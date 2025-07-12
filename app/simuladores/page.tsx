@@ -2,7 +2,6 @@ import { supabase } from '../../lib/supabaseClient';
 import Card from '../components/Card';
 import Breadcrumbs from '../components/Breadcrumbs';
 
-// Revalidate the data every 60 seconds
 export const revalidate = 60;
 
 async function getInstitutions() {
@@ -15,7 +14,8 @@ async function getInstitutions() {
     return [];
   }
   
-  const institutions = [...new Set(data.map(item => item.institucion))];
+  // Usamos Array.from() para asegurar la compatibilidad con TypeScript
+  const institutions = Array.from(new Set(data.map(item => item.institucion)));
   return institutions;
 }
 

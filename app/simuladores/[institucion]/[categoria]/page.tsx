@@ -3,7 +3,6 @@ import Card from '../../../components/Card';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import { notFound } from 'next/navigation';
 
-// Revalidate the data every 60 seconds
 export const revalidate = 60;
 
 async function getMaterias(institution: string, category: string) {
@@ -21,7 +20,8 @@ async function getMaterias(institution: string, category: string) {
     return [];
   }
   
-  const materias = [...new Set(data.map(item => item.materia))];
+  // Usamos Array.from() para asegurar la compatibilidad con TypeScript
+  const materias = Array.from(new Set(data.map(item => item.materia)));
   return materias;
 }
 
