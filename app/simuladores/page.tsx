@@ -1,10 +1,12 @@
-import { supabase } from '../../lib/supabaseClient';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 import Card from '../components/Card';
 import Breadcrumbs from '../components/Breadcrumbs';
 
 export const revalidate = 60;
 
 async function getInstitutions() {
+  const supabase = createServerComponentClient({ cookies });
   const { data, error } = await supabase
     .from('simuladores')
     .select('institucion');
@@ -14,7 +16,6 @@ async function getInstitutions() {
     return [];
   }
   
-  // Usamos Array.from() para asegurar la compatibilidad con TypeScript
   const institutions = Array.from(new Set(data.map(item => item.institucion)));
   return institutions;
 }

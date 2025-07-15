@@ -1,4 +1,5 @@
-import { supabase } from '../../../lib/supabaseClient';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 import Simulator from '../../components/Simulator';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import { notFound } from 'next/navigation';
@@ -6,7 +7,6 @@ import Image from 'next/image';
 
 export const revalidate = 60;
 
-// Tipos para el nuevo formato de opciones y respuestas con JSON
 export type Option = {
   type: 'text' | 'image';
   value: string;
@@ -25,14 +25,15 @@ export interface QuestionType {
   id: number;
   simulador_id: string;
   pregunta: string;
-  pregunta_img_url: string | null; // <-- Nueva columna
-  opciones: Option[]; // <-- Tipo actualizado
-  respuesta: Option; // <-- Tipo actualizado
+  pregunta_img_url: string | null;
+  opciones: Option[];
+  respuesta: Option;
   feedback: string | null;
   youtube_url: string | null;
 }
 
 async function getSimulatorData(slug: string) {
+  const supabase = createServerComponentClient({ cookies });
   const { data: simulator, error: simulatorError } = await supabase
     .from('simuladores')
     .select('*')

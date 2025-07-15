@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabaseClient';
 import { CheckCircle, XCircle, Youtube, Repeat } from 'lucide-react';
 import type { SimulatorType, QuestionType, Option } from '../simulador/[slug]/page';
 import Image from 'next/image';
+import { useSupabase } from './AuthProvider'; // <-- IMPORTADO
 
 interface SimulatorProps {
   initialSimulator: SimulatorType;
@@ -12,6 +12,9 @@ interface SimulatorProps {
 }
 
 export default function Simulator({ initialSimulator, initialQuestions }: SimulatorProps) {
+  // CORRECCIÓN: Llamar a los hooks en el nivel superior del componente.
+  const { user, supabase } = useSupabase(); 
+  
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<{ [key: number]: Option }>({});
@@ -30,15 +33,13 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
   }, [initialQuestions]);
 
   const handleOptionSelect = (option: Option) => {
-    if (answerStatus) return; // No permitir cambiar la opción después de verificar
+    if (answerStatus) return;
     setSelectedOption(option);
   };
 
   const handleVerifyAnswer = () => {
     if (!selectedOption) return;
-    
     const isCorrect = selectedOption.value === questions[currentQuestionIndex].respuesta.value;
-    
     setAnswerStatus(isCorrect ? 'correct' : 'incorrect');
     setUserAnswers({ ...userAnswers, [currentQuestionIndex]: selectedOption });
   };
@@ -46,7 +47,6 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
   const handleNextQuestion = () => {
     setAnswerStatus(null);
     setSelectedOption(null);
-    
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
@@ -56,11 +56,16 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
   
   const calculateAndShowResults = async () => {
     setIsSubmitting(true);
+    
+    // CORRECCIÓN: Ya no se llama al hook aquí. Usamos la variable 'supabase' definida arriba.
+    const finalUserAnswers = { ...userAnswers };
+    if (selectedOption && !finalUserAnswers[currentQuestionIndex]) {
+        finalUserAnswers[currentQuestionIndex] = selectedOption;
+    }
+
     let correctAnswers = 0;
     questions.forEach((q, index) => {
-      // Usamos la respuesta guardada en el momento de la verificación
-      const finalUserAnswer = { ...userAnswers, [currentQuestionIndex]: selectedOption };
-      if (finalUserAnswer[index]?.value === q.respuesta.value) {
+      if (finalUserAnswers[index]?.value === q.respuesta.value) {
         correctAnswers++;
       }
     });
@@ -75,6 +80,8 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
         puntaje: Math.round(finalScore),
         total_preguntas: questions.length,
         aciertos: correctAnswers,
+        usuario_id: user?.id,
+        email: user?.email,
       });
     } catch (error) {
       console.error('Error saving results:', error);

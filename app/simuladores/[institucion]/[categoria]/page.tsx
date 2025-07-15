@@ -1,4 +1,5 @@
-import { supabase } from '../../../../lib/supabaseClient';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 import Card from '../../../components/Card';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import { notFound } from 'next/navigation';
@@ -6,6 +7,7 @@ import { notFound } from 'next/navigation';
 export const revalidate = 60;
 
 async function getMaterias(institution: string, category: string) {
+  const supabase = createServerComponentClient({ cookies });
   const { data, error } = await supabase
     .from('simuladores')
     .select('materia')
@@ -20,7 +22,6 @@ async function getMaterias(institution: string, category: string) {
     return [];
   }
   
-  // Usamos Array.from() para asegurar la compatibilidad con TypeScript
   const materias = Array.from(new Set(data.map(item => item.materia)));
   return materias;
 }

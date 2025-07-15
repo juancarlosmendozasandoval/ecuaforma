@@ -1,12 +1,13 @@
-import { supabase } from '../../../../../lib/supabaseClient';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 import Card from '../../../../components/Card';
 import Breadcrumbs from '../../../../components/Breadcrumbs';
 import { notFound } from 'next/navigation';
 
-// Revalidate the data every 60 seconds
 export const revalidate = 60;
 
 async function getSimulators(institution: string, category: string, materia: string) {
+  const supabase = createServerComponentClient({ cookies });
   const { data, error } = await supabase
     .from('simuladores')
     .select('nombre, slug')

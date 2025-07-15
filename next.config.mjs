@@ -8,7 +8,11 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'hqoopmrvagnzsxoofozh.supabase.co', // <-- DOMINIO DE SUPABASE AÑADIDO
+                hostname: 'hqoopmrvagnzsxoofozh.supabase.co',
+            },
+            {
+                protocol: 'https',
+                hostname: 'lh3.googleusercontent.com', // <-- DOMINIO PARA FOTOS DE PERFIL DE GOOGLE
             },
         ],
     },
