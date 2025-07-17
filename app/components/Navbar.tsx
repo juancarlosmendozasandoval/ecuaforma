@@ -1,12 +1,12 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X, BookOpen, Shield, Home, Phone, LogOut, UserCircle } from 'lucide-react';
+import { Menu, X, BookOpen, Shield, Home, Phone, LogOut } from 'lucide-react';
 import { useSupabase } from './AuthProvider';
 import Image from 'next/image';
+import Logo from './Logo'; // <-- IMPORTAMOS EL NUEVO COMPONENTE DEL LOGO
 
 const navLinks = [
-  { href: '/', label: 'Inicio', icon: Home },
   { href: '/cursos', label: 'Cursos', icon: BookOpen },
   { href: '/simuladores', label: 'Simuladores', icon: Shield },
   { href: '/contacto', label: 'Contacto', icon: Phone },
@@ -28,9 +28,9 @@ export default function Navbar() {
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="main-container flex items-center justify-between h-20">
-        <Link href="/" className="text-2xl font-bold text-primary">
-          Ecuaforma
-        </Link>
+        {/* Usamos el nuevo componente del Logo aquí */}
+        <Logo />
+
         <nav className="hidden md:flex items-center space-x-6">
           {navLinks.map((link) => (
             <Link key={link.href} href={link.href} className="text-base font-medium text-text-primary hover:text-primary transition-colors duration-300">
@@ -50,7 +50,7 @@ export default function Navbar() {
                 />
                 <span className="font-medium text-sm">{user.user_metadata.full_name}</span>
               </button>
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                 <button
                   onClick={signOut}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
