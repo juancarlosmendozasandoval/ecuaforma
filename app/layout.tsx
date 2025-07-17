@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import 'katex/dist/katex.min.css'; // <-- ESTILOS PARA MATEMÁTICAS
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
-import AuthProvider from "./components/AuthProvider"; // <-- IMPORTADO
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"; // <-- IMPORTADO
-import { cookies } from "next/headers"; // <-- IMPORTADO
+import AuthProvider from "./components/AuthProvider";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 import React from "react";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,7 +22,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Obtenemos la sesión del lado del servidor para pasarla al AuthProvider
   const supabase = createServerComponentClient({ cookies });
   const {
     data: { session },
@@ -30,7 +30,7 @@ export default async function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <AuthProvider session={session}> {/* <-- ENVOLVEMOS LA APP */}
+        <AuthProvider session={session}>
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <main className="flex-grow py-8 sm:py-12">

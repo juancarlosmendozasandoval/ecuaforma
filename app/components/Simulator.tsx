@@ -4,15 +4,36 @@ import { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Youtube, Repeat } from 'lucide-react';
 import type { SimulatorType, QuestionType, Option } from '../simulador/[slug]/page';
 import Image from 'next/image';
-import { useSupabase } from './AuthProvider'; // <-- IMPORTADO
+import { useSupabase } from './AuthProvider';
+import { InlineMath, BlockMath } from 'react-katex';
 
 interface SimulatorProps {
   initialSimulator: SimulatorType;
   initialQuestions: QuestionType[];
 }
 
+// Nueva función para renderizar texto y fórmulas matemáticas con los delimitadores estándar
+const renderWithMath = (text: string) => {
+  // Expresión regular para encontrar fórmulas LaTeX: \(...\) o \[...\]
+  const mathRegex = /(\\\[[\s\S]*?\\\]|\\\(.*?\\\))/g;
+  const parts = text.split(mathRegex);
+
+  return parts.map((part, index) => {
+    if (part.startsWith('\\[') && part.endsWith('\\]')) {
+      // Fórmula en bloque: \[ ... \]
+      return <BlockMath key={index} math={part.slice(2, -2)} />;
+    } else if (part.startsWith('\\(') && part.endsWith('\\)')) {
+      // Fórmula en línea: \( ... \)
+      return <InlineMath key={index} math={part.slice(2, -2)} />;
+    } else {
+      // Texto normal (incluyendo signos de dólar para dinero)
+      return <span key={index}>{part}</span>;
+    }
+  });
+};
+
+
 export default function Simulator({ initialSimulator, initialQuestions }: SimulatorProps) {
-  // CORRECCIÓN: Llamar a los hooks en el nivel superior del componente.
   const { user, supabase } = useSupabase(); 
   
   const [questions, setQuestions] = useState<QuestionType[]>([]);
@@ -57,7 +78,6 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
   const calculateAndShowResults = async () => {
     setIsSubmitting(true);
     
-    // CORRECCIÓN: Ya no se llama al hook aquí. Usamos la variable 'supabase' definida arriba.
     const finalUserAnswers = { ...userAnswers };
     if (selectedOption && !finalUserAnswers[currentQuestionIndex]) {
         finalUserAnswers[currentQuestionIndex] = selectedOption;
@@ -141,8 +161,8 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
         </div>
       </div>
 
-      <div className="mb-6 text-center">
-        <p className="text-xl md:text-2xl font-semibold">{currentQuestion.pregunta}</p>
+      <div className="mb-6 text-center text-xl md:text-2xl font-semibold">
+        {renderWithMath(currentQuestion.pregunta)}
         {currentQuestion.pregunta_img_url && (
           <div className="mt-4 relative w-full h-64 md:h-80 max-w-lg mx-auto">
             <Image src={currentQuestion.pregunta_img_url} alt="Imagen de la pregunta" layout="fill" objectFit="contain" className="rounded-lg" />
@@ -173,7 +193,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
               className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-300 flex items-center justify-center min-h-[60px] ${buttonClass}`}
             >
               {option.type === 'text' ? (
-                <span className="font-medium">{option.value}</span>
+                <span className="font-medium text-center">{renderWithMath(option.value)}</span>
               ) : (
                 <div className="relative w-full h-32">
                   <Image src={option.value} alt={`Opción ${i+1}`} layout="fill" objectFit="contain" className="rounded-md" />
