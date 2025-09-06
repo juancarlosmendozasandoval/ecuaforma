@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { CheckCircle, XCircle, Youtube, Repeat } from 'lucide-react';
 import type { SimulatorType, QuestionType, Option } from '../simulador/[slug]/page';
 import Image from 'next/image';
@@ -12,23 +12,26 @@ interface SimulatorProps {
   initialQuestions: QuestionType[];
 }
 
-// Nueva función para renderizar texto y fórmulas matemáticas con los delimitadores estándar
-const renderWithMath = (text: string) => {
-  // Expresión regular para encontrar fórmulas LaTeX: \(...\) o \[...\]
-  const mathRegex = /(\\\[[\s\S]*?\\\]|\\\(.*?\\\))/g;
-  const parts = text.split(mathRegex);
+// Función recursiva y definitiva para renderizar formato anidado correctamente.
+const renderFormattedText = (text: string): (string | JSX.Element)[] => {
+  if (!text) return [];
+  // Expresión regular para buscar subrayado o fórmulas matemáticas.
+  const regex = /(\\\[[\s\S]*?\\\]|\\\(.*?\\\)|<u>[\s\S]*?<\/u>)/g;
+  const parts = text.split(regex);
 
-  return parts.map((part, index) => {
+  return parts.filter(Boolean).map((part, index) => {
     if (part.startsWith('\\[') && part.endsWith('\\]')) {
-      // Fórmula en bloque: \[ ... \]
       return <BlockMath key={index} math={part.slice(2, -2)} />;
-    } else if (part.startsWith('\\(') && part.endsWith('\\)')) {
-      // Fórmula en línea: \( ... \)
-      return <InlineMath key={index} math={part.slice(2, -2)} />;
-    } else {
-      // Texto normal (incluyendo signos de dólar para dinero)
-      return <span key={index}>{part}</span>;
     }
+    if (part.startsWith('\\(') && part.endsWith('\\)')) {
+      return <InlineMath key={index} math={part.slice(2, -2)} />;
+    }
+    if (part.startsWith('<u>') && part.endsWith('</u>')) {
+      // Procesa recursivamente el contenido dentro de la etiqueta <u>
+      return <u key={index}>{renderFormattedText(part.slice(3, -3))}</u>;
+    }
+    // Devuelve el texto plano como una cadena simple.
+    return part;
   });
 };
 
@@ -162,7 +165,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
       </div>
 
       <div className="mb-6 text-center text-xl md:text-2xl font-semibold">
-        {renderWithMath(currentQuestion.pregunta)}
+        {renderFormattedText(currentQuestion.pregunta)}
         {currentQuestion.pregunta_img_url && (
           <div className="mt-4 relative w-full h-64 md:h-80 max-w-lg mx-auto">
             <Image src={currentQuestion.pregunta_img_url} alt="Imagen de la pregunta" layout="fill" objectFit="contain" className="rounded-lg" />
@@ -193,7 +196,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
               className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-300 flex items-center justify-center min-h-[60px] ${buttonClass}`}
             >
               {option.type === 'text' ? (
-                <span className="font-medium text-center">{renderWithMath(option.value)}</span>
+                <span className="font-medium text-center">{renderFormattedText(option.value)}</span>
               ) : (
                 <div className="relative w-full h-32">
                   <Image src={option.value} alt={`Opción ${i+1}`} layout="fill" objectFit="contain" className="rounded-md" />

@@ -18,7 +18,7 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 const socialLinks = [
-  { href: 'https://tiktok.com/@inge.jc', icon: TikTokIcon, label: 'TikTok' },
+  { href: 'https://tiktok.com/@ecuaforma', icon: TikTokIcon, label: 'TikTok' },
   { href: 'https://youtube.com/@ecuaforma', icon: Youtube, label: 'YouTube' },
   { href: 'https://instagram.com/ecuaforma', icon: Instagram, label: 'Instagram' },
   { href: 'https://facebook.com/ecuaforma', icon: Facebook, label: 'Facebook' },
