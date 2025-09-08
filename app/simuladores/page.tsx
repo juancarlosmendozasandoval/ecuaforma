@@ -3,46 +3,32 @@ import { cookies } from 'next/headers';
 import Card from '../components/Card';
 import Breadcrumbs from '../components/Breadcrumbs';
 
-export const revalidate = 60;
-
-async function getInstitutions() {
-  const supabase = createServerComponentClient({ cookies });
+// Esta es la página principal que muestra todas las instituciones.
+export default async function SimuladoresHome() {
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  
+  // Solo obtenemos los simuladores que son públicos.
   const { data, error } = await supabase
     .from('simuladores')
-    .select('institucion');
+    .select('institucion')
+    .eq('publico', true);
 
-  if (error) {
-    console.error('Error fetching institutions:', error);
-    return [];
+  if (error || !data) {
+    return <p>No se encontraron instituciones.</p>;
   }
-  
+
   const institutions = Array.from(new Set(data.map(item => item.institucion)));
-  return institutions;
-}
-
-export default async function SimuladoresPage() {
-  const institutions = await getInstitutions();
-
-  const breadcrumbs = [
-    { label: 'Simuladores' }
-  ];
+  const breadcrumbs = [{ label: 'Simuladores', href: '/simuladores', isActive: true }];
 
   return (
-    <div className="main-container">
+    <div className="main-container py-10">
       <Breadcrumbs items={breadcrumbs} />
-      <h1 className="text-3xl md:text-4xl font-bold mb-8">Elige una Institución</h1>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {institutions.map(inst => (
-          <Card 
-            key={inst}
-            title={inst}
-            href={`/simuladores/${inst.toLowerCase()}`}
-            description={`Simuladores para ${inst}`}
-          />
+      <h1 className="text-3xl font-bold mb-6">Instituciones Públicas</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {institutions.map((inst) => (
+          <Card key={inst} title={inst} href={`/simuladores/${inst}`} />
         ))}
-        {institutions.length === 0 && (
-          <p className="text-text-secondary">No hay instituciones disponibles en este momento.</p>
-        )}
       </div>
     </div>
   );

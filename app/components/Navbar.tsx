@@ -1,10 +1,10 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X, BookOpen, Shield, Home, Phone, LogOut } from 'lucide-react';
+import { Menu, X, BookOpen, Shield, Home, Phone, LogOut, Lock } from 'lucide-react';
 import { useSupabase } from './AuthProvider';
 import Image from 'next/image';
-import Logo from './Logo'; // <-- IMPORTAMOS EL NUEVO COMPONENTE DEL LOGO
+import Logo from './Logo';
 
 const navLinks = [
   { href: '/cursos', label: 'Cursos', icon: BookOpen },
@@ -28,15 +28,18 @@ export default function Navbar() {
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="main-container flex items-center justify-between h-20">
-        {/* Usamos el nuevo componente del Logo aquí */}
         <Logo />
-
         <nav className="hidden md:flex items-center space-x-6">
           {navLinks.map((link) => (
             <Link key={link.href} href={link.href} className="text-base font-medium text-text-primary hover:text-primary transition-colors duration-300">
               {link.label}
             </Link>
           ))}
+          {user && (
+            <Link href="/mis-cursos" className="text-base font-medium text-text-primary hover:text-primary transition-colors duration-300 flex items-center gap-1">
+              <Lock size={14} /> Mis Cursos
+            </Link>
+          )}
           <div className="w-px h-6 bg-gray-200" />
           {user ? (
             <div className="relative group">
@@ -74,7 +77,6 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-      {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden bg-white pb-4 border-t">
           <nav className="flex flex-col items-center space-y-4 pt-4">
@@ -84,6 +86,11 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+             {user && (
+              <Link href="/mis-cursos" onClick={() => setIsOpen(false)} className="flex items-center gap-2 text-lg font-medium text-text-primary hover:text-primary transition-colors duration-300">
+                <Lock size={20} /> Mis Cursos
+              </Link>
+            )}
             <div className="w-full px-8">
               <div className="w-full h-px bg-gray-200 my-2" />
               {user ? (

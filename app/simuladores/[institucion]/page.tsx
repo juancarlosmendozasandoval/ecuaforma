@@ -2,54 +2,36 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import Card from '../../components/Card';
 import Breadcrumbs from '../../components/Breadcrumbs';
-import { notFound } from 'next/navigation';
 
-export const revalidate = 60;
+// Muestra las categorías para una institución específica.
+export default async function InstitucionPage({ params }: { params: { institucion: string } }) {
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient({ cookies: () => cookieStore });
 
-async function getCategories(institution: string) {
-  const supabase = createServerComponentClient({ cookies });
+  // Solo obtenemos las categorías de los simuladores públicos de esta institución.
   const { data, error } = await supabase
     .from('simuladores')
     .select('categoria')
-    .ilike('institucion', institution);
-
-  if (error) {
-    console.error('Error fetching categories:', error);
-    return [];
-  }
-  if (!data || data.length === 0) {
-    return [];
+    .eq('institucion', params.institucion)
+    .eq('publico', true);
+    
+  if (error || !data) {
+    return <p>No se encontraron categorías para esta institución.</p>;
   }
   
   const categories = Array.from(new Set(data.map(item => item.categoria)));
-  return categories;
-}
-
-export default async function InstitutionPage({ params }: { params: { institucion: string } }) {
-  const institution = decodeURIComponent(params.institucion);
-  const categories = await getCategories(institution);
-
-  if (categories.length === 0) {
-    notFound();
-  }
-  
   const breadcrumbs = [
     { label: 'Simuladores', href: '/simuladores' },
-    { label: institution.charAt(0).toUpperCase() + institution.slice(1) }
+    { label: params.institucion, href: `/simuladores/${params.institucion}`, isActive: true }
   ];
 
   return (
-    <div className="main-container">
+    <div className="main-container py-10">
       <Breadcrumbs items={breadcrumbs} />
-      <h1 className="text-3xl md:text-4xl font-bold mb-8">Elige una Categoría</h1>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <h1 className="text-3xl font-bold mb-6">Categorías en {decodeURIComponent(params.institucion)}</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories.map(cat => (
-          <Card 
-            key={cat}
-            title={cat}
-            href={`/simuladores/${institution}/${cat.toLowerCase()}`}
-            description={`Pruebas de tipo ${cat}`}
-          />
+          <Card key={cat} title={cat} href={`/simuladores/${params.institucion}/${cat}`} />
         ))}
       </div>
     </div>

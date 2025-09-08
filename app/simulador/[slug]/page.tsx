@@ -2,28 +2,24 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import Simulator from '../../components/Simulator';
 import Breadcrumbs from '../../components/Breadcrumbs';
-import { notFound } from 'next/navigation';
-import Image from 'next/image';
-
-export const revalidate = 60;
-
-export type Option = {
-  type: 'text' | 'image';
-  value: string;
-};
+import { Lock } from 'lucide-react';
 
 export interface SimulatorType {
   id: string;
   nombre: string;
-  slug: string;
-  categoria: string;
   institucion: string;
+  categoria: string;
   materia: string;
+  publico: boolean;
+}
+
+export interface Option {
+  type: 'text' | 'image';
+  value: string;
 }
 
 export interface QuestionType {
   id: number;
-  simulador_id: string;
   pregunta: string;
   pregunta_img_url: string | null;
   opciones: Option[];
@@ -32,66 +28,84 @@ export interface QuestionType {
   youtube_url: string | null;
 }
 
-async function getSimulatorData(slug: string) {
-  const supabase = createServerComponentClient({ cookies });
-  const { data: simulator, error: simulatorError } = await supabase
+// Esta es la página principal de un simulador individual.
+export default async function SimuladorPage({ params }: { params: { slug: string } }) {
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+
+  // 1. Obtener los datos del simulador
+  const { data: simulatorData, error: simulatorError } = await supabase
     .from('simuladores')
     .select('*')
-    .eq('slug', slug)
-    .single<SimulatorType>();
+    .eq('slug', params.slug)
+    .single();
 
-  if (simulatorError || !simulator) {
-    console.error('Error fetching simulator:', simulatorError);
-    return null;
+  if (simulatorError || !simulatorData) {
+    return <p className="text-center mt-10">No se encontró el simulador.</p>;
+  }
+  
+  // 2. Comprobar si el usuario ha iniciado sesión
+  const { data: { session } } = await supabase.auth.getSession();
+
+  // 3. Si el simulador NO es público, comprobar permisos
+  if (!simulatorData.publico) {
+    if (!session) {
+      return (
+        <div className="text-center mt-10 p-8 bg-yellow-50 border-l-4 border-yellow-400">
+           <Lock className="mx-auto mb-4 h-12 w-12 text-yellow-500" />
+          <h1 className="text-2xl font-bold">Contenido Privado</h1>
+          <p className="mt-2 text-gray-600">Este es un simulador privado. Por favor, inicia sesión para comprobar si tienes acceso.</p>
+        </div>
+      );
+    }
+
+    // El usuario ha iniciado sesión, ahora comprobamos si tiene acceso en la tabla `accesos_simuladores`
+    const { data: accessData, error: accessError } = await supabase
+      .from('accesos_simuladores')
+      .select('*')
+      .eq('simulador_id', simulatorData.id)
+      .eq('usuario_id', session.user.id)
+      .maybeSingle(); // Usamos maybeSingle porque puede que no haya registro
+
+    if (accessError || !accessData) {
+       return (
+        <div className="text-center mt-10 p-8 bg-red-50 border-l-4 border-red-400">
+           <Lock className="mx-auto mb-4 h-12 w-12 text-red-500" />
+          <h1 className="text-2xl font-bold">Acceso Denegado</h1>
+          <p className="mt-2 text-gray-600">No tienes permiso para acceder a este simulador privado.</p>
+        </div>
+      );
+    }
   }
 
-  const { data: questions, error: questionsError } = await supabase
+  // 4. Si el simulador es público o el usuario tiene acceso, obtener las preguntas
+  const { data: questionsData, error: questionsError } = await supabase
     .from('preguntas')
     .select('*')
-    .eq('simulador_id', simulator.id)
-    .returns<QuestionType[]>();
+    .eq('simulador_id', simulatorData.id);
 
-  if (questionsError) {
-    console.error('Error fetching questions:', questionsError);
-    return { simulator, questions: [] };
+  if (questionsError || !questionsData) {
+    return <p className="text-center mt-10">No se pudieron cargar las preguntas.</p>;
   }
-
-  return { simulator, questions: questions || [] };
-}
-
-export default async function SimulatorPage({ params }: { params: { slug: string } }) {
-  const data = await getSimulatorData(params.slug);
-
-  if (!data) {
-    notFound();
-  }
-
-  const { simulator, questions } = data;
 
   const breadcrumbs = [
     { label: 'Simuladores', href: '/simuladores' },
-    { label: simulator.institucion, href: `/simuladores/${simulator.institucion.toLowerCase()}` },
-    { label: simulator.categoria, href: `/simuladores/${simulator.institucion.toLowerCase()}/${simulator.categoria.toLowerCase()}` },
-    { label: simulator.materia, href: `/simuladores/${simulator.institucion.toLowerCase()}/${simulator.categoria.toLowerCase()}/${simulator.materia.toLowerCase()}` },
-    { label: simulator.nombre }
+    { label: simulatorData.institucion, href: `/simuladores/${simulatorData.institucion}` },
+    { label: simulatorData.categoria, href: `/simuladores/${simulatorData.institucion}/${simulatorData.categoria}` },
+    { label: simulatorData.materia, href: `/simuladores/${simulatorData.institucion}/${simulatorData.categoria}/${simulatorData.materia}` },
+    { label: simulatorData.nombre, href: `/simulador/${params.slug}`, isActive: true },
   ];
 
   return (
-    <div className="main-container">
+    <div className="main-container py-10">
       <Breadcrumbs items={breadcrumbs} />
       <div className="text-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">{simulator.nombre}</h1>
-        <p className="text-text-secondary">Institución: {simulator.institucion} | Categoría: {simulator.categoria} | Materia: {simulator.materia}</p>
+        <h1 className="text-4xl font-extrabold text-primary">{simulatorData.nombre}</h1>
+        <p className="text-text-secondary mt-2">
+          Institución: {simulatorData.institucion} | Categoría: {simulatorData.categoria} | Materia: {simulatorData.materia}
+        </p>
       </div>
-      
-      {questions.length > 0 ? (
-        <Simulator initialSimulator={simulator} initialQuestions={questions} />
-      ) : (
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md" role="alert">
-          <p className="font-bold">Sin preguntas</p>
-          <p>Este simulador aún no tiene preguntas cargadas. Vuelve a intentarlo más tarde.</p>
-        </div>
-      )}
+      <Simulator initialSimulator={simulatorData} initialQuestions={questionsData} />
     </div>
   );
 }
