@@ -8,11 +8,31 @@ export default async function SimuladoresHome() {
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   const { data: { user } } = await supabase.auth.getUser();
+
+  let query = supabase.from('simuladores').select('institucion');
+
+  // Si el usuario no ha iniciado sesión, solo mostramos los públicos.
+  if (!user) {
+    query = query.eq('publico', true);
+  } else {
+    // Si ha iniciado sesión, obtenemos sus accesos privados.
+    const { data: accessData } = await supabase
+      .from('accesos_simuladores')
+      .select('simulador_id')
+      .eq('usuario_id', user.id);
+    
+    const accessibleIds = accessData ? accessData.map(a => a.simulador_id) : [];
+
+    if (accessibleIds.length > 0) {
+      // Mostramos los que son públicos O los que están en su lista de acceso.
+      query = query.or(`publico.eq.true,id.in.(${accessibleIds.join(',')})`);
+    } else {
+      // Si no tiene accesos, solo ve los públicos.
+      query = query.eq('publico', true);
+    }
+  }
   
-  // Usamos la nueva función para obtener todos los simuladores visibles.
-  const { data, error } = await supabase
-    .rpc('get_visible_simulators', { p_user_id: user?.id })
-    .select('institucion');
+  const { data, error } = await query;
 
   if (error || !data) {
     return <p>No se encontraron instituciones.</p>;

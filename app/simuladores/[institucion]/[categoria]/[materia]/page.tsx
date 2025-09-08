@@ -9,13 +9,29 @@ export default async function MateriaPage({ params }: { params: { institucion: s
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Usamos la nueva función y filtramos.
-  const { data, error } = await supabase
-    .rpc('get_visible_simulators', { p_user_id: user?.id })
+  let query = supabase.from('simuladores').select('nombre, slug')
     .eq('institucion', params.institucion)
     .eq('categoria', params.categoria)
-    .eq('materia', params.materia)
-    .select('nombre, slug');
+    .eq('materia', params.materia);
+  
+  if (!user) {
+    query = query.eq('publico', true);
+  } else {
+    const { data: accessData } = await supabase
+      .from('accesos_simuladores')
+      .select('simulador_id')
+      .eq('usuario_id', user.id);
+    
+    const accessibleIds = accessData ? accessData.map(a => a.simulador_id) : [];
+
+    if (accessibleIds.length > 0) {
+      query = query.or(`publico.eq.true,id.in.(${accessibleIds.join(',')})`);
+    } else {
+      query = query.eq('publico', true);
+    }
+  }
+
+  const { data, error } = await query;
 
   if (error || !data) {
     return <p>No se encontraron simuladores para esta materia.</p>;
