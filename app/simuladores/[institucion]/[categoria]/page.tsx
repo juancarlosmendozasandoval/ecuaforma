@@ -3,18 +3,18 @@ import { cookies } from 'next/headers';
 import Card from '../../../components/Card';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 
-// Muestra las materias para una categoría específica.
+// Muestra las materias visibles para una categoría específica.
 export default async function CategoriaPage({ params }: { params: { institucion: string, categoria: string } }) {
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const { data: { user } } = await supabase.auth.getUser();
   
-  // Solo obtenemos las materias de los simuladores públicos de esta categoría.
+  // Usamos la nueva función y filtramos.
   const { data, error } = await supabase
-    .from('simuladores')
-    .select('materia')
+    .rpc('get_visible_simulators', { p_user_id: user?.id })
     .eq('institucion', params.institucion)
     .eq('categoria', params.categoria)
-    .eq('publico', true);
+    .select('materia');
 
   if (error || !data) {
     return <p>No se encontraron materias para esta categoría.</p>;

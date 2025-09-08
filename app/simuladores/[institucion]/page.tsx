@@ -3,17 +3,17 @@ import { cookies } from 'next/headers';
 import Card from '../../components/Card';
 import Breadcrumbs from '../../components/Breadcrumbs';
 
-// Muestra las categorías para una institución específica.
+// Muestra las categorías visibles para una institución específica.
 export default async function InstitucionPage({ params }: { params: { institucion: string } }) {
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // Solo obtenemos las categorías de los simuladores públicos de esta institución.
+  // Usamos la nueva función y filtramos por institución.
   const { data, error } = await supabase
-    .from('simuladores')
-    .select('categoria')
+    .rpc('get_visible_simulators', { p_user_id: user?.id })
     .eq('institucion', params.institucion)
-    .eq('publico', true);
+    .select('categoria');
     
   if (error || !data) {
     return <p>No se encontraron categorías para esta institución.</p>;

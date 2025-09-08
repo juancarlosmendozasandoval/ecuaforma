@@ -3,19 +3,19 @@ import { cookies } from 'next/headers';
 import Card from '../../../../components/Card';
 import Breadcrumbs from '../../../../components/Breadcrumbs';
 
-// Muestra los simuladores para una materia específica.
+// Muestra los simuladores visibles para una materia específica.
 export default async function MateriaPage({ params }: { params: { institucion: string, categoria: string, materia: string } }) {
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // Solo obtenemos los simuladores públicos de esta materia.
+  // Usamos la nueva función y filtramos.
   const { data, error } = await supabase
-    .from('simuladores')
-    .select('nombre, slug')
+    .rpc('get_visible_simulators', { p_user_id: user?.id })
     .eq('institucion', params.institucion)
     .eq('categoria', params.categoria)
     .eq('materia', params.materia)
-    .eq('publico', true);
+    .select('nombre, slug');
 
   if (error || !data) {
     return <p>No se encontraron simuladores para esta materia.</p>;
