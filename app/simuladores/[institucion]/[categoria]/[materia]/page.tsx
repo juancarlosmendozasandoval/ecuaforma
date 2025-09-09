@@ -9,10 +9,15 @@ export default async function MateriaPage({ params }: { params: { institucion: s
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   const { data: { user } } = await supabase.auth.getUser();
 
+  // Solución: Decodificar todos los parámetros de la URL.
+  const decodedInstitucion = decodeURIComponent(params.institucion);
+  const decodedCategoria = decodeURIComponent(params.categoria);
+  const decodedMateria = decodeURIComponent(params.materia);
+
   let query = supabase.from('simuladores').select('nombre, slug')
-    .eq('institucion', params.institucion)
-    .eq('categoria', params.categoria)
-    .eq('materia', params.materia);
+    .eq('institucion', decodedInstitucion)
+    .eq('categoria', decodedCategoria)
+    .eq('materia', decodedMateria);
   
   if (!user) {
     query = query.eq('publico', true);
@@ -39,15 +44,15 @@ export default async function MateriaPage({ params }: { params: { institucion: s
   
   const breadcrumbs = [
     { label: 'Simuladores', href: '/simuladores' },
-    { label: params.institucion, href: `/simuladores/${params.institucion}` },
-    { label: params.categoria, href: `/simuladores/${params.institucion}/${params.categoria}` },
-    { label: params.materia, href: `/simuladores/${params.institucion}/${params.categoria}/${params.materia}`, isActive: true }
+    { label: decodedInstitucion, href: `/simuladores/${params.institucion}` },
+    { label: decodedCategoria, href: `/simuladores/${params.institucion}/${params.categoria}` },
+    { label: decodedMateria, href: `/simuladores/${params.institucion}/${params.categoria}/${params.materia}`, isActive: true }
   ];
   
   return (
     <div className="main-container py-10">
        <Breadcrumbs items={breadcrumbs} />
-      <h1 className="text-3xl font-bold mb-6">Simuladores de {decodeURIComponent(params.materia)}</h1>
+      <h1 className="text-3xl font-bold mb-6">Simuladores de {decodedMateria}</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {data.map(sim => (
           <Card key={sim.slug} title={sim.nombre} href={`/simulador/${sim.slug}`} />

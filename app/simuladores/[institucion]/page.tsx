@@ -9,7 +9,10 @@ export default async function InstitucionPage({ params }: { params: { institucio
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   const { data: { user } } = await supabase.auth.getUser();
 
-  let query = supabase.from('simuladores').select('categoria').eq('institucion', params.institucion);
+  // Solución: Decodificar el nombre de la institución desde la URL.
+  const decodedInstitucion = decodeURIComponent(params.institucion);
+
+  let query = supabase.from('simuladores').select('categoria').eq('institucion', decodedInstitucion);
 
   if (!user) {
     query = query.eq('publico', true);
@@ -37,13 +40,13 @@ export default async function InstitucionPage({ params }: { params: { institucio
   const categories = Array.from(new Set(data.map(item => item.categoria)));
   const breadcrumbs = [
     { label: 'Simuladores', href: '/simuladores' },
-    { label: params.institucion, href: `/simuladores/${params.institucion}`, isActive: true }
+    { label: decodedInstitucion, href: `/simuladores/${params.institucion}`, isActive: true }
   ];
 
   return (
     <div className="main-container py-10">
       <Breadcrumbs items={breadcrumbs} />
-      <h1 className="text-3xl font-bold mb-6">Categorías en {decodeURIComponent(params.institucion)}</h1>
+      <h1 className="text-3xl font-bold mb-6">Categorías en {decodedInstitucion}</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories.map(cat => (
           <Card key={cat} title={cat} href={`/simuladores/${params.institucion}/${cat}`} />
