@@ -13,8 +13,8 @@ export default function CrearSimuladorPage() {
   // Datos del formulario
   const [formData, setFormData] = useState({
     nombre: '',
-    institucion: 'Policía Nacional',
-    categoria: 'Tropa',
+    institucion: '', // CAMBIO: Ya no tiene valor por defecto fijo
+    categoria: '',
     materia: '',
     publico: true,
   });
@@ -32,7 +32,6 @@ export default function CrearSimuladorPage() {
     setLoading(true);
 
     // Creamos un "slug" (identificador para la URL) automáticamente
-    // Ejemplo: "Examen Final" -> "examen-final"
     const slug = formData.nombre
       .toLowerCase()
       .trim()
@@ -48,7 +47,7 @@ export default function CrearSimuladorPage() {
           {
             nombre: formData.nombre,
             slug: slug,
-            institucion: formData.institucion,
+            institucion: formData.institucion.trim(), // Guardamos lo que escribas
             categoria: formData.categoria,
             materia: formData.materia,
             publico: formData.publico
@@ -61,7 +60,13 @@ export default function CrearSimuladorPage() {
 
       alert('¡Simulador creado correctamente!');
       // Limpiamos el formulario
-      setFormData({ ...formData, nombre: '', materia: '' });
+      setFormData({
+        nombre: '',
+        institucion: '',
+        categoria: '',
+        materia: '',
+        publico: true
+      });
       
     } catch (error: any) {
       console.error(error);
@@ -94,21 +99,18 @@ export default function CrearSimuladorPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Institución */}
+          {/* Institución - AHORA ES TEXTO LIBRE */}
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Institución</label>
-            <select
+            <input
+              type="text"
               name="institucion"
+              required
+              placeholder="Ej: Policía Nacional, Bomberos..."
               value={formData.institucion}
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-            >
-              <option value="Policía Nacional">Policía Nacional</option>
-              <option value="Ejército">Ejército</option>
-              <option value="Armada">Armada</option>
-              <option value="FAE">FAE</option>
-              <option value="Senescyt">Senescyt</option>
-            </select>
+            />
           </div>
 
           {/* Categoría */}
