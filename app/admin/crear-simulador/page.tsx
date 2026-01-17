@@ -13,7 +13,7 @@ export default function CrearSimuladorPage() {
   // Datos del formulario
   const [formData, setFormData] = useState({
     nombre: '',
-    institucion: '', // CAMBIO: Ya no tiene valor por defecto fijo
+    institucion: '', // Campo libre
     categoria: '',
     materia: '',
     publico: true,
@@ -31,7 +31,7 @@ export default function CrearSimuladorPage() {
     e.preventDefault();
     setLoading(true);
 
-    // Creamos un "slug" (identificador para la URL) automáticamente
+    // Generar slug automático
     const slug = formData.nombre
       .toLowerCase()
       .trim()
@@ -40,14 +40,13 @@ export default function CrearSimuladorPage() {
       .replace(/^-+|-+$/g, '');
 
     try {
-      // Intentamos guardar en Supabase
       const { data, error } = await supabase
         .from('simuladores')
         .insert([
           {
             nombre: formData.nombre,
             slug: slug,
-            institucion: formData.institucion.trim(), // Guardamos lo que escribas
+            institucion: formData.institucion.trim(),
             categoria: formData.categoria,
             materia: formData.materia,
             publico: formData.publico
@@ -58,21 +57,15 @@ export default function CrearSimuladorPage() {
 
       if (error) throw error;
 
-      alert('¡Simulador creado correctamente!');
-      // Limpiamos el formulario
-      setFormData({
-        nombre: '',
-        institucion: '',
-        categoria: '',
-        materia: '',
-        publico: true
-      });
+      alert('¡Simulador creado correctamente! Redirigiendo a preguntas...');
+      
+      // ✅ REDIRECCIÓN: Te lleva directo a agregar preguntas
+      router.push(`/admin/preguntas/${data.slug}`);
       
     } catch (error: any) {
       console.error(error);
       alert('Error: ' + error.message);
-    } finally {
-      setLoading(false);
+      setLoading(false); // Solo quitamos loading si hubo error
     }
   };
 
@@ -99,7 +92,7 @@ export default function CrearSimuladorPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Institución - AHORA ES TEXTO LIBRE */}
+          {/* Institución - TEXTO LIBRE */}
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Institución</label>
             <input
@@ -165,7 +158,7 @@ export default function CrearSimuladorPage() {
           {loading ? (
             <><Loader2 className="animate-spin" /> Creando...</>
           ) : (
-            <><Save /> Guardar Simulador</>
+            <><Save /> Guardar y Agregar Preguntas</>
           )}
         </button>
       </form>
