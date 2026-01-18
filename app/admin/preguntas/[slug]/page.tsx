@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSupabase } from '../../../components/AuthProvider';
-import { Trash2, Plus, Save, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Trash2, Plus, Save, ArrowLeft, CheckCircle, Youtube, ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 
 // Estructura de una opción para la BD
@@ -26,8 +26,17 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     opcionD: '',
     correcta: 'A', // 'A', 'B', 'C' o 'D'
     feedback: '',
-    imgUrl: ''
+    imgUrl: '',
+    youtubeUrl: '' // NUEVO CAMPO
   });
+
+  // Helper para extraer ID de YouTube y mostrar miniatura
+  const getYoutubeId = (url: string) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
 
   // 1. Cargar datos del simulador y sus preguntas al entrar
   useEffect(() => {
@@ -79,7 +88,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
       { value: newQuestion.opcionD, type: 'text' },
     ];
 
-    // Identificar cuál es la respuesta correcta (objeto completo)
+    // Identificar cuál es la respuesta correcta
     let respuestaCorrecta: Option;
     switch (newQuestion.correcta) {
       case 'B': respuestaCorrecta = opciones[1]; break;
@@ -92,10 +101,11 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
       const { error } = await supabase.from('preguntas').insert({
         simulador_id: simulador.id,
         pregunta: newQuestion.pregunta,
-        opciones: opciones, // Se guarda como JSONB
-        respuesta: respuestaCorrecta, // Se guarda como JSONB
+        opciones: opciones,
+        respuesta: respuestaCorrecta,
         feedback: newQuestion.feedback,
-        pregunta_img_url: newQuestion.imgUrl || null
+        pregunta_img_url: newQuestion.imgUrl || null,
+        youtube_url: newQuestion.youtubeUrl || null // GUARDAR YOUTUBE
       });
 
       if (error) throw error;
@@ -109,11 +119,12 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
         opcionD: '',
         correcta: 'A',
         feedback: '',
-        imgUrl: ''
+        imgUrl: '',
+        youtubeUrl: ''
       });
       cargarPreguntas(simulador.id);
-      alert('Pregunta guardada correctamente');
-
+      // No alertamos cada vez para ser más rápidos
+      
     } catch (err: any) {
       alert('Error guardando: ' + err.message);
     }
@@ -129,13 +140,13 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
   if (loading) return <div className="p-10 text-center">Cargando editor...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-20">
+    <div className="max-w-6xl mx-auto space-y-8 pb-20">
       
       {/* Cabecera */}
       <div className="flex items-center justify-between">
         <div>
-          <Link href="/admin/crear-simulador" className="text-gray-500 hover:text-blue-600 flex items-center gap-1 mb-2 text-sm">
-            <ArrowLeft size={16}/> Volver a crear simulador
+          <Link href="/admin" className="text-gray-500 hover:text-blue-600 flex items-center gap-1 mb-2 text-sm">
+            <ArrowLeft size={16}/> Volver al panel
           </Link>
           <h1 className="text-2xl font-bold text-gray-800">
             Editando: {simulador.nombre}
@@ -199,64 +210,109 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
               ))}
             </div>
 
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Retroalimentación (Opcional)</label>
-              <input
-                type="text"
-                name="feedback"
-                value={newQuestion.feedback}
-                onChange={handleInputChange}
-                placeholder="Explicación que aparece al responder (opcional)"
-                className="w-full p-3 border border-gray-300 rounded-lg outline-none text-sm"
-              />
-            </div>
-            
-             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">URL Imagen (Opcional)</label>
-              <input
-                type="text"
-                name="imgUrl"
-                value={newQuestion.imgUrl}
-                onChange={handleInputChange}
-                placeholder="https://..."
-                className="w-full p-3 border border-gray-300 rounded-lg outline-none text-sm font-mono text-gray-500"
-              />
+            {/* SECCIÓN MULTIMEDIA (Retroalimentación, Imagen y YouTube) */}
+            <div className="bg-gray-50 p-4 rounded-lg space-y-3 border border-gray-200">
+               <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Recursos Extra (Opcional)</h3>
+               
+               <div>
+                <label className="block text-xs font-bold text-gray-600 mb-1">Explicación / Feedback</label>
+                <input
+                  type="text"
+                  name="feedback"
+                  value={newQuestion.feedback}
+                  onChange={handleInputChange}
+                  placeholder="Aparece al responder la pregunta..."
+                  className="w-full p-2 border border-gray-300 rounded outline-none text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1 flex items-center gap-1">
+                    <ImageIcon size={14}/> URL Imagen Pregunta
+                  </label>
+                  <input
+                    type="text"
+                    name="imgUrl"
+                    value={newQuestion.imgUrl}
+                    onChange={handleInputChange}
+                    placeholder="https://..."
+                    className="w-full p-2 border border-gray-300 rounded outline-none text-sm font-mono text-gray-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1 flex items-center gap-1">
+                    <Youtube size={14} className="text-red-600"/> URL Video YouTube
+                  </label>
+                  <input
+                    type="text"
+                    name="youtubeUrl"
+                    value={newQuestion.youtubeUrl}
+                    onChange={handleInputChange}
+                    placeholder="https://youtube.com/watch?v=..."
+                    className="w-full p-2 border border-gray-300 rounded outline-none text-sm font-mono text-gray-500"
+                  />
+                </div>
+              </div>
             </div>
 
-            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all">
+            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg">
               <Save size={18}/> Guardar Pregunta
             </button>
           </form>
         </div>
 
         {/* Columna Derecha: LISTA DE PREGUNTAS */}
-        <div className="lg:col-span-1 space-y-4">
-          <h3 className="font-bold text-gray-500 uppercase text-xs tracking-wider">
+        <div className="lg:col-span-1 flex flex-col h-[calc(100vh-100px)]">
+          <h3 className="font-bold text-gray-500 uppercase text-xs tracking-wider mb-3">
             Preguntas Agregadas ({preguntas.length})
           </h3>
           
-          <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+          <div className="flex-1 overflow-y-auto pr-2 space-y-3">
             {preguntas.length === 0 && (
               <p className="text-gray-400 text-sm italic text-center py-4">Aún no hay preguntas.</p>
             )}
             
-            {preguntas.map((p, index) => (
-              <div key={p.id} className="bg-white p-3 rounded-lg shadow border border-gray-100 group hover:border-blue-300 transition-all">
-                <div className="flex justify-between items-start mb-2">
-                  <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">#{index + 1}</span>
-                  <button onClick={() => handleDelete(p.id)} className="text-gray-300 hover:text-red-500 transition-colors">
-                    <Trash2 size={16}/>
-                  </button>
+            {preguntas.map((p, index) => {
+              const youtubeId = getYoutubeId(p.youtube_url);
+              
+              return (
+                <div key={p.id} className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 transition-all">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">#{index + 1}</span>
+                    <button onClick={() => handleDelete(p.id)} className="text-gray-300 hover:text-red-500 transition-colors p-1">
+                      <Trash2 size={16}/>
+                    </button>
+                  </div>
+                  
+                  <p className="text-sm text-gray-800 font-medium line-clamp-2 mb-2" title={p.pregunta}>
+                    {p.pregunta}
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {/* Indicador Respuesta Correcta */}
+                    <div className="text-xs text-green-700 bg-green-50 px-2 py-1 rounded flex items-center gap-1 w-fit max-w-full">
+                      <CheckCircle size={12} className="flex-shrink-0"/> 
+                      <span className="truncate">{p.respuesta.value}</span>
+                    </div>
+
+                    {/* Miniatura de YouTube si existe */}
+                    {youtubeId && (
+                      <a href={p.youtube_url} target="_blank" rel="noopener noreferrer" className="relative block w-12 h-8 rounded overflow-hidden border border-gray-300 hover:opacity-80 transition group" title="Ver video">
+                        <img 
+                          src={`https://img.youtube.com/vi/${youtubeId}/mqdefault.jpg`} 
+                          alt="Video" 
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/0">
+                           <Youtube size={12} className="text-white drop-shadow-md"/>
+                        </div>
+                      </a>
+                    )}
+                  </div>
                 </div>
-                <p className="text-sm text-gray-800 font-medium line-clamp-2 mb-2" title={p.pregunta}>
-                  {p.pregunta}
-                </p>
-                <div className="text-xs text-green-600 bg-green-50 p-1.5 rounded flex items-center gap-1">
-                  <CheckCircle size={12}/> 
-                  <span className="truncate max-w-[200px]">{p.respuesta.value}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
