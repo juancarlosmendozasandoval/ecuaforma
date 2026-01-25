@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSupabase } from '../../../components/AuthProvider';
-import { Trash2, Plus, Save, ArrowLeft, CheckCircle, Youtube, ImageIcon } from 'lucide-react';
+import { Trash2, Plus, Save, ArrowLeft, CheckCircle, Youtube, ImageIcon, Type } from 'lucide-react';
 import Link from 'next/link';
 
 // Estructura de una opción para la BD
@@ -24,13 +24,18 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     opcionB: '',
     opcionC: '',
     opcionD: '',
-    correcta: 'A', // 'A', 'B', 'C' o 'D'
+    // Tipos de opciones (text por defecto)
+    typeA: 'text' as 'text' | 'image',
+    typeB: 'text' as 'text' | 'image',
+    typeC: 'text' as 'text' | 'image',
+    typeD: 'text' as 'text' | 'image',
+    correcta: 'A',
     feedback: '',
     imgUrl: '',
-    youtubeUrl: '' // NUEVO CAMPO
+    youtubeUrl: ''
   });
 
-  // Helper para extraer ID de YouTube y mostrar miniatura
+  // Helper para extraer ID de YouTube
   const getYoutubeId = (url: string) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -38,10 +43,8 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
-  // 1. Cargar datos del simulador y sus preguntas al entrar
   useEffect(() => {
     const fetchData = async () => {
-      // a) Obtener ID del simulador usando el slug
       const { data: simData, error: simError } = await supabase
         .from('simuladores')
         .select('*')
@@ -53,20 +56,17 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
         return;
       }
       setSimulador(simData);
-
-      // b) Obtener preguntas existentes
       cargarPreguntas(simData.id);
     };
-
     fetchData();
   }, [params.slug, supabase]);
 
   const cargarPreguntas = async (simuladorId: string) => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('preguntas')
       .select('*')
       .eq('simulador_id', simuladorId)
-      .order('id', { ascending: true }); // Orden por creación
+      .order('id', { ascending: true });
 
     if (data) setPreguntas(data);
     setLoading(false);
@@ -76,19 +76,23 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     setNewQuestion({ ...newQuestion, [e.target.name]: e.target.value });
   };
 
+  const setOptionType = (letra: 'A' | 'B' | 'C' | 'D', type: 'text' | 'image') => {
+    setNewQuestion({ ...newQuestion, [`type${letra}`]: type });
+  };
+
   const handleSaveQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!simulador) return;
 
-    // Construir el array de opciones JSON
+    // Construir el array de opciones con sus tipos correctos
     const opciones: Option[] = [
-      { value: newQuestion.opcionA, type: 'text' },
-      { value: newQuestion.opcionB, type: 'text' },
-      { value: newQuestion.opcionC, type: 'text' },
-      { value: newQuestion.opcionD, type: 'text' },
+      { value: newQuestion.opcionA, type: newQuestion.typeA },
+      { value: newQuestion.opcionB, type: newQuestion.typeB },
+      { value: newQuestion.opcionC, type: newQuestion.typeC },
+      { value: newQuestion.opcionD, type: newQuestion.typeD },
     ];
 
-    // Identificar cuál es la respuesta correcta
+    // Identificar cuál es la respuesta correcta (guardar objeto completo)
     let respuestaCorrecta: Option;
     switch (newQuestion.correcta) {
       case 'B': respuestaCorrecta = opciones[1]; break;
@@ -105,25 +109,22 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
         respuesta: respuestaCorrecta,
         feedback: newQuestion.feedback,
         pregunta_img_url: newQuestion.imgUrl || null,
-        youtube_url: newQuestion.youtubeUrl || null // GUARDAR YOUTUBE
+        youtube_url: newQuestion.youtubeUrl || null
       });
 
       if (error) throw error;
 
-      // Limpiar form y recargar
+      // Limpiar form
       setNewQuestion({
         pregunta: '',
-        opcionA: '',
-        opcionB: '',
-        opcionC: '',
-        opcionD: '',
+        opcionA: '', opcionB: '', opcionC: '', opcionD: '',
+        typeA: 'text', typeB: 'text', typeC: 'text', typeD: 'text',
         correcta: 'A',
         feedback: '',
         imgUrl: '',
         youtubeUrl: ''
       });
       cargarPreguntas(simulador.id);
-      // No alertamos cada vez para ser más rápidos
       
     } catch (err: any) {
       alert('Error guardando: ' + err.message);
@@ -132,7 +133,6 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
 
   const handleDelete = async (id: number) => {
     if (!confirm('¿Estás seguro de borrar esta pregunta?')) return;
-    
     await supabase.from('preguntas').delete().eq('id', id);
     if (simulador) cargarPreguntas(simulador.id);
   };
@@ -170,58 +170,96 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
           
           <form onSubmit={handleSaveQuestion} className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Enunciado de la Pregunta</label>
+              <label className="block text-sm font-bold text-gray-700 mb-1">Enunciado</label>
               <textarea
                 name="pregunta"
                 value={newQuestion.pregunta}
                 onChange={handleInputChange}
                 required
                 rows={3}
-                placeholder="Escribe aquí la pregunta..."
+                placeholder="Escribe la pregunta..."
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {['A', 'B', 'C', 'D'].map((letra) => (
-                <div key={letra} className={`relative p-3 rounded-lg border-2 ${newQuestion.correcta === letra ? 'border-green-500 bg-green-50' : 'border-gray-200'}`}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-gray-500">Opción {letra}</span>
+              {['A', 'B', 'C', 'D'].map((letra) => {
+                // @ts-ignore
+                const currentType = newQuestion[`type${letra}`];
+                // @ts-ignore
+                const currentValue = newQuestion[`opcion${letra}`];
+                
+                return (
+                  <div key={letra} className={`relative p-3 rounded-lg border-2 ${newQuestion.correcta === letra ? 'border-green-500 bg-green-50' : 'border-gray-200'}`}>
+                    
+                    {/* Header: Radio Correcta + Selector Tipo */}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                         <input
+                          type="radio"
+                          name="correcta"
+                          value={letra}
+                          checked={newQuestion.correcta === letra}
+                          onChange={handleInputChange}
+                          className="w-4 h-4 cursor-pointer text-green-600 focus:ring-green-500"
+                        />
+                        <span className="font-bold text-gray-600">Opción {letra}</span>
+                      </div>
+                      
+                      <div className="flex bg-gray-100 rounded-md p-0.5">
+                        <button
+                          type="button"
+                          // @ts-ignore
+                          onClick={() => setOptionType(letra, 'text')}
+                          className={`p-1 rounded ${currentType === 'text' ? 'bg-white shadow text-blue-600' : 'text-gray-400'}`}
+                          title="Texto"
+                        >
+                          <Type size={14}/>
+                        </button>
+                        <button
+                          type="button"
+                           // @ts-ignore
+                          onClick={() => setOptionType(letra, 'image')}
+                          className={`p-1 rounded ${currentType === 'image' ? 'bg-white shadow text-purple-600' : 'text-gray-400'}`}
+                          title="Imagen URL"
+                        >
+                          <ImageIcon size={14}/>
+                        </button>
+                      </div>
+                    </div>
+
                     <input
-                      type="radio"
-                      name="correcta"
-                      value={letra}
-                      checked={newQuestion.correcta === letra}
+                      type="text"
+                      name={`opcion${letra}`}
+                      value={currentValue}
                       onChange={handleInputChange}
-                      className="w-4 h-4 cursor-pointer text-green-600 focus:ring-green-500"
+                      required
+                      placeholder={currentType === 'image' ? "Pega la URL de la imagen..." : `Respuesta ${letra}`}
+                      className="w-full bg-transparent outline-none border-b border-gray-300 focus:border-blue-500 text-sm py-1"
                     />
+                    
+                    {currentType === 'image' && currentValue && (
+                      <div className="mt-2 h-16 w-full bg-gray-100 rounded flex items-center justify-center overflow-hidden border border-gray-200">
+                        <img src={currentValue} alt="Vista previa" className="h-full object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                      </div>
+                    )}
                   </div>
-                  <input
-                    type="text"
-                    name={`opcion${letra}`}
-                    // @ts-ignore
-                    value={newQuestion[`opcion${letra}`]}
-                    onChange={handleInputChange}
-                    required
-                    placeholder={`Respuesta ${letra}`}
-                    className="w-full bg-transparent outline-none border-b border-gray-300 focus:border-blue-500 text-sm py-1"
-                  />
-                </div>
-              ))}
+                );
+              })}
             </div>
 
-            {/* SECCIÓN MULTIMEDIA (Retroalimentación, Imagen y YouTube) */}
+            {/* SECCIÓN MULTIMEDIA EXTRA */}
             <div className="bg-gray-50 p-4 rounded-lg space-y-3 border border-gray-200">
-               <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Recursos Extra (Opcional)</h3>
+               <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Recursos Extra</h3>
                
                <div>
-                <label className="block text-xs font-bold text-gray-600 mb-1">Explicación / Feedback</label>
+                <label className="block text-xs font-bold text-gray-600 mb-1">Feedback / Explicación</label>
                 <input
                   type="text"
                   name="feedback"
                   value={newQuestion.feedback}
                   onChange={handleInputChange}
-                  placeholder="Aparece al responder la pregunta..."
+                  placeholder="Texto que aparece al responder..."
                   className="w-full p-2 border border-gray-300 rounded outline-none text-sm"
                 />
               </div>
@@ -262,20 +300,15 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
           </form>
         </div>
 
-        {/* Columna Derecha: LISTA DE PREGUNTAS */}
+        {/* Columna Derecha: LISTA */}
         <div className="lg:col-span-1 flex flex-col h-[calc(100vh-100px)]">
           <h3 className="font-bold text-gray-500 uppercase text-xs tracking-wider mb-3">
             Preguntas Agregadas ({preguntas.length})
           </h3>
           
           <div className="flex-1 overflow-y-auto pr-2 space-y-3">
-            {preguntas.length === 0 && (
-              <p className="text-gray-400 text-sm italic text-center py-4">Aún no hay preguntas.</p>
-            )}
-            
             {preguntas.map((p, index) => {
               const youtubeId = getYoutubeId(p.youtube_url);
-              
               return (
                 <div key={p.id} className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 transition-all">
                   <div className="flex justify-between items-start mb-2">
@@ -290,24 +323,20 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
                   </p>
 
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {/* Indicador Respuesta Correcta */}
+                    {/* Respuesta Correcta */}
                     <div className="text-xs text-green-700 bg-green-50 px-2 py-1 rounded flex items-center gap-1 w-fit max-w-full">
                       <CheckCircle size={12} className="flex-shrink-0"/> 
-                      <span className="truncate">{p.respuesta.value}</span>
+                      {p.respuesta.type === 'image' ? (
+                        <span className="italic">Imagen</span>
+                      ) : (
+                        <span className="truncate">{p.respuesta.value}</span>
+                      )}
                     </div>
-
-                    {/* Miniatura de YouTube si existe */}
+                    {/* Youtube Miniatura */}
                     {youtubeId && (
-                      <a href={p.youtube_url} target="_blank" rel="noopener noreferrer" className="relative block w-12 h-8 rounded overflow-hidden border border-gray-300 hover:opacity-80 transition group" title="Ver video">
-                        <img 
-                          src={`https://img.youtube.com/vi/${youtubeId}/mqdefault.jpg`} 
-                          alt="Video" 
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/0">
-                           <Youtube size={12} className="text-white drop-shadow-md"/>
-                        </div>
-                      </a>
+                      <div className="w-8 h-6 bg-red-100 rounded flex items-center justify-center">
+                         <Youtube size={12} className="text-red-600"/>
+                      </div>
                     )}
                   </div>
                 </div>

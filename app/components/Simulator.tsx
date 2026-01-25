@@ -3,7 +3,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { CheckCircle, XCircle, Youtube, Repeat, PlayCircle } from 'lucide-react';
 import type { SimulatorType, QuestionType, Option } from '../simulador/[slug]/page';
-import Image from 'next/image';
+// Eliminamos Image de next/image para evitar bloqueos
 import { useSupabase } from './AuthProvider';
 import { InlineMath, BlockMath } from 'react-katex';
 
@@ -188,14 +188,13 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
           {renderFormattedText(currentQuestion.pregunta)}
         </div>
         
-        {/* Imagen de la pregunta (si existe) */}
+        {/* Imagen de la pregunta (si existe) - CORREGIDO A <img> */}
         {currentQuestion.pregunta_img_url && (
-          <div className="relative w-full h-64 md:h-80 max-w-2xl mx-auto rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
-            <Image 
+          <div className="relative w-full h-64 md:h-80 max-w-2xl mx-auto rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center p-2">
+            <img 
               src={currentQuestion.pregunta_img_url} 
               alt="Imagen de la pregunta" 
-              layout="fill" 
-              objectFit="contain" 
+              className="max-w-full max-h-full object-contain"
             />
           </div>
         )}
@@ -230,12 +229,17 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
               <div className="flex-shrink-0 mr-3 w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-sm bg-white/50 border-current opacity-70">
                 {String.fromCharCode(65 + i)}
               </div>
-              <span className="font-medium text-lg leading-snug">
+              <span className="font-medium text-lg leading-snug w-full">
                 {option.type === 'text' ? (
                   renderFormattedText(option.value)
                 ) : (
-                  <div className="relative w-full h-32">
-                    <Image src={option.value} alt={`Opción ${i+1}`} layout="fill" objectFit="contain" className="rounded-md" />
+                  // CORREGIDO: Usamos <img> estándar para opciones de imagen
+                  <div className="w-full h-40 flex justify-center items-center bg-white rounded border border-gray-200 p-1">
+                    <img 
+                      src={option.value} 
+                      alt={`Opción ${i+1}`} 
+                      className="max-h-full max-w-full object-contain" 
+                    />
                   </div>
                 )}
               </span>
@@ -267,7 +271,6 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
               </p>
             )}
 
-            {/* AQUÍ ESTÁ LA MEJORA: Video de YouTube con Miniatura */}
             {youtubeId && (
               <div className="mt-4">
                 <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1">
@@ -279,14 +282,12 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
                   rel="noopener noreferrer" 
                   className="group relative block w-full max-w-md rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all border border-gray-200"
                 >
-                  {/* Miniatura de Alta Calidad */}
                   <div className="aspect-video relative bg-black">
                     <img 
                       src={`https://img.youtube.com/vi/${youtubeId}/mqdefault.jpg`} 
                       alt="Ver explicación en video"
                       className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
                     />
-                    {/* Botón de Play Superpuesto */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                         <PlayCircle className="w-8 h-8 text-white ml-1" />
