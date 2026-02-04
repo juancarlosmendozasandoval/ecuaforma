@@ -16,6 +16,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
   const [simulador, setSimulador] = useState<any>(null);
   const [preguntas, setPreguntas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reordering, setReordering] = useState(false); // Estado para bloquear mientras reordena
 
   // Estado del formulario de nueva pregunta
   const [newQuestion, setNewQuestion] = useState({
@@ -60,16 +61,16 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
   }, [params.slug, supabase]);
 
   const cargarPreguntas = async (simuladorId: string) => {
-    // CAMBIO: Ahora ordenamos por la columna 'orden' y luego por 'id'
     const { data } = await supabase
       .from('preguntas')
       .select('*')
       .eq('simulador_id', simuladorId)
-      .order('orden', { ascending: true })
-      .order('id', { ascending: true });
+      .order('orden', { ascending: true }) // Prioridad al orden manual
+      .order('id', { ascending: true });   // Fallback
 
     if (data) setPreguntas(data);
     setLoading(false);
+    setReordering(false);
   };
 
   const handleInputChange = (e: any) => {
@@ -80,32 +81,62 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     setNewQuestion({ ...newQuestion, [`type${letra}`]: type });
   };
 
-  // NUEVA FUNCIÓN: Mover preguntas arriba/abajo
-  const moveQuestion = async (index: number, direction: 'up' | 'down') => {
-    // Validaciones de bordes
-    if (direction === 'up' && index === 0) return;
-    if (direction === 'down' && index === preguntas.length - 1) return;
+  // --- LÓGICA DE REORDENAMIENTO ---
+  
+  // Función maestra para mover preguntas
+  const reorderQuestion = async (currentIndex: number, newPositionDisplay: number) => {
+    // Convertir de "Posición Visual (1-based)" a "Índice Array (0-based)"
+    const targetIndex = newPositionDisplay - 1;
 
-    const currentQ = preguntas[index];
-    const neighborIndex = direction === 'up' ? index - 1 : index + 1;
-    const neighborQ = preguntas[neighborIndex];
+    // Validaciones
+    if (targetIndex < 0 || targetIndex >= preguntas.length || targetIndex === currentIndex) return;
 
-    // Intercambiamos los valores de 'orden'
-    const newCurrentOrder = neighborQ.orden;
-    const newNeighborOrder = currentQ.orden;
+    setReordering(true);
+
+    // 1. Crear copia del array y manipularlo localmente
+    const newPreguntas = [...preguntas];
+    const [movedItem] = newPreguntas.splice(currentIndex, 1); // Sacar de la vieja posición
+    newPreguntas.splice(targetIndex, 0, movedItem); // Meter en la nueva posición
+
+    // 2. Preparar actualizaciones masivas
+    // Solo necesitamos actualizar las preguntas cuyo índice no coincida con su 'orden' actual
+    const updates = newPreguntas.map((p, index) => ({
+      id: p.id,
+      simulador_id: simulador.id, // Requerido para upsert a veces según RLS
+      orden: index + 1, // El nuevo orden es su posición en el array + 1
+      // Necesitamos pasar otros campos requeridos si la tabla lo exige, 
+      // pero normalmente upsert solo actualiza lo que pasas si hay ID.
+      // Para seguridad en Supabase, pasamos solo lo necesario.
+    }));
 
     try {
-      // Actualizamos ambas preguntas en la BD
-      await supabase.from('preguntas').update({ orden: newCurrentOrder }).eq('id', currentQ.id);
-      await supabase.from('preguntas').update({ orden: newNeighborOrder }).eq('id', neighborQ.id);
-      
-      // Recargamos la lista visualmente
+      // 3. Enviar a Supabase (Upsert actualiza si existe el ID)
+      const { error } = await supabase
+        .from('preguntas')
+        .upsert(updates, { onConflict: 'id' });
+
+      if (error) throw error;
+
+      // 4. Recargar
       cargarPreguntas(simulador.id);
-    } catch (error) {
-      console.error('Error al mover:', error);
-      alert('Error al mover la pregunta');
+      
+    } catch (error: any) {
+      alert('Error al reordenar: ' + error.message);
+      setReordering(false);
     }
   };
+
+  // Wrapper para las flechas
+  const handleArrowMove = (index: number, direction: 'up' | 'down') => {
+    const newPos = direction === 'up' ? index : index + 2; // index + 1 es actual, -1 es arriba (0), +1 es abajo (2)
+    // Explicación:
+    // Si estoy en index 5 (Pos 6).
+    // Arriba: Quiero ir a Pos 5. (index 5)
+    // Abajo: Quiero ir a Pos 7. (index + 2)
+    reorderQuestion(index, direction === 'up' ? index : index + 2);
+  };
+
+  // --- FIN LÓGICA DE REORDENAMIENTO ---
 
   const handleSaveQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,17 +158,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     }
 
     try {
-      // CAMBIO: Calculamos el siguiente orden (max + 1)
-      const { data: maxOrderData } = await supabase
-        .from('preguntas')
-        .select('orden')
-        .eq('simulador_id', simulador.id)
-        .order('orden', { ascending: false })
-        .limit(1)
-        .single();
-      
-      // Si no hay preguntas, empezamos en 1. Si hay, sumamos 1 al último.
-      const nextOrder = (maxOrderData?.orden ?? 0) + 1;
+      const nextOrder = preguntas.length + 1; // Siempre al final
 
       const { error } = await supabase.from('preguntas').insert({
         simulador_id: simulador.id,
@@ -147,7 +168,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
         feedback: newQuestion.feedback,
         pregunta_img_url: newQuestion.imgUrl || null,
         youtube_url: newQuestion.youtubeUrl || null,
-        orden: nextOrder // Guardamos el orden calculado
+        orden: nextOrder
       });
 
       if (error) throw error;
@@ -334,63 +355,71 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
           </form>
         </div>
 
-        {/* Columna Derecha: LISTA CON FLECHAS */}
+        {/* Columna Derecha: LISTA */}
         <div className="lg:col-span-1 flex flex-col h-[calc(100vh-100px)]">
-          <h3 className="font-bold text-gray-500 uppercase text-xs tracking-wider mb-3">
-            Preguntas Agregadas ({preguntas.length})
+          <h3 className="font-bold text-gray-500 uppercase text-xs tracking-wider mb-3 flex justify-between items-center">
+            <span>Preguntas Agregadas ({preguntas.length})</span>
+            {reordering && <span className="text-orange-500 text-xs animate-pulse">Guardando orden...</span>}
           </h3>
           
           <div className="flex-1 overflow-y-auto pr-2 space-y-3">
             {preguntas.map((p, index) => {
               const youtubeId = getYoutubeId(p.youtube_url);
               return (
-                <div key={p.id} className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 transition-all group">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2">
-                       <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">#{index + 1}</span>
-                       
-                       {/* CONTROLES DE ORDEN */}
-                       <div className="flex flex-col gap-0.5 opacity-30 group-hover:opacity-100 transition-opacity">
-                         <button 
-                           onClick={() => moveQuestion(index, 'up')}
-                           disabled={index === 0}
-                           className="p-0.5 hover:bg-blue-100 rounded disabled:opacity-0 text-gray-500 hover:text-blue-600"
-                           title="Subir"
-                         >
-                           <ArrowUp size={12}/>
-                         </button>
-                         <button 
-                           onClick={() => moveQuestion(index, 'down')}
-                           disabled={index === preguntas.length - 1}
-                           className="p-0.5 hover:bg-blue-100 rounded disabled:opacity-0 text-gray-500 hover:text-blue-600"
-                           title="Bajar"
-                         >
-                           <ArrowDown size={12}/>
-                         </button>
+                <div key={`${p.id}-${index}`} className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 transition-all group relative">
+                  <div className="flex justify-between items-start mb-2 gap-2">
+                    <div className="flex items-center gap-2 flex-1">
+                       {/* INPUT DE ORDEN MANUAL */}
+                       <div className="flex flex-col items-center">
+                         <input 
+                            type="number"
+                            disabled={reordering}
+                            defaultValue={index + 1}
+                            onBlur={(e) => {
+                                const val = parseInt(e.target.value);
+                                if (!isNaN(val) && val !== index + 1) {
+                                    reorderQuestion(index, val);
+                                } else {
+                                    e.target.value = (index + 1).toString(); // Reset si es inválido
+                                }
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.currentTarget.blur();
+                                }
+                            }}
+                            className="w-10 h-8 text-center font-bold text-blue-700 bg-blue-50 rounded border border-blue-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                         />
+                         
+                         {/* FLECHAS */}
+                         <div className="flex gap-1 mt-1 opacity-20 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => handleArrowMove(index, 'up')} disabled={index === 0 || reordering} className="hover:text-blue-600 disabled:opacity-0"><ArrowUp size={12}/></button>
+                            <button onClick={() => handleArrowMove(index, 'down')} disabled={index === preguntas.length - 1 || reordering} className="hover:text-blue-600 disabled:opacity-0"><ArrowDown size={12}/></button>
+                         </div>
                        </div>
+                       
+                       <p className="text-sm text-gray-800 font-medium line-clamp-2 leading-tight flex-1 pt-1" title={p.pregunta}>
+                         {p.pregunta}
+                       </p>
                     </div>
 
-                    <button onClick={() => handleDelete(p.id)} className="text-gray-300 hover:text-red-500 transition-colors p-1">
+                    <button onClick={() => handleDelete(p.id)} disabled={reordering} className="text-gray-300 hover:text-red-500 transition-colors p-1">
                       <Trash2 size={16}/>
                     </button>
                   </div>
-                  
-                  <p className="text-sm text-gray-800 font-medium line-clamp-2 mb-2" title={p.pregunta}>
-                    {p.pregunta}
-                  </p>
 
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    <div className="text-xs text-green-700 bg-green-50 px-2 py-1 rounded flex items-center gap-1 w-fit max-w-full">
-                      <CheckCircle size={12} className="flex-shrink-0"/> 
+                  <div className="flex flex-wrap gap-2 mt-1 ml-12">
+                    <div className="text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded flex items-center gap-1 w-fit max-w-full">
+                      <CheckCircle size={10} className="flex-shrink-0"/> 
                       {p.respuesta.type === 'image' ? (
                         <span className="italic">Imagen</span>
                       ) : (
-                        <span className="truncate">{p.respuesta.value}</span>
+                        <span className="truncate max-w-[100px]">{p.respuesta.value}</span>
                       )}
                     </div>
                     {youtubeId && (
-                      <div className="w-8 h-6 bg-red-100 rounded flex items-center justify-center">
-                         <Youtube size={12} className="text-red-600"/>
+                      <div className="w-6 h-5 bg-red-100 rounded flex items-center justify-center">
+                         <Youtube size={10} className="text-red-600"/>
                       </div>
                     )}
                   </div>
