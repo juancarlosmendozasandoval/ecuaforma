@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSupabase } from '../../../components/AuthProvider';
-import { Trash2, Plus, Save, ArrowLeft, CheckCircle, Youtube, ImageIcon, Type } from 'lucide-react';
+import { Trash2, Plus, Save, ArrowLeft, CheckCircle, Youtube, ImageIcon, Type, ArrowUp, ArrowDown } from 'lucide-react';
 import Link from 'next/link';
 
 // Estructura de una opción para la BD
@@ -24,7 +24,6 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     opcionB: '',
     opcionC: '',
     opcionD: '',
-    // Tipos de opciones (text por defecto)
     typeA: 'text' as 'text' | 'image',
     typeB: 'text' as 'text' | 'image',
     typeC: 'text' as 'text' | 'image',
@@ -35,7 +34,6 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     youtubeUrl: ''
   });
 
-  // Helper para extraer ID de YouTube
   const getYoutubeId = (url: string) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -62,10 +60,12 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
   }, [params.slug, supabase]);
 
   const cargarPreguntas = async (simuladorId: string) => {
+    // CAMBIO: Ahora ordenamos por la columna 'orden' y luego por 'id'
     const { data } = await supabase
       .from('preguntas')
       .select('*')
       .eq('simulador_id', simuladorId)
+      .order('orden', { ascending: true })
       .order('id', { ascending: true });
 
     if (data) setPreguntas(data);
@@ -80,11 +80,37 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     setNewQuestion({ ...newQuestion, [`type${letra}`]: type });
   };
 
+  // NUEVA FUNCIÓN: Mover preguntas arriba/abajo
+  const moveQuestion = async (index: number, direction: 'up' | 'down') => {
+    // Validaciones de bordes
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === preguntas.length - 1) return;
+
+    const currentQ = preguntas[index];
+    const neighborIndex = direction === 'up' ? index - 1 : index + 1;
+    const neighborQ = preguntas[neighborIndex];
+
+    // Intercambiamos los valores de 'orden'
+    const newCurrentOrder = neighborQ.orden;
+    const newNeighborOrder = currentQ.orden;
+
+    try {
+      // Actualizamos ambas preguntas en la BD
+      await supabase.from('preguntas').update({ orden: newCurrentOrder }).eq('id', currentQ.id);
+      await supabase.from('preguntas').update({ orden: newNeighborOrder }).eq('id', neighborQ.id);
+      
+      // Recargamos la lista visualmente
+      cargarPreguntas(simulador.id);
+    } catch (error) {
+      console.error('Error al mover:', error);
+      alert('Error al mover la pregunta');
+    }
+  };
+
   const handleSaveQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!simulador) return;
 
-    // Construir el array de opciones con sus tipos correctos
     const opciones: Option[] = [
       { value: newQuestion.opcionA, type: newQuestion.typeA },
       { value: newQuestion.opcionB, type: newQuestion.typeB },
@@ -92,7 +118,6 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
       { value: newQuestion.opcionD, type: newQuestion.typeD },
     ];
 
-    // Identificar cuál es la respuesta correcta (guardar objeto completo)
     let respuestaCorrecta: Option;
     switch (newQuestion.correcta) {
       case 'B': respuestaCorrecta = opciones[1]; break;
@@ -102,6 +127,18 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     }
 
     try {
+      // CAMBIO: Calculamos el siguiente orden (max + 1)
+      const { data: maxOrderData } = await supabase
+        .from('preguntas')
+        .select('orden')
+        .eq('simulador_id', simulador.id)
+        .order('orden', { ascending: false })
+        .limit(1)
+        .single();
+      
+      // Si no hay preguntas, empezamos en 1. Si hay, sumamos 1 al último.
+      const nextOrder = (maxOrderData?.orden ?? 0) + 1;
+
       const { error } = await supabase.from('preguntas').insert({
         simulador_id: simulador.id,
         pregunta: newQuestion.pregunta,
@@ -109,12 +146,12 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
         respuesta: respuestaCorrecta,
         feedback: newQuestion.feedback,
         pregunta_img_url: newQuestion.imgUrl || null,
-        youtube_url: newQuestion.youtubeUrl || null
+        youtube_url: newQuestion.youtubeUrl || null,
+        orden: nextOrder // Guardamos el orden calculado
       });
 
       if (error) throw error;
 
-      // Limpiar form
       setNewQuestion({
         pregunta: '',
         opcionA: '', opcionB: '', opcionC: '', opcionD: '',
@@ -192,7 +229,6 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
                 return (
                   <div key={letra} className={`relative p-3 rounded-lg border-2 ${newQuestion.correcta === letra ? 'border-green-500 bg-green-50' : 'border-gray-200'}`}>
                     
-                    {/* Header: Radio Correcta + Selector Tipo */}
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                          <input
@@ -248,10 +284,8 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
               })}
             </div>
 
-            {/* SECCIÓN MULTIMEDIA EXTRA */}
             <div className="bg-gray-50 p-4 rounded-lg space-y-3 border border-gray-200">
                <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Recursos Extra</h3>
-               
                <div>
                 <label className="block text-xs font-bold text-gray-600 mb-1">Feedback / Explicación</label>
                 <input
@@ -300,7 +334,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
           </form>
         </div>
 
-        {/* Columna Derecha: LISTA */}
+        {/* Columna Derecha: LISTA CON FLECHAS */}
         <div className="lg:col-span-1 flex flex-col h-[calc(100vh-100px)]">
           <h3 className="font-bold text-gray-500 uppercase text-xs tracking-wider mb-3">
             Preguntas Agregadas ({preguntas.length})
@@ -310,9 +344,32 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
             {preguntas.map((p, index) => {
               const youtubeId = getYoutubeId(p.youtube_url);
               return (
-                <div key={p.id} className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 transition-all">
+                <div key={p.id} className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 transition-all group">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">#{index + 1}</span>
+                    <div className="flex items-center gap-2">
+                       <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">#{index + 1}</span>
+                       
+                       {/* CONTROLES DE ORDEN */}
+                       <div className="flex flex-col gap-0.5 opacity-30 group-hover:opacity-100 transition-opacity">
+                         <button 
+                           onClick={() => moveQuestion(index, 'up')}
+                           disabled={index === 0}
+                           className="p-0.5 hover:bg-blue-100 rounded disabled:opacity-0 text-gray-500 hover:text-blue-600"
+                           title="Subir"
+                         >
+                           <ArrowUp size={12}/>
+                         </button>
+                         <button 
+                           onClick={() => moveQuestion(index, 'down')}
+                           disabled={index === preguntas.length - 1}
+                           className="p-0.5 hover:bg-blue-100 rounded disabled:opacity-0 text-gray-500 hover:text-blue-600"
+                           title="Bajar"
+                         >
+                           <ArrowDown size={12}/>
+                         </button>
+                       </div>
+                    </div>
+
                     <button onClick={() => handleDelete(p.id)} className="text-gray-300 hover:text-red-500 transition-colors p-1">
                       <Trash2 size={16}/>
                     </button>
@@ -323,7 +380,6 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
                   </p>
 
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {/* Respuesta Correcta */}
                     <div className="text-xs text-green-700 bg-green-50 px-2 py-1 rounded flex items-center gap-1 w-fit max-w-full">
                       <CheckCircle size={12} className="flex-shrink-0"/> 
                       {p.respuesta.type === 'image' ? (
@@ -332,7 +388,6 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
                         <span className="truncate">{p.respuesta.value}</span>
                       )}
                     </div>
-                    {/* Youtube Miniatura */}
                     {youtubeId && (
                       <div className="w-8 h-6 bg-red-100 rounded flex items-center justify-center">
                          <Youtube size={12} className="text-red-600"/>
