@@ -26,6 +26,7 @@ export interface QuestionType {
   respuesta: Option;
   feedback: string | null;
   youtube_url: string | null;
+  orden: number; // Agregamos el tipo orden
 }
 
 // Esta es la página principal de un simulador individual.
@@ -65,7 +66,7 @@ export default async function SimuladorPage({ params }: { params: { slug: string
       .select('*')
       .eq('simulador_id', simulatorData.id)
       .eq('usuario_id', session.user.id)
-      .maybeSingle(); // Usamos maybeSingle porque puede que no haya registro
+      .maybeSingle();
 
     if (accessError || !accessData) {
        return (
@@ -79,10 +80,13 @@ export default async function SimuladorPage({ params }: { params: { slug: string
   }
 
   // 4. Si el simulador es público o el usuario tiene acceso, obtener las preguntas
+  // CORRECCIÓN: Ahora ordenamos por 'orden' (tu orden manual) y luego por 'id'
   const { data: questionsData, error: questionsError } = await supabase
     .from('preguntas')
     .select('*')
-    .eq('simulador_id', simulatorData.id);
+    .eq('simulador_id', simulatorData.id)
+    .order('orden', { ascending: true }) // <--- ESTO FALTABA
+    .order('id', { ascending: true });
 
   if (questionsError || !questionsData) {
     return <p className="text-center mt-10">No se pudieron cargar las preguntas.</p>;
