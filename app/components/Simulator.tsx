@@ -3,7 +3,6 @@
 import { useState, useEffect, Fragment } from 'react';
 import { CheckCircle, XCircle, Youtube, Repeat, PlayCircle } from 'lucide-react';
 import type { SimulatorType, QuestionType, Option } from '../simulador/[slug]/page';
-// Eliminamos Image de next/image para evitar bloqueos
 import { useSupabase } from './AuthProvider';
 import { InlineMath, BlockMath } from 'react-katex';
 
@@ -188,7 +187,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
           {renderFormattedText(currentQuestion.pregunta)}
         </div>
         
-        {/* Imagen de la pregunta (si existe) - CORREGIDO A <img> */}
+        {/* Imagen de la pregunta (si existe) */}
         {currentQuestion.pregunta_img_url && (
           <div className="relative w-full h-64 md:h-80 max-w-2xl mx-auto rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center p-2">
             <img 
@@ -226,14 +225,11 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
               disabled={!!answerStatus}
               className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center min-h-[70px] ${buttonClass}`}
             >
-              <div className="flex-shrink-0 mr-3 w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-sm bg-white/50 border-current opacity-70">
-                {String.fromCharCode(65 + i)}
-              </div>
+              {/* SE ELIMINÓ EL DIV CON LA LETRA EN CÍRCULO AQUÍ */}
               <span className="font-medium text-lg leading-snug w-full">
                 {option.type === 'text' ? (
                   renderFormattedText(option.value)
                 ) : (
-                  // CORREGIDO: Usamos <img> estándar para opciones de imagen
                   <div className="w-full h-40 flex justify-center items-center bg-white rounded border border-gray-200 p-1">
                     <img 
                       src={option.value} 
