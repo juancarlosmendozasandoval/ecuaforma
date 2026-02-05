@@ -16,7 +16,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
   const [simulador, setSimulador] = useState<any>(null);
   const [preguntas, setPreguntas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [reordering, setReordering] = useState(false); // Estado para bloquear mientras reordena
+  const [reordering, setReordering] = useState(false);
 
   // Estado del formulario de nueva pregunta
   const [newQuestion, setNewQuestion] = useState({
@@ -65,8 +65,8 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
       .from('preguntas')
       .select('*')
       .eq('simulador_id', simuladorId)
-      .order('orden', { ascending: true }) // Prioridad al orden manual
-      .order('id', { ascending: true });   // Fallback
+      .order('orden', { ascending: true })
+      .order('id', { ascending: true });
 
     if (data) setPreguntas(data);
     setLoading(false);
@@ -81,36 +81,29 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     setNewQuestion({ ...newQuestion, [`type${letra}`]: type });
   };
 
-  // --- LÓGICA DE REORDENAMIENTO ---
+  // --- LÓGICA DE REORDENAMIENTO CORREGIDA ---
   
-  // Función maestra para mover preguntas
   const reorderQuestion = async (currentIndex: number, newPositionDisplay: number) => {
-    // Convertir de "Posición Visual (1-based)" a "Índice Array (0-based)"
     const targetIndex = newPositionDisplay - 1;
 
-    // Validaciones
+    // Validaciones básicas
     if (targetIndex < 0 || targetIndex >= preguntas.length || targetIndex === currentIndex) return;
 
     setReordering(true);
 
-    // 1. Crear copia del array y manipularlo localmente
+    // 1. Manipulación local del array
     const newPreguntas = [...preguntas];
-    const [movedItem] = newPreguntas.splice(currentIndex, 1); // Sacar de la vieja posición
-    newPreguntas.splice(targetIndex, 0, movedItem); // Meter en la nueva posición
+    const [movedItem] = newPreguntas.splice(currentIndex, 1);
+    newPreguntas.splice(targetIndex, 0, movedItem);
 
-    // 2. Preparar actualizaciones masivas
-    // Solo necesitamos actualizar las preguntas cuyo índice no coincida con su 'orden' actual
+    // 2. Preparar el paquete de actualización
     const updates = newPreguntas.map((p, index) => ({
-      id: p.id,
-      simulador_id: simulador.id, // Requerido para upsert a veces según RLS
-      orden: index + 1, // El nuevo orden es su posición en el array + 1
-      // Necesitamos pasar otros campos requeridos si la tabla lo exige, 
-      // pero normalmente upsert solo actualiza lo que pasas si hay ID.
-      // Para seguridad en Supabase, pasamos solo lo necesario.
+      ...p, // <--- ¡AQUÍ ESTABA EL ERROR! (Ahora enviamos todo el objeto: id, pregunta, opciones, etc.)
+      orden: index + 1
     }));
 
     try {
-      // 3. Enviar a Supabase (Upsert actualiza si existe el ID)
+      // 3. Enviar a Supabase
       const { error } = await supabase
         .from('preguntas')
         .upsert(updates, { onConflict: 'id' });
@@ -121,18 +114,15 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
       cargarPreguntas(simulador.id);
       
     } catch (error: any) {
+      console.error(error);
       alert('Error al reordenar: ' + error.message);
       setReordering(false);
     }
   };
 
-  // Wrapper para las flechas
   const handleArrowMove = (index: number, direction: 'up' | 'down') => {
-    const newPos = direction === 'up' ? index : index + 2; // index + 1 es actual, -1 es arriba (0), +1 es abajo (2)
-    // Explicación:
-    // Si estoy en index 5 (Pos 6).
-    // Arriba: Quiero ir a Pos 5. (index 5)
-    // Abajo: Quiero ir a Pos 7. (index + 2)
+    // Si sube (up), va al índice actual (que visualmente es index). 
+    // Si baja (down), va al index + 2 (porque index+1 es su posición actual visual).
     reorderQuestion(index, direction === 'up' ? index : index + 2);
   };
 
@@ -158,7 +148,8 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     }
 
     try {
-      const nextOrder = preguntas.length + 1; // Siempre al final
+      // Al crear, el orden será el último + 1
+      const nextOrder = preguntas.length + 1;
 
       const { error } = await supabase.from('preguntas').insert({
         simulador_id: simulador.id,
@@ -380,7 +371,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
                                 if (!isNaN(val) && val !== index + 1) {
                                     reorderQuestion(index, val);
                                 } else {
-                                    e.target.value = (index + 1).toString(); // Reset si es inválido
+                                    e.target.value = (index + 1).toString();
                                 }
                             }}
                             onKeyDown={(e) => {
