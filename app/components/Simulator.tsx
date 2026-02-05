@@ -11,22 +11,42 @@ interface SimulatorProps {
   initialQuestions: QuestionType[];
 }
 
-// Función recursiva para renderizar formato (negrita, fórmulas, etc.)
+// --- FUNCIÓN MEJORADA (Agregamos soporte para **Negritas** y Saltos de línea) ---
 const renderFormattedText = (text: string): (string | JSX.Element)[] => {
   if (!text) return [];
-  const regex = /(\\\[[\s\S]*?\\\]|\\\(.*?\\\)|<u>[\s\S]*?<\/u>)/g;
+  
+  // Regex actualizado:
+  // 1. Matemáticas Bloque \[...\]
+  // 2. Matemáticas Línea \(...\)
+  // 3. Subrayado <u>...</u>
+  // 4. Negritas Markdown **...** (NUEVO)
+  // 5. Salto de línea \n (NUEVO - Detecta el Enter de la base de datos)
+  const regex = /(\\\[[\s\S]*?\\\]|\\\(.*?\\\)|<u>[\s\S]*?<\/u>|\*\*[\s\S]*?\*\*|\n)/g;
+  
   const parts = text.split(regex);
 
   return parts.filter(Boolean).map((part, index) => {
+    // Matemáticas Bloque
     if (part.startsWith('\\[') && part.endsWith('\\]')) {
       return <BlockMath key={index} math={part.slice(2, -2)} />;
     }
+    // Matemáticas Línea
     if (part.startsWith('\\(') && part.endsWith('\\)')) {
       return <InlineMath key={index} math={part.slice(2, -2)} />;
     }
+    // Subrayado HTML
     if (part.startsWith('<u>') && part.endsWith('</u>')) {
       return <u key={index}>{renderFormattedText(part.slice(3, -3))}</u>;
     }
+    // Negritas Markdown (**texto**) -> Agregamos clase font-bold
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={index} className="font-bold">{renderFormattedText(part.slice(2, -2))}</strong>;
+    }
+    // Salto de Línea
+    if (part === '\n') {
+      return <br key={index} />;
+    }
+    // Texto normal
     return part;
   });
 };
@@ -127,7 +147,6 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
     setShowResults(false);
     setScore(0);
     setAnswerStatus(null);
-    // Volver a mezclar preguntas al reiniciar
     const shuffledQuestions = initialQuestions.map(q => ({
       ...q,
       opciones: [...q.opciones].sort(() => Math.random() - 0.5)
@@ -187,7 +206,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
           {renderFormattedText(currentQuestion.pregunta)}
         </div>
         
-        {/* Imagen de la pregunta (si existe) */}
+        {/* Imagen de la pregunta */}
         {currentQuestion.pregunta_img_url && (
           <div className="relative w-full h-64 md:h-80 max-w-2xl mx-auto rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center p-2">
             <img 
@@ -225,7 +244,6 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
               disabled={!!answerStatus}
               className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center min-h-[70px] ${buttonClass}`}
             >
-              {/* SE ELIMINÓ EL DIV CON LA LETRA EN CÍRCULO AQUÍ */}
               <span className="font-medium text-lg leading-snug w-full">
                 {option.type === 'text' ? (
                   renderFormattedText(option.value)
@@ -261,9 +279,10 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
               }
             </h3>
             
+            {/* AQUÍ SE APLICA LA MEJORA: renderFormattedText en el feedback */}
             {currentQuestion.feedback && (
               <p className="text-gray-700 mt-2 mb-4 leading-relaxed">
-                {currentQuestion.feedback}
+                {renderFormattedText(currentQuestion.feedback)}
               </p>
             )}
 
