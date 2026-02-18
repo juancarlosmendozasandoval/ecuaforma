@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSupabase } from '../../../components/AuthProvider';
-import { ArrowLeft, Users, TrendingUp, AlertTriangle, RefreshCw, Trophy } from 'lucide-react';
+import { ArrowLeft, Users, TrendingUp, AlertTriangle, RefreshCw, Trophy, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ResultadosPage({ params }: { params: { slug: string } }) {
@@ -60,8 +60,6 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
               const respuestasUsuario = intento.detalle_respuestas; // JSONB
               if (!respuestasUsuario) return;
               
-              // El JSON guarda indices como keys "0", "1". 
-              // Buscamos la respuesta a ESTA pregunta (index)
               const respuestaDada = respuestasUsuario[index.toString()] || respuestasUsuario[index];
               
               if (respuestaDada && respuestaDada.value === preg.respuesta.value) {
@@ -81,15 +79,41 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
             };
           });
           
-          // Ordenar por las más falladas primero
           setAnalisisPreguntas(analisis.sort((a, b) => b.tasaFallo - a.tasaFallo));
         }
+      } else {
+        // Reset stats si no hay resultados
+        setStats({ promedio: 0, total: 0, mejor: 0 });
+        setAnalisisPreguntas([]);
       }
 
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // --- NUEVA FUNCIÓN: BORRAR TODO ---
+  const handleResetSimulator = async () => {
+    if (!simulador) return;
+    
+    const confirmacion = window.confirm(
+      `⚠️ ¿ESTÁS SEGURO?\n\nEsto borrará PERMANENTEMENTE los ${resultados.length} intentos registrados de "${simulador.nombre}".\n\nÚsalo solo antes de iniciar un nuevo curso.`
+    );
+
+    if (confirmacion) {
+      const { error } = await supabase
+        .from('resultados')
+        .delete()
+        .eq('simulador_id', simulador.id);
+
+      if (error) {
+        alert('Error al borrar: ' + error.message);
+      } else {
+        alert('✅ Historial reseteado correctamente. Listo para la nueva clase.');
+        cargarDatos(); // Recargar la página limpia
+      }
     }
   };
 
@@ -112,12 +136,24 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
           <h1 className="text-3xl font-bold text-gray-800">Analítica: {simulador.nombre}</h1>
           <p className="text-gray-500">Resultados en tiempo real</p>
         </div>
-        <button 
-          onClick={cargarDatos}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 shadow-lg transition-transform active:scale-95"
-        >
-          <RefreshCw size={20}/> Actualizar Datos
-        </button>
+        
+        <div className="flex gap-2">
+           {/* BOTÓN RESETEAR */}
+           <button 
+            onClick={handleResetSimulator}
+            className="bg-red-100 text-red-700 border border-red-200 px-4 py-3 rounded-lg font-bold flex items-center gap-2 hover:bg-red-200 transition-colors"
+            title="Borrar todos los resultados de este simulador"
+          >
+            <Trash2 size={20}/> Resetear Clase
+          </button>
+
+          <button 
+            onClick={cargarDatos}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 shadow-lg transition-transform active:scale-95"
+          >
+            <RefreshCw size={20}/> Actualizar Datos
+          </button>
+        </div>
       </div>
 
       {/* Tarjetas de Resumen */}
@@ -153,7 +189,7 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* COLUMNA 1: SEMÁFORO DE PREGUNTAS (Lo más importante para el profe) */}
+        {/* COLUMNA 1: SEMÁFORO DE PREGUNTAS */}
         <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <AlertTriangle className="text-orange-500"/> Preguntas más Difíciles
