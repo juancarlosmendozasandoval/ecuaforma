@@ -11,7 +11,7 @@ interface SimulatorProps {
   initialQuestions: QuestionType[];
 }
 
-// --- FUNCIÓN MEJORADA (Agregamos soporte para **Negritas** y Saltos de línea) ---
+// --- FUNCIÓN DE FORMATO DE TEXTO (Soporta Negritas, Enter, Math, Underline) ---
 const renderFormattedText = (text: string): (string | JSX.Element)[] => {
   if (!text) return [];
   
@@ -19,8 +19,8 @@ const renderFormattedText = (text: string): (string | JSX.Element)[] => {
   // 1. Matemáticas Bloque \[...\]
   // 2. Matemáticas Línea \(...\)
   // 3. Subrayado <u>...</u>
-  // 4. Negritas Markdown **...** (NUEVO)
-  // 5. Salto de línea \n (NUEVO - Detecta el Enter de la base de datos)
+  // 4. Negritas Markdown **...**
+  // 5. Salto de línea \n
   const regex = /(\\\[[\s\S]*?\\\]|\\\(.*?\\\)|<u>[\s\S]*?<\/u>|\*\*[\s\S]*?\*\*|\n)/g;
   
   const parts = text.split(regex);
@@ -124,6 +124,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
 
     try {
       if (user) {
+        // Guardamos resultados incluyendo el detalle de respuestas para la analítica
         await supabase.from('resultados').insert({
           simulador_id: initialSimulator.id,
           puntaje: Math.round(finalScore),
@@ -131,6 +132,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
           aciertos: correctAnswers,
           usuario_id: user.id,
           email: user.email,
+          detalle_respuestas: finalUserAnswers // <--- IMPORTANTE PARA EL DASHBOARD
         });
       }
     } catch (error) {
@@ -147,6 +149,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
     setShowResults(false);
     setScore(0);
     setAnswerStatus(null);
+    // Volver a mezclar preguntas al reiniciar
     const shuffledQuestions = initialQuestions.map(q => ({
       ...q,
       opciones: [...q.opciones].sort(() => Math.random() - 0.5)
@@ -279,7 +282,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
               }
             </h3>
             
-            {/* AQUÍ SE APLICA LA MEJORA: renderFormattedText en el feedback */}
+            {/* Retroalimentación con formato */}
             {currentQuestion.feedback && (
               <p className="text-gray-700 mt-2 mb-4 leading-relaxed">
                 {renderFormattedText(currentQuestion.feedback)}
