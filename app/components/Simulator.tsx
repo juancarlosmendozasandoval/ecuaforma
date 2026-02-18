@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Fragment } from 'react';
-import { CheckCircle, XCircle, Youtube, Repeat, PlayCircle, Loader2 } from 'lucide-react';
+import { CheckCircle, XCircle, Youtube, Repeat, PlayCircle, Loader2, AlertTriangle } from 'lucide-react';
 import type { SimulatorType, QuestionType, Option } from '../simulador/[slug]/page';
 import { useSupabase } from './AuthProvider';
 import { InlineMath, BlockMath } from 'react-katex';
@@ -44,6 +44,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null); // Nuevo estado para errores
   const [answerStatus, setAnswerStatus] = useState<'correct' | 'incorrect' | null>(null);
 
   useEffect(() => {
@@ -66,24 +67,21 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
     setUserAnswers({ ...userAnswers, [currentQuestionIndex]: selectedOption });
   };
 
-  // --- LÓGICA CORREGIDA AQUÍ ---
   const handleNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
-      // Si NO es la última, limpiamos y avanzamos normal
       setAnswerStatus(null);
       setSelectedOption(null);
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      // Si ES la última, NO limpiamos la pantalla.
-      // Directamente calculamos resultados para evitar el "parpadeo"
       calculateAndShowResults();
     }
   };
   
   const calculateAndShowResults = async () => {
-    setIsSubmitting(true); // Activamos estado de carga
+    setIsSubmitting(true);
+    setSaveError(null); // Reseteamos errores previos
     
-    // Asegurar guardar la última respuesta
+    // 1. Calcular Nota Localmente
     const finalUserAnswers = { ...userAnswers };
     if (selectedOption && !finalUserAnswers[currentQuestionIndex]) {
         finalUserAnswers[currentQuestionIndex] = selectedOption;
@@ -97,7 +95,9 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
     });
     
     const finalScore = (correctAnswers / questions.length) * 100;
-    
+    setScore(finalScore); // Guardamos la nota en el estado YA MISMO
+
+    // 2. Intentar guardar en Base de Datos (en segundo plano)
     try {
       if (user) {
         const { error } = await supabase.from('resultados').insert({
@@ -112,17 +112,14 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
 
         if (error) throw error;
       }
-      setScore(finalScore);
-      setShowResults(true);
-
     } catch (error: any) {
-      console.error('Error:', error);
-      // Si falla por permisos, mostramos el resultado igual pero avisamos
-      alert('Tu nota es: ' + Math.round(finalScore) + '/100. (Nota: No se pudo guardar en el historial por permisos de base de datos. Recuerda ejecutar el script SQL).');
-      setScore(finalScore);
-      setShowResults(true);
+      console.error('Error guardando:', error);
+      // NO bloqueamos al usuario con un alert. Solo guardamos el mensaje para mostrarlo al final.
+      setSaveError('Nota: No se pudo guardar en tu historial (Error de conexión/permisos), pero aquí tienes tu resultado.');
     } finally {
+      // 3. Pase lo que pase, MOSTRAR RESULTADOS
       setIsSubmitting(false);
+      setShowResults(true);
     }
   };
 
@@ -133,6 +130,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
     setShowResults(false);
     setScore(0);
     setAnswerStatus(null);
+    setSaveError(null);
     const shuffledQuestions = initialQuestions.map(q => ({
       ...q,
       opciones: [...q.opciones].sort(() => Math.random() - 0.5)
@@ -152,6 +150,15 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
         <p className="text-lg text-text-secondary mb-8">
           ({correctCount} de {questions.length} respuestas correctas)
         </p>
+
+        {/* Mensaje de error discreto si falló el guardado */}
+        {saveError && (
+          <div className="mb-6 p-3 bg-orange-50 text-orange-700 text-sm rounded-lg flex items-center justify-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            {saveError}
+          </div>
+        )}
+
         <button
           onClick={restartSimulator}
           className="bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-secondary transition-colors inline-flex items-center text-lg"
@@ -263,7 +270,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
         ) : (
           <button 
             onClick={handleNextQuestion} 
-            disabled={isSubmitting} // Deshabilitamos botón para evitar doble clic
+            disabled={isSubmitting}
             className={`w-full sm:w-auto bg-primary text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:bg-blue-600 hover:shadow-xl transition-all transform active:scale-95 flex items-center justify-center ${isSubmitting ? 'opacity-80 cursor-wait' : ''}`}
           >
             {isSubmitting ? (
