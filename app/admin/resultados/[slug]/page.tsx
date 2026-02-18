@@ -242,7 +242,7 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
                 <tr className="text-xs font-bold text-gray-500 border-b border-gray-200">
                   <th className="py-3">Estudiante</th>
                   <th className="py-3 text-center">Nota</th>
-                  <th className="py-3 text-right">Hora</th>
+                  <th className="py-3 text-right">Hora (Ecuador)</th>
                 </tr>
               </thead>
               <tbody className="text-sm">
@@ -259,7 +259,12 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
                       </span>
                     </td>
                     <td className="py-3 text-right text-gray-400 text-xs">
-                      {new Date(res.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      {/* AQUÍ ESTÁ EL CAMBIO DE HORA */}
+                      {new Date(res.created_at).toLocaleTimeString('es-EC', {
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        timeZone: 'America/Guayaquil'
+                      })}
                     </td>
                   </tr>
                 ))}
