@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Fragment } from 'react';
-import { CheckCircle, XCircle, Youtube, Repeat, PlayCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Youtube, Repeat, PlayCircle, Loader2 } from 'lucide-react';
 import type { SimulatorType, QuestionType, Option } from '../simulador/[slug]/page';
 import { useSupabase } from './AuthProvider';
 import { InlineMath, BlockMath } from 'react-katex';
@@ -55,7 +55,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
   }, [initialQuestions]);
 
   const handleOptionSelect = (option: Option) => {
-    if (answerStatus) return;
+    if (answerStatus || isSubmitting) return;
     setSelectedOption(option);
   };
 
@@ -66,19 +66,24 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
     setUserAnswers({ ...userAnswers, [currentQuestionIndex]: selectedOption });
   };
 
+  // --- LÓGICA CORREGIDA AQUÍ ---
   const handleNextQuestion = () => {
-    setAnswerStatus(null);
-    setSelectedOption(null);
     if (currentQuestionIndex < questions.length - 1) {
+      // Si NO es la última, limpiamos y avanzamos normal
+      setAnswerStatus(null);
+      setSelectedOption(null);
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
+      // Si ES la última, NO limpiamos la pantalla.
+      // Directamente calculamos resultados para evitar el "parpadeo"
       calculateAndShowResults();
     }
   };
   
   const calculateAndShowResults = async () => {
-    setIsSubmitting(true);
+    setIsSubmitting(true); // Activamos estado de carga
     
+    // Asegurar guardar la última respuesta
     const finalUserAnswers = { ...userAnswers };
     if (selectedOption && !finalUserAnswers[currentQuestionIndex]) {
         finalUserAnswers[currentQuestionIndex] = selectedOption;
@@ -95,7 +100,6 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
     
     try {
       if (user) {
-        // CORRECCIÓN IMPORTANTE: Capturamos el error
         const { error } = await supabase.from('resultados').insert({
           simulador_id: initialSimulator.id,
           puntaje: Math.round(finalScore),
@@ -106,18 +110,15 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
           detalle_respuestas: finalUserAnswers
         });
 
-        // Si hay error, lanzamos excepción para que caiga en el catch
         if (error) throw error;
       }
-      // Solo mostramos resultados si se guardó bien (o si no hay usuario logueado)
       setScore(finalScore);
       setShowResults(true);
 
     } catch (error: any) {
-      console.error('Error fatal guardando resultados:', error);
-      alert('Error al guardar tu nota: ' + (error.message || 'Error desconocido'));
-      // Aun así mostramos el resultado localmente para no frustrar al usuario, 
-      // pero sabrá que no se guardó.
+      console.error('Error:', error);
+      // Si falla por permisos, mostramos el resultado igual pero avisamos
+      alert('Tu nota es: ' + Math.round(finalScore) + '/100. (Nota: No se pudo guardar en el historial por permisos de base de datos. Recuerda ejecutar el script SQL).');
       setScore(finalScore);
       setShowResults(true);
     } finally {
@@ -171,6 +172,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
 
   return (
     <div className="bg-white p-4 sm:p-8 rounded-2xl shadow-xl max-w-4xl mx-auto border border-gray-100">
+      {/* Barra de Progreso */}
       <div className="mb-6">
         <div className="flex justify-between text-sm text-text-secondary mb-2">
            <span>Pregunta {currentQuestionIndex + 1} de {questions.length}</span>
@@ -184,6 +186,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
         </div>
       </div>
 
+      {/* Enunciado */}
       <div className="mb-8">
         <div className="text-xl md:text-2xl font-semibold text-gray-800 leading-relaxed mb-4">
           {renderFormattedText(currentQuestion.pregunta)}
@@ -195,6 +198,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
         )}
       </div>
 
+      {/* Opciones */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {currentQuestion.opciones.map((option, i) => {
           const isSelected = selectedOption?.value === option.value;
@@ -213,7 +217,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
             <button
               key={i}
               onClick={() => handleOptionSelect(option)}
-              disabled={!!answerStatus}
+              disabled={!!answerStatus || isSubmitting}
               className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center min-h-[70px] ${buttonClass}`}
             >
               <span className="font-medium text-lg leading-snug w-full">
@@ -255,10 +259,20 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
 
       <div className="flex justify-center pt-4 border-t border-gray-100">
         {!answerStatus ? (
-          <button onClick={handleVerifyAnswer} disabled={!selectedOption} className="w-full sm:w-auto bg-slate-900 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:bg-slate-800 hover:shadow-xl transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed disabled:shadow-none transform active:scale-95">Verificar Respuesta</button>
+          <button onClick={handleVerifyAnswer} disabled={!selectedOption || isSubmitting} className="w-full sm:w-auto bg-slate-900 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:bg-slate-800 hover:shadow-xl transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed disabled:shadow-none transform active:scale-95">Verificar Respuesta</button>
         ) : (
-          <button onClick={handleNextQuestion} className="w-full sm:w-auto bg-primary text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:bg-blue-600 hover:shadow-xl transition-all transform active:scale-95 flex items-center justify-center">
-            {currentQuestionIndex < questions.length - 1 ? <>Siguiente Pregunta <PlayCircle className="ml-2 w-5 h-5"/></> : 'Finalizar Simulador'}
+          <button 
+            onClick={handleNextQuestion} 
+            disabled={isSubmitting} // Deshabilitamos botón para evitar doble clic
+            className={`w-full sm:w-auto bg-primary text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:bg-blue-600 hover:shadow-xl transition-all transform active:scale-95 flex items-center justify-center ${isSubmitting ? 'opacity-80 cursor-wait' : ''}`}
+          >
+            {isSubmitting ? (
+              <>Guardando... <Loader2 className="ml-2 w-5 h-5 animate-spin"/></>
+            ) : (
+              currentQuestionIndex < questions.length - 1 ? 
+                <>Siguiente Pregunta <PlayCircle className="ml-2 w-5 h-5"/></> : 
+                'Finalizar Simulador'
+            )}
           </button>
         )}
       </div>
