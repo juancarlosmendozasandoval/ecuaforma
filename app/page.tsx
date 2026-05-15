@@ -2,6 +2,14 @@ import Link from 'next/link';
 import { Shield, BookOpen, ArrowRight } from 'lucide-react';
 
 export default function HomePage() {
+  // Creamos una lista donde separamos el nombre visible de la URL (slug)
+  const instituciones = [
+    { nombre: 'FAE', slug: 'fae' },
+    { nombre: 'Armada', slug: 'armada' },
+    { nombre: 'Ejército', slug: 'ejercito' },
+    { nombre: 'Policía', slug: 'policia' }
+  ];
+
   return (
     <div className="main-container">
       <section className="text-center py-16 md:py-24">
@@ -26,11 +34,14 @@ export default function HomePage() {
       <section className="py-16">
         <h2 className="text-3xl font-bold text-center mb-10">Nuestras Instituciones</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {['FAE', 'Armada', 'Ejército', 'Policía'].map((inst) => (
-            <div key={inst} className="bg-white p-8 rounded-xl shadow-md text-center hover:shadow-xl transition-shadow">
-              <h3 className="text-2xl font-bold text-primary mb-4">{inst}</h3>
+          {instituciones.map((inst) => (
+            <div key={inst.slug} className="bg-white p-8 rounded-xl shadow-md text-center hover:shadow-xl transition-shadow">
+              {/* Mostramos el nombre bonito con mayúsculas y tildes */}
+              <h3 className="text-2xl font-bold text-primary mb-4">{inst.nombre}</h3>
               <p className="text-text-secondary mb-6">Prepárate para las pruebas específicas de la institución.</p>
-              <Link href={`/simuladores/${inst.toLowerCase()}`} className="font-semibold text-primary hover:text-secondary">
+              
+              {/* Usamos el slug limpio para la dirección URL */}
+              <Link href={`/simuladores/${inst.slug}`} className="font-semibold text-primary hover:text-secondary">
                 Ir a simuladores <ArrowRight className="inline w-4 h-4" />
               </Link>
             </div>
