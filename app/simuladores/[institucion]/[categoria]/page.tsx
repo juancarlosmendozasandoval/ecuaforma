@@ -9,12 +9,25 @@ export default async function CategoriaPage({ params }: { params: { institucion:
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Solución: Decodificar los parámetros de la URL.
+  // Decodificar los parámetros de la URL
   const decodedInstitucion = decodeURIComponent(params.institucion);
   const decodedCategoria = decodeURIComponent(params.categoria);
   
+  // Diccionario traductor: convierte la URL limpia al nombre exacto de la Base de Datos
+  const mapping: { [key: string]: string } = {
+    'fae': 'FAE',
+    'armada': 'Armada',
+    'ejercito': 'Ejército',
+    'ejército': 'Ejército',
+    'policia': 'Policía',
+    'policía': 'Policía'
+  };
+
+  // Obtenemos el nombre real (con tilde y mayúscula) para buscar en Supabase
+  const nombreRealInstitucion = mapping[decodedInstitucion.toLowerCase()] || decodedInstitucion;
+
   let query = supabase.from('simuladores').select('materia')
-    .eq('institucion', decodedInstitucion)
+    .eq('institucion', nombreRealInstitucion)
     .eq('categoria', decodedCategoria);
 
   if (!user) {
@@ -41,9 +54,11 @@ export default async function CategoriaPage({ params }: { params: { institucion:
   }
 
   const materias = Array.from(new Set(data.map(item => item.materia)));
+  
+  // Usamos nombreRealInstitucion para que el texto de navegación se vea elegante
   const breadcrumbs = [
     { label: 'Simuladores', href: '/simuladores' },
-    { label: decodedInstitucion, href: `/simuladores/${params.institucion}` },
+    { label: nombreRealInstitucion, href: `/simuladores/${params.institucion}` },
     { label: decodedCategoria, href: `/simuladores/${params.institucion}/${params.categoria}`, isActive: true }
   ];
   

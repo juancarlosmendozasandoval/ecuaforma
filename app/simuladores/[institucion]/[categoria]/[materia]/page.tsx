@@ -9,13 +9,25 @@ export default async function MateriaPage({ params }: { params: { institucion: s
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Solución: Decodificar todos los parámetros de la URL.
+  // Decodificar todos los parámetros de la URL.
   const decodedInstitucion = decodeURIComponent(params.institucion);
   const decodedCategoria = decodeURIComponent(params.categoria);
   const decodedMateria = decodeURIComponent(params.materia);
 
+  // Diccionario traductor
+  const mapping: { [key: string]: string } = {
+    'fae': 'FAE',
+    'armada': 'Armada',
+    'ejercito': 'Ejército',
+    'ejército': 'Ejército',
+    'policia': 'Policía',
+    'policía': 'Policía'
+  };
+
+  const nombreRealInstitucion = mapping[decodedInstitucion.toLowerCase()] || decodedInstitucion;
+
   let query = supabase.from('simuladores').select('nombre, slug')
-    .eq('institucion', decodedInstitucion)
+    .eq('institucion', nombreRealInstitucion)
     .eq('categoria', decodedCategoria)
     .eq('materia', decodedMateria);
   
@@ -42,9 +54,10 @@ export default async function MateriaPage({ params }: { params: { institucion: s
     return <p>No se encontraron simuladores para esta materia.</p>;
   }
   
+  // Usamos nombreRealInstitucion para la navegación
   const breadcrumbs = [
     { label: 'Simuladores', href: '/simuladores' },
-    { label: decodedInstitucion, href: `/simuladores/${params.institucion}` },
+    { label: nombreRealInstitucion, href: `/simuladores/${params.institucion}` },
     { label: decodedCategoria, href: `/simuladores/${params.institucion}/${params.categoria}` },
     { label: decodedMateria, href: `/simuladores/${params.institucion}/${params.categoria}/${params.materia}`, isActive: true }
   ];
