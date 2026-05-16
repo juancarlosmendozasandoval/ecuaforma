@@ -2,7 +2,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ShieldAlert, PlusCircle } from 'lucide-react';
+import { ShieldAlert, PlusCircle, Key, BarChart } from 'lucide-react';
 
 // ⚠️ AQUÍ DEFINIMOS AL JEFE: Debe coincidir con el del SQL
 const ADMIN_EMAIL = 'juanjuacmend@gmail.com';
@@ -39,10 +39,24 @@ export default async function AdminLayout({
           >
             <PlusCircle size={20} /> Crear Simulador
           </Link>
+
+          <Link 
+            href="/admin/accesos" 
+            className="flex items-center gap-3 px-4 py-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
+          >
+            <Key size={20} /> Dar Accesos
+          </Link>
+
+          <Link 
+            href="/admin/resultados" 
+            className="flex items-center gap-3 px-4 py-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
+          >
+            <BarChart size={20} /> Ver Resultados
+          </Link>
         </nav>
       </aside>
 
-      {/* Aquí se cargará la página que creemos en el Paso 3 */}
+      {/* Aquí se cargará la página */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
         {children}
       </main>
