@@ -16,8 +16,11 @@ export default function AdminDashboardPage() {
       // 1. Contar Simuladores
       const { count: countSims } = await supabase.from('simuladores').select('*', { count: 'exact', head: true });
       
-      // 2. Traer intentos para estadísticas
-      const { data: resultados } = await supabase.from('resultados').select('puntaje, created_at, email');
+      // 2. Traer SOLO los puntajes con un límite muy alto para sacar el promedio real (bypasseando el límite de 1000)
+      const { data: resultados } = await supabase
+        .from('resultados')
+        .select('puntaje')
+        .limit(10000); 
       
       let intentos = 0;
       let sumaNotas = 0;
@@ -25,8 +28,17 @@ export default function AdminDashboardPage() {
       if (resultados && resultados.length > 0) {
         intentos = resultados.length;
         sumaNotas = resultados.reduce((acc, curr) => acc + curr.puntaje, 0);
-        // Ordenar por fecha para la actividad reciente (últimos 5)
-        setActividadReciente(resultados.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5));
+      }
+
+      // 3. 🌟 LA SOLUCIÓN: Traer la actividad reciente directamente ordenada desde la base de datos
+      const { data: recientes } = await supabase
+        .from('resultados')
+        .select('puntaje, created_at, email')
+        .order('created_at', { ascending: false }) // Del más nuevo al más viejo
+        .limit(5); // Solo traemos 5, respuesta en milisegundos
+
+      if (recientes) {
+        setActividadReciente(recientes);
       }
 
       setStats({
