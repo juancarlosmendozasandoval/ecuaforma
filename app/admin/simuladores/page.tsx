@@ -17,8 +17,6 @@ export default function GestionSimuladoresPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const instituciones = ['FAE', 'Armada', 'Ejército', 'Policía'];
-
   const fetchSimuladores = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -38,6 +36,15 @@ export default function GestionSimuladoresPage() {
     setAlert({ type, text });
     setTimeout(() => setAlert(null), 4000);
   };
+
+  // 🌟 SOLUCIÓN: Lista dinámica de instituciones
+  // Toma las 4 clásicas y le suma automáticamente cualquier otra (como MIES) que encuentre en los simuladores
+  const instituciones = Array.from(
+    new Set([
+      'FAE', 'Armada', 'Ejército', 'Policía', 
+      ...simuladores.map(sim => sim.institucion)
+    ])
+  ).filter(Boolean).sort(); // filter quita vacíos y sort las ordena alfabéticamente
 
   // 1. CAMBIAR PRIVACIDAD CON UN CLICK
   const togglePublico = async (id: string, currentStatus: boolean) => {
