@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSupabase } from '../../components/AuthProvider';
 import { 
   Eye, EyeOff, Copy, Move, Trash2, Search, 
-  Plus, RefreshCw, CheckCircle, AlertCircle, Sparkles 
+  Plus, RefreshCw, CheckCircle, AlertCircle, Sparkles, Pencil
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -16,6 +16,11 @@ export default function GestionSimuladoresPage() {
   const [selectedInst, setSelectedInst] = useState('TODAS');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Estados nuevos para controlar la edición inline
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editNombre, setEditNombre] = useState('');
+  const [editSlug, setEditSlug] = useState('');
 
   const fetchSimuladores = async () => {
     setLoading(true);
@@ -37,16 +42,64 @@ export default function GestionSimuladoresPage() {
     setTimeout(() => setAlert(null), 4000);
   };
 
-  // 🌟 SOLUCIÓN: Lista dinámica de instituciones
-  // Toma las 4 clásicas y le suma automáticamente cualquier otra (como MIES) que encuentre en los simuladores
+  // Lista dinámica de instituciones (detecta nuevas automáticamente como MIES)
   const instituciones = Array.from(
     new Set([
       'FAE', 'Armada', 'Ejército', 'Policía', 
       ...simuladores.map(sim => sim.institucion)
     ])
-  ).filter(Boolean).sort(); // filter quita vacíos y sort las ordena alfabéticamente
+  ).filter(Boolean).sort();
 
-  // 1. CAMBIAR PRIVACIDAD CON UN CLICK
+  // Activar el modo edición guardando los valores actuales en los inputs
+  const iniciarEdicion = (sim: any) => {
+    setEditingId(sim.id);
+    setEditNombre(sim.nombre);
+    setEditSlug(sim.slug);
+  };
+
+  const cancelarEdicion = () => {
+    setEditingId(null);
+    setEditNombre('');
+    setEditSlug('');
+  };
+
+  // 🌟 GUARDAR NOMBRE Y URL EDITADOS
+  const guardarEdicion = async (id: string) => {
+    if (!editNombre.trim() || !editSlug.trim()) {
+      showAlert('error', 'El nombre y la URL no pueden estar vacíos.');
+      return;
+    }
+
+    // Limpieza automática del Slug (URL segura)
+    const slugLimpio = editSlug
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // Quita tildes de forma automática
+      .replace(/[^a-z0-9-_]/g, '-')    // Reemplaza espacios y caracteres raros por guiones
+      .replace(/-+/g, '-');            // Evita guiones duplicados (ej: "materia--test")
+
+    setActionLoading(`edit-${id}`);
+
+    const { error } = await supabase
+      .from('simuladores')
+      .update({ 
+        nombre: editNombre.trim(), 
+        slug: slugLimpio 
+      })
+      .eq('id', id);
+
+    if (error) {
+      showAlert('error', 'Error al actualizar. Es muy probable que esa URL ya exista en otro simulador.');
+    } else {
+      setSimuladores(simuladores.map(s => s.id === id ? { ...s, nombre: editNombre.trim(), slug: slugLimpio } : s));
+      showAlert('success', 'Simulador y URL actualizados con éxito.');
+      setEditingId(null);
+    }
+    setActionLoading(null);
+  };
+
+  // CAMBIAR PRIVACIDAD CON UN CLICK
   const togglePublico = async (id: string, currentStatus: boolean) => {
     setActionLoading(`public-${id}`);
     const { error } = await supabase
@@ -63,7 +116,7 @@ export default function GestionSimuladoresPage() {
     setActionLoading(null);
   };
 
-  // 2. MOVER SIMULADOR A OTRA INSTITUCIÓN
+  // MOVER SIMULADOR A OTRA INSTITUCIÓN
   const moverSimulador = async (id: string, nuevaInst: string) => {
     if (!nuevaInst) return;
     setActionLoading(`move-${id}`);
@@ -82,13 +135,12 @@ export default function GestionSimuladoresPage() {
     setActionLoading(null);
   };
 
-  // 3. COPIAR/DUPLICAR SIMULADOR POR COMPLETO (CON PREGUNTAS)
+  // COPIAR/DUPLICAR SIMULADOR POR COMPLETO (CON PREGUNTAS)
   const duplicarSimulador = async (simulador: any, destinoInst: string) => {
     setActionLoading(`copy-${simulador.id}`);
     const nuevoSlug = `${simulador.slug}-copia-${Math.floor(Math.random() * 10000)}`;
 
     try {
-      // Clonar la fila del simulador
       const { data: nuevoSim, error: errSim } = await supabase
         .from('simuladores')
         .insert([{
@@ -104,7 +156,6 @@ export default function GestionSimuladoresPage() {
 
       if (errSim) throw errSim;
 
-      // Buscar y clonar todas sus preguntas asociadas
       const { data: preguntas, error: errPreg } = await supabase
         .from('preguntas')
         .select('*')
@@ -129,7 +180,7 @@ export default function GestionSimuladoresPage() {
     }
   };
 
-  // 4. ELIMINAR SIMULADOR
+  // ELIMINAR SIMULADOR
   const eliminarSimulador = async (id: string, nombre: string) => {
     if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el simulador "${nombre}"? Esta acción borrará todas sus preguntas y notas asociadas.`)) return;
     
@@ -236,97 +287,158 @@ export default function GestionSimuladoresPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {simuladoresFiltrados.map((sim) => (
-                  <tr key={sim.id} className="hover:bg-gray-50/70 transition-colors">
-                    {/* Información Básica */}
-                    <td className="p-4">
-                      <div className="flex items-start gap-2 flex-col">
-                        <span className="px-2.5 py-0.5 bg-slate-100 text-slate-800 text-xs font-bold rounded-md uppercase border border-slate-200">
-                          {sim.institucion}
-                        </span>
-                        <div className="font-bold text-gray-800 text-base mt-1">{sim.nombre}</div>
-                        <div className="text-xs text-gray-400 mt-0.5">
-                          {sim.categoria} • <span className="italic">{sim.materia}</span>
-                        </div>
-                      </div>
-                    </td>
+                {simuladoresFiltrados.map((sim) => {
+                  const isEditing = editingId === sim.id;
 
-                    {/* Visibilidad Interactiva */}
-                    <td className="p-4 text-center">
-                      <button
-                        onClick={() => togglePublico(sim.id, sim.publico)}
-                        disabled={actionLoading === `public-${sim.id}`}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-xs shadow-sm border transition-all ${
-                          sim.publico 
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' 
-                            : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
-                        }`}
-                      >
-                        {sim.publico ? (
-                          <><Eye className="w-3.5 h-3.5"/> Público</>
-                        ) : (
-                          <><EyeOff className="w-3.5 h-3.5"/> Privado</>
-                        )}
-                      </button>
-                    </td>
-
-                    {/* Mover Institución Rápido */}
-                    <td className="p-4">
-                      <select
-                        value={sim.institucion}
-                        onChange={(e) => moverSimulador(sim.id, e.target.value)}
-                        disabled={actionLoading !== null}
-                        className="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg p-2 focus:ring-1 focus:ring-primary focus:bg-white font-semibold cursor-pointer"
-                      >
-                        {instituciones.map(inst => (
-                          <option key={inst} value={inst}>{inst}</option>
-                        ))}
-                      </select>
-                    </td>
-
-                    {/* Clonar y Eliminar */}
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        {/* Menú desplegable rápido para clonar en otra institución */}
-                        <div className="relative group">
-                          <button 
-                            disabled={actionLoading !== null}
-                            className="p-2 text-gray-500 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold border border-gray-100 shadow-sm bg-white"
-                          >
-                            <Copy className="w-4 h-4" /> Duplicar en...
-                          </button>
-                          <div className="absolute right-0 bottom-full mb-1 hidden group-hover:block bg-white border border-gray-200 rounded-xl shadow-xl py-1 z-10 w-40 animate-fade-in">
-                            <p className="text-[10px] text-gray-400 font-bold px-3 py-1 uppercase tracking-wider">Destino:</p>
-                            {instituciones.map(inst => (
-                              <button
-                                key={inst}
-                                onClick={() => duplicarSimulador(sim, inst)}
-                                className="w-full text-left px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors flex items-center gap-1.5"
-                              >
-                                <Move className="w-3 h-3 text-gray-400" /> {inst}
-                              </button>
-                            ))}
+                  return (
+                    <tr key={sim.id} className="hover:bg-gray-50/70 transition-colors">
+                      {/* Información Básica / Modo Edición */}
+                      <td className="p-4">
+                        <div className="flex items-start gap-2 flex-col w-full">
+                          <span className="px-2.5 py-0.5 bg-slate-100 text-slate-800 text-xs font-bold rounded-md uppercase border border-slate-200">
+                            {sim.institucion}
+                          </span>
+                          
+                          {isEditing ? (
+                            <div className="flex flex-col gap-2 w-full mt-2 min-w-[250px]">
+                              <label className="text-[10px] font-bold text-gray-400 uppercase">Nombre del Simulador:</label>
+                              <input
+                                type="text"
+                                value={editNombre}
+                                onChange={(e) => setEditNombre(e.target.value)}
+                                className="p-2 text-sm border border-gray-300 rounded-xl text-gray-800 font-semibold bg-white focus:ring-1 focus:ring-primary w-full"
+                              />
+                              <label className="text-[10px] font-bold text-gray-400 uppercase mt-1">URL (Slug):</label>
+                              <div className="flex items-center gap-1 text-xs text-gray-500 w-full">
+                                <span className="font-mono bg-gray-100 p-1 rounded">/simulador/</span>
+                                <input
+                                  type="text"
+                                  value={editSlug}
+                                  onChange={(e) => setEditSlug(e.target.value)}
+                                  className="p-2 text-xs border border-gray-300 rounded-xl text-gray-700 font-mono bg-white focus:ring-1 focus:ring-primary flex-1"
+                                />
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="font-bold text-gray-800 text-base mt-1">{sim.nombre}</div>
+                              <div className="text-xs text-gray-500 font-mono bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100 mt-1">
+                                URL: /simulador/{sim.slug}
+                              </div>
+                            </>
+                          )}
+                          
+                          <div className="text-xs text-gray-400 mt-1">
+                            {sim.categoria} • <span className="italic">{sim.materia}</span>
                           </div>
                         </div>
+                      </td>
 
-                        {/* Eliminar permanentemente */}
+                      {/* Visibilidad Interactiva */}
+                      <td className="p-4 text-center">
                         <button
-                          onClick={() => eliminarSimulador(sim.id, sim.nombre)}
-                          disabled={actionLoading !== null}
-                          className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-100"
-                          title="Eliminar Simulador"
+                          onClick={() => togglePublico(sim.id, sim.publico)}
+                          disabled={actionLoading !== null || isEditing}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-xs shadow-sm border transition-all ${
+                            sim.publico 
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' 
+                              : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
+                          } ${isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          {sim.publico ? (
+                            <><Eye className="w-3.5 h-3.5"/> Público</>
+                          ) : (
+                            <><EyeOff className="w-3.5 h-3.5"/> Privado</>
+                          )}
+                        </button>
+                      </td>
+
+                      {/* Mover Institución Rápido */}
+                      <td className="p-4">
+                        <select
+                          value={sim.institucion}
+                          onChange={(e) => moverSimulador(sim.id, e.target.value)}
+                          disabled={actionLoading !== null || isEditing}
+                          className={`bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg p-2 focus:ring-1 focus:ring-primary focus:bg-white font-semibold cursor-pointer ${isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          {instituciones.map(inst => (
+                            <option key={inst} value={inst}>{inst}</option>
+                          ))}
+                        </select>
+                      </td>
+
+                      {/* Botones de Acción */}
+                      <td className="p-4">
+                        {isEditing ? (
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => guardarEdicion(sim.id)}
+                              disabled={actionLoading !== null}
+                              className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition-colors"
+                            >
+                              Guardar
+                            </button>
+                            <button
+                              onClick={cancelarEdicion}
+                              className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded-xl text-xs font-bold transition-colors"
+                            >
+                              Cancelar
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            {/* BOTÓN EDITAR (LÁPIZ) */}
+                            <button
+                              onClick={() => iniciarEdicion(sim)}
+                              disabled={actionLoading !== null}
+                              className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-gray-100 shadow-sm bg-white"
+                              title="Editar Nombre y URL"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </button>
+
+                            {/* Menú desplegable rápido para clonar */}
+                            <div className="relative group">
+                              <button 
+                                disabled={actionLoading !== null}
+                                className="p-2 text-gray-500 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold border border-gray-100 shadow-sm bg-white"
+                              >
+                                <Copy className="w-4 h-4" /> Duplicar en...
+                              </button>
+                              <div className="absolute right-0 bottom-full mb-1 hidden group-hover:block bg-white border border-gray-200 rounded-xl shadow-xl py-1 z-10 w-40 animate-fade-in">
+                                <p className="text-[10px] text-gray-400 font-bold px-3 py-1 uppercase tracking-wider">Destino:</p>
+                                {instituciones.map(inst => (
+                                  <button
+                                    key={inst}
+                                    onClick={() => duplicarSimulador(sim, inst)}
+                                    className="w-full text-left px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors flex items-center gap-1.5"
+                                  >
+                                    <Move className="w-3 h-3 text-gray-400" /> {inst}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Eliminar permanentemente */}
+                            <button
+                              onClick={() => eliminarSimulador(sim.id, sim.nombre)}
+                              disabled={actionLoading !== null}
+                              className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-100"
+                              title="Eliminar Simulador"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
-    </div>
-  );
+    )}
+  </div>
+</div>
+);
 }
