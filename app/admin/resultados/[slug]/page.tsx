@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSupabase } from '../../../components/AuthProvider';
-import { ArrowLeft, Users, TrendingUp, AlertTriangle, RefreshCw, Trophy, Trash2 } from 'lucide-react';
+import { ArrowLeft, Users, TrendingUp, AlertTriangle, RefreshCw, Trophy, Trash2, Download } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ResultadosPage({ params }: { params: { slug: string } }) {
@@ -18,12 +18,10 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
   const cargarDatos = async () => {
     setLoading(true);
     try {
-      // a) Datos del Simulador
       const { data: sim } = await supabase.from('simuladores').select('*').eq('slug', params.slug).single();
       if (!sim) return;
       setSimulador(sim);
 
-      // b) Preguntas (para saber cuál era la correcta y el texto)
       const { data: pregs } = await supabase
         .from('preguntas')
         .select('*')
@@ -32,15 +30,13 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
         .order('id', { ascending: true });
       setPreguntas(pregs || []);
 
-      // c) Resultados de los alumnos
       const { data: res } = await supabase
         .from('resultados')
         .select('*')
         .eq('simulador_id', sim.id)
-        .order('created_at', { ascending: false }); // Los más recientes primero
+        .order('created_at', { ascending: false }); 
       setResultados(res || []);
 
-      // d) Calcular Estadísticas al vuelo
       if (res && res.length > 0) {
         const suma = res.reduce((acc: number, curr: any) => acc + curr.puntaje, 0);
         const mejor = Math.max(...res.map((r: any) => r.puntaje));
@@ -50,14 +46,13 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
           mejor: mejor
         });
 
-        // e) ANÁLISIS DE FALLOS (El Semáforo)
         if (pregs) {
           const analisis = pregs.map((preg, index) => {
             let fallos = 0;
             let aciertos = 0;
 
             res.forEach((intento: any) => {
-              const respuestasUsuario = intento.detalle_respuestas; // JSONB
+              const respuestasUsuario = intento.detalle_respuestas; 
               if (!respuestasUsuario) return;
               
               const respuestaDada = respuestasUsuario[index.toString()] || respuestasUsuario[index];
@@ -82,7 +77,6 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
           setAnalisisPreguntas(analisis.sort((a, b) => b.tasaFallo - a.tasaFallo));
         }
       } else {
-        // Reset stats si no hay resultados
         setStats({ promedio: 0, total: 0, mejor: 0 });
         setAnalisisPreguntas([]);
       }
@@ -94,7 +88,7 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
     }
   };
 
-  // --- NUEVA FUNCIÓN: BORRAR TODO ---
+  // --- FUNCIÓN: BORRAR TODO ---
   const handleResetSimulator = async () => {
     if (!simulador) return;
     
@@ -112,9 +106,34 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
         alert('Error al borrar: ' + error.message);
       } else {
         alert('✅ Historial reseteado correctamente. Listo para la nueva clase.');
-        cargarDatos(); // Recargar la página limpia
+        cargarDatos(); 
       }
     }
+  };
+
+  // --- NUEVA FUNCIÓN: EXPORTAR A EXCEL (CSV) ---
+  const exportarCSV = () => {
+    if (resultados.length === 0) return alert("No hay resultados para exportar.");
+    
+    let csvContent = "Estudiante,Nota,Fecha,Hora\n";
+    
+    resultados.forEach(res => {
+      const email = res.email ? res.email.split('@')[0] : 'Anonimo';
+      const fecha = new Date(res.created_at);
+      const fechaFormat = fecha.toLocaleDateString('es-EC');
+      const horaFormat = fecha.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Guayaquil' });
+      
+      csvContent += `${email},${res.puntaje},${fechaFormat},${horaFormat}\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Notas_${simulador.nombre.replace(/\s+/g, '_')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   useEffect(() => {
@@ -130,14 +149,23 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
       {/* Cabecera */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <Link href="/admin" className="text-gray-500 hover:text-blue-600 flex items-center gap-1 mb-2 text-sm">
+          <Link href="/admin/resultados" className="text-gray-500 hover:text-blue-600 flex items-center gap-1 mb-2 text-sm">
             <ArrowLeft size={16}/> Volver al Panel
           </Link>
           <h1 className="text-3xl font-bold text-gray-800">Analítica: {simulador.nombre}</h1>
           <p className="text-gray-500">Resultados en tiempo real</p>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+           {/* NUEVO BOTÓN: EXPORTAR */}
+           <button 
+            onClick={exportarCSV}
+            className="bg-emerald-100 text-emerald-700 border border-emerald-200 px-4 py-3 rounded-lg font-bold flex items-center gap-2 hover:bg-emerald-200 transition-colors"
+            title="Descargar calificaciones en Excel"
+          >
+            <Download size={20}/> Exportar Excel
+          </button>
+
            {/* BOTÓN RESETEAR */}
            <button 
             onClick={handleResetSimulator}
@@ -259,7 +287,6 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
                       </span>
                     </td>
                     <td className="py-3 text-right text-gray-400 text-xs">
-                      {/* AQUÍ ESTÁ EL CAMBIO DE HORA */}
                       {new Date(res.created_at).toLocaleTimeString('es-EC', {
                         hour: '2-digit', 
                         minute: '2-digit',

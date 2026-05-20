@@ -3,164 +3,130 @@
 import { useEffect, useState } from 'react';
 import { useSupabase } from '../components/AuthProvider';
 import Link from 'next/link';
-import { Edit, Trash2, ExternalLink, PlusCircle, Search, Shield } from 'lucide-react';
+import { Shield, BookOpen, Users, Activity, ArrowRight, Settings } from 'lucide-react';
 
 export default function AdminDashboardPage() {
   const { supabase } = useSupabase();
-  const [simuladores, setSimuladores] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const cargarSimuladores = async () => {
-    const { data, error } = await supabase
-      .from('simuladores')
-      .select('*, preguntas(count)') // Traemos también el conteo de preguntas
-      .order('created_at', { ascending: false });
-
-    if (data) setSimuladores(data);
-    setLoading(false);
-  };
+  const [stats, setStats] = useState({ totalSims: 0, totalIntentos: 0, promedioGeneral: 0 });
+  const [actividadReciente, setActividadReciente] = useState<any[]>([]);
 
   useEffect(() => {
-    cargarSimuladores();
+    const cargarResumen = async () => {
+      // 1. Contar Simuladores
+      const { count: countSims } = await supabase.from('simuladores').select('*', { count: 'exact', head: true });
+      
+      // 2. Traer intentos para estadísticas
+      const { data: resultados } = await supabase.from('resultados').select('puntaje, created_at, email');
+      
+      let intentos = 0;
+      let sumaNotas = 0;
+      
+      if (resultados && resultados.length > 0) {
+        intentos = resultados.length;
+        sumaNotas = resultados.reduce((acc, curr) => acc + curr.puntaje, 0);
+        // Ordenar por fecha para la actividad reciente (últimos 5)
+        setActividadReciente(resultados.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5));
+      }
+
+      setStats({
+        totalSims: countSims || 0,
+        totalIntentos: intentos,
+        promedioGeneral: intentos > 0 ? (sumaNotas / intentos) : 0
+      });
+      setLoading(false);
+    };
+
+    cargarResumen();
   }, [supabase]);
 
-  const handleDelete = async (id: string, nombre: string) => {
-    if (!confirm(`¿ESTÁS SEGURO?\n\nVas a eliminar el simulador "${nombre}" y TODAS sus preguntas.\nEsta acción no se puede deshacer.`)) {
-      return;
-    }
-
-    try {
-      const { error } = await supabase.from('simuladores').delete().eq('id', id);
-      if (error) throw error;
-      
-      alert('Simulador eliminado');
-      cargarSimuladores(); // Recargar lista
-    } catch (err: any) {
-      alert('Error eliminando: ' + err.message);
-    }
-  };
-
-  // Filtrado simple por nombre
-  const filteredSims = simuladores.filter(s => 
-    s.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.institucion.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  if (loading) return <div className="p-10 text-center">Cargando panel...</div>;
+  if (loading) return <div className="p-10 text-center animate-pulse">Cargando Centro de Mando...</div>;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-8">
       
       {/* Cabecera del Dashboard */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <Shield className="text-blue-600"/> Panel de Administración
-          </h1>
-          <p className="text-gray-500">Gestiona tus {simuladores.length} simuladores activos</p>
+      <div className="bg-slate-900 p-8 rounded-2xl shadow-xl text-white">
+        <h1 className="text-3xl font-bold flex items-center gap-3 mb-2">
+          <Shield className="text-blue-400 w-8 h-8"/> Centro de Mando Ecuaforma
+        </h1>
+        <p className="text-slate-400">Resumen general del rendimiento de la academia.</p>
+      </div>
+
+      {/* Tarjetas KPI */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+          <div className="p-4 bg-blue-50 text-blue-600 rounded-xl"><BookOpen size={28}/></div>
+          <div>
+            <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">Simuladores Activos</p>
+            <p className="text-3xl font-extrabold text-gray-800">{stats.totalSims}</p>
+          </div>
         </div>
-        <Link 
-          href="/admin/crear-simulador" 
-          className="bg-slate-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-slate-800 transition flex items-center gap-2 shadow-lg"
-        >
-          <PlusCircle size={20} /> Crear Nuevo
-        </Link>
+
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+          <div className="p-4 bg-emerald-50 text-emerald-600 rounded-xl"><Users size={28}/></div>
+          <div>
+            <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">Pruebas Rendidas</p>
+            <p className="text-3xl font-extrabold text-gray-800">{stats.totalIntentos}</p>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
+          <div className="p-4 bg-purple-50 text-purple-600 rounded-xl"><Activity size={28}/></div>
+          <div>
+            <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">Promedio Global</p>
+            <p className="text-3xl font-extrabold text-gray-800">{stats.promedioGeneral.toFixed(1)} <span className="text-sm text-gray-400 font-medium">/ 100</span></p>
+          </div>
+        </div>
       </div>
 
-      {/* Barra de Búsqueda */}
-      <div className="relative">
-        <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-        <input 
-          type="text" 
-          placeholder="Buscar por nombre o institución..." 
-          className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-
-      {/* Tabla de Simuladores */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        {filteredSims.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            No se encontraron simuladores.
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Accesos Directos */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-lg font-bold text-gray-800 mb-4">Gestión Rápida</h2>
+          <div className="space-y-3">
+            <Link href="/admin/simuladores" className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-blue-50 hover:text-blue-700 transition group">
+              <div className="flex items-center gap-3 font-semibold">
+                <Settings className="text-gray-400 group-hover:text-blue-600" size={20}/> 
+                Administrar Simuladores
+              </div>
+              <ArrowRight size={18} className="text-gray-400 group-hover:translate-x-1 transition-transform"/>
+            </Link>
+            <Link href="/admin/resultados" className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition group">
+              <div className="flex items-center gap-3 font-semibold">
+                <Activity className="text-gray-400 group-hover:text-emerald-600" size={20}/> 
+                Ver Calificaciones de Clases
+              </div>
+              <ArrowRight size={18} className="text-gray-400 group-hover:translate-x-1 transition-transform"/>
+            </Link>
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
-                <tr>
-                  <th className="p-4 font-bold">Simulador</th>
-                  <th className="p-4 font-bold">Institución</th>
-                  <th className="p-4 font-bold text-center">Preguntas</th>
-                  <th className="p-4 font-bold text-center">Estado</th>
-                  <th className="p-4 font-bold text-right">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filteredSims.map((sim) => (
-                  <tr key={sim.id} className="hover:bg-blue-50/30 transition-colors">
-                    <td className="p-4">
-                      <div className="font-bold text-gray-800">{sim.nombre}</div>
-                      <div className="text-xs text-gray-400">{sim.categoria} • {sim.materia}</div>
-                    </td>
-                    <td className="p-4 text-sm text-gray-600">
-                      <span className="bg-gray-100 px-2 py-1 rounded text-xs font-bold uppercase">
-                        {sim.institucion}
-                      </span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-bold">
-                        {sim.preguntas[0]?.count || 0}
-                      </span>
-                    </td>
-                    <td className="p-4 text-center">
-                      {sim.publico ? (
-                        <span className="text-green-600 text-xs font-bold flex justify-center items-center gap-1">
-                          ● Público
-                        </span>
-                      ) : (
-                        <span className="text-amber-600 text-xs font-bold flex justify-center items-center gap-1">
-                          ● Privado
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-4 flex justify-end gap-2">
-                      {/* Ver en Web */}
-                      <Link 
-                        href={`/simulador/${sim.slug}`} 
-                        target="_blank"
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                        title="Ver simulador real"
-                      >
-                        <ExternalLink size={18} />
-                      </Link>
+        </div>
 
-                      {/* Editar Preguntas */}
-                      <Link 
-                        href={`/admin/preguntas/${sim.slug}`}
-                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
-                        title="Gestionar preguntas"
-                      >
-                        <Edit size={18} />
-                      </Link>
-
-                      {/* Eliminar */}
-                      <button 
-                        onClick={() => handleDelete(sim.id, sim.nombre)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                        title="Eliminar simulador"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        {/* Actividad Reciente */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-lg font-bold text-gray-800 mb-4">Últimos Alumnos Evaluados</h2>
+          {actividadReciente.length > 0 ? (
+            <div className="space-y-4">
+              {actividadReciente.map((act, idx) => (
+                <div key={idx} className="flex justify-between items-center border-b border-gray-50 pb-2">
+                  <div className="text-sm font-medium text-gray-700">
+                    {act.email ? act.email.split('@')[0] : 'Alumno Anónimo'}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className={`px-2 py-1 rounded text-xs font-bold ${act.puntaje >= 70 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {act.puntaje}/100
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      {new Date(act.created_at).toLocaleDateString('es-EC')}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-sm italic">Aún no hay pruebas registradas en la academia.</p>
+          )}
+        </div>
       </div>
     </div>
   );
