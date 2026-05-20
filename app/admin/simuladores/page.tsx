@@ -27,6 +27,7 @@ export default function GestionSimuladoresPage() {
     const { data, error } = await supabase
       .from('simuladores')
       .select('*')
+      .eq('is_deleted', false) // 🌟 Solo traer los activos
       .order('created_at', { ascending: false });
 
     if (!error && data) setSimuladores(data);
@@ -180,18 +181,23 @@ export default function GestionSimuladoresPage() {
     }
   };
 
-  // ELIMINAR SIMULADOR
+  // 4. ELIMINAR SIMULADOR (Soft Delete)
   const eliminarSimulador = async (id: string, nombre: string) => {
-    if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el simulador "${nombre}"? Esta acción borrará todas sus preguntas y notas asociadas.`)) return;
+    if (!confirm(`¿Mandar el simulador "${nombre}" al archivo? Los alumnos ya no podrán verlo, pero tú conservarás sus calificaciones históricas.`)) return;
     
     setActionLoading(`delete-${id}`);
-    const { error } = await supabase.from('simuladores').delete().eq('id', id);
+    
+    // 🌟 En lugar de .delete(), hacemos un .update()
+    const { error } = await supabase
+      .from('simuladores')
+      .update({ is_deleted: true }) 
+      .eq('id', id);
 
     if (error) {
-      showAlert('error', 'No se pudo eliminar el simulador.');
+      showAlert('error', 'No se pudo archivar el simulador.');
     } else {
       setSimuladores(simuladores.filter(s => s.id !== id));
-      showAlert('success', 'Simulador eliminado permanentemente.');
+      showAlert('success', 'Simulador archivado correctamente.');
     }
     setActionLoading(null);
   };
