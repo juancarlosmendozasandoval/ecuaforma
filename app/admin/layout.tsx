@@ -2,7 +2,8 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ShieldAlert, Key, BarChart, Settings } from 'lucide-react';
+// 🌟 Se agregó 'Library' a las importaciones de iconos
+import { ShieldAlert, Key, BarChart, Settings, Library } from 'lucide-react';
 
 // ⚠️ AQUÍ DEFINIMOS AL JEFE: Debe coincidir con el del SQL
 const ADMIN_EMAIL = 'juanjuacmend@gmail.com';
@@ -33,12 +34,20 @@ export default async function AdminLayout({
           <p className="text-xs text-gray-400 mt-1">Hola, {user.email}</p>
         </div>
         <nav className="p-4 space-y-2">
-          {/* Botón actualizado para ir al Panel CRUD */}
+          {/* Botón para ir al Panel CRUD */}
           <Link 
             href="/admin/simuladores" 
             className="flex items-center gap-3 px-4 py-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
           >
             <Settings size={20} /> Gestionar Simuladores
+          </Link>
+
+          {/* 🌟 NUEVO BOTÓN: Constructor Mixto */}
+          <Link 
+            href="/admin/constructor" 
+            className="flex items-center gap-3 px-4 py-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
+          >
+            <Library size={20} /> Ensamblar Mixto
           </Link>
 
           <Link 
