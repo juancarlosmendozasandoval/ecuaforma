@@ -26,10 +26,13 @@ export default async function MateriaPage({ params }: { params: { institucion: s
 
   const nombreRealInstitucion = mapping[decodedInstitucion.toLowerCase()] || decodedInstitucion;
 
-  let query = supabase.from('simuladores').select('nombre, slug')
+  let query = supabase
+    .from('simuladores')
+    .select('nombre, slug')
     .eq('institucion', nombreRealInstitucion)
     .eq('categoria', decodedCategoria)
-    .eq('materia', decodedMateria);
+    .eq('materia', decodedMateria)
+    .eq('is_deleted', false); // 🌟 Filtro integrado
   
   if (!user) {
     query = query.eq('publico', true);

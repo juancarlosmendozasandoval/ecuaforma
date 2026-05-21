@@ -26,9 +26,12 @@ export default async function CategoriaPage({ params }: { params: { institucion:
   // Obtenemos el nombre real (con tilde y mayúscula) para buscar en Supabase
   const nombreRealInstitucion = mapping[decodedInstitucion.toLowerCase()] || decodedInstitucion;
 
-  let query = supabase.from('simuladores').select('materia')
+  let query = supabase
+    .from('simuladores')
+    .select('materia')
     .eq('institucion', nombreRealInstitucion)
-    .eq('categoria', decodedCategoria);
+    .eq('categoria', decodedCategoria)
+    .eq('is_deleted', false); // 🌟 Filtro integrado
 
   if (!user) {
     query = query.eq('publico', true);

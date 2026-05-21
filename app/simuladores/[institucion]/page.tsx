@@ -25,10 +25,14 @@ export default async function InstitucionPage({ params }: { params: { institucio
   // 3. Obtenemos el nombre real (con tilde) para buscar en Supabase
   const nombreReal = mapping[decodedInstitucion.toLowerCase()] || decodedInstitucion;
 
-  // 4. Usamos el 'nombreReal' en la consulta en lugar de 'decodedInstitucion'
-  let query = supabase.from('simuladores').select('categoria').eq('institucion', nombreReal);
+  // 4. Usamos el 'nombreReal' en la consulta y filtramos los eliminados lógicamente
+  let query = supabase
+    .from('simuladores')
+    .select('categoria')
+    .eq('institucion', nombreReal)
+    .eq('is_deleted', false); // 🌟 Filtro integrado
 
-  // --- Lógica original de permisos (intacta) ---
+  // --- Lógica original de permisos ---
   if (!user) {
     query = query.eq('publico', true);
   } else {
