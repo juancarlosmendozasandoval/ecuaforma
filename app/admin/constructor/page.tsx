@@ -34,7 +34,7 @@ export default function ConstructorMixtoPage() {
     setTimeout(() => setAlert(null), 5000);
   };
 
-  // Cargar lista de simuladores al iniciar para el filtro
+  // Cargar lista de simuladores al iniciar
   useEffect(() => {
     const cargarSimuladores = async () => {
       const { data } = await supabase
@@ -47,7 +47,7 @@ export default function ConstructorMixtoPage() {
     cargarSimuladores();
   }, [supabase]);
 
-  // Cargar preguntas cuando seleccionas un simulador en el filtro
+  // Cargar preguntas del simulador seleccionado
   useEffect(() => {
     const cargarPreguntas = async () => {
       if (!simuladorSeleccionado) {
@@ -66,7 +66,6 @@ export default function ConstructorMixtoPage() {
 
   // Funciones del Carrito
   const agregarAlCarrito = (pregunta: any) => {
-    // Evitar duplicados exactos en el carrito usando el ID original temporalmente
     if (carrito.find(p => p.id === pregunta.id)) {
       showAlert('error', 'Esta pregunta ya está en tu nuevo simulador.');
       return;
@@ -78,6 +77,14 @@ export default function ConstructorMixtoPage() {
     setCarrito(carrito.filter(p => p.id !== preguntaId));
   };
 
+  // 🌟 SOLUCIÓN 1: Lista Dinámica de Instituciones
+  const institucionesDinamicas = Array.from(
+    new Set([
+      'FAE', 'Armada', 'Ejército', 'Policía', 
+      ...simuladoresDb.map(sim => sim.institucion)
+    ])
+  ).filter(Boolean).sort();
+
   // GUARDAR EL NUEVO SIMULADOR ENSAMBLADO
   const ensamblarSimulador = async () => {
     if (!nombre || !categoria || !materia) return showAlert('error', 'Completa los datos básicos del simulador.');
@@ -85,12 +92,10 @@ export default function ConstructorMixtoPage() {
 
     setLoading(true);
 
-    // 1. Crear URL limpia y única
     const slugBase = nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9-_]/g, '-').replace(/-+/g, '-');
     const slugFinal = `${slugBase}-mixto-${Math.floor(Math.random() * 1000)}`;
 
     try {
-      // 2. Insertar la fila del nuevo simulador
       const { data: nuevoSim, error: errSim } = await supabase
         .from('simuladores')
         .insert([{
@@ -106,24 +111,22 @@ export default function ConstructorMixtoPage() {
 
       if (errSim) throw errSim;
 
-      // 3. Limpiar las preguntas del carrito (quitarles su ID viejo) y asignarles el ID del nuevo simulador
-      const preguntasNuevas = carrito.map((preg, index) => ({
-        simulador_id: nuevoSim.id,
-        pregunta: preg.pregunta,
-        opciones: preg.opciones,
-        respuesta: preg.respuesta,
-        explicacion: preg.explicacion,
-        imagen_url: preg.imagen_url,
-        orden: index + 1 // El orden en el que quedaron en el carrito
-      }));
+      // 🌟 SOLUCIÓN 2: Clonación Inteligente (Evita errores de columnas inexistentes)
+      const preguntasNuevas = carrito.map((preg, index) => {
+        // Extraemos los datos que NO queremos copiar (id viejo, fechas, etc)
+        const { id, created_at, simulador_id, ...restoDeColumnas } = preg;
+        
+        return {
+          ...restoDeColumnas,       // Pega TODAS las columnas que sí existan en tu base de datos
+          simulador_id: nuevoSim.id, // Asignamos el ID del nuevo simulador
+          orden: index + 1          // Reordenamos
+        };
+      });
 
-      // 4. Insertar todas las preguntas clonadas de golpe
       const { error: errPreg } = await supabase.from('preguntas').insert(preguntasNuevas);
       if (errPreg) throw errPreg;
 
       showAlert('success', '¡Simulador Mixto creado exitosamente!');
-      
-      // Limpiar formulario
       setNombre(''); setCategoria(''); setMateria(''); setCarrito([]);
       
     } catch (error: any) {
@@ -133,7 +136,6 @@ export default function ConstructorMixtoPage() {
     }
   };
 
-  // Filtrado de la barra de búsqueda en las preguntas disponibles
   const preguntasFiltradas = preguntasDisponibles.filter(p => 
     p.pregunta.toLowerCase().includes(busquedaPregunta.toLowerCase())
   );
@@ -173,10 +175,14 @@ export default function ConstructorMixtoPage() {
           </div>
           <div>
             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Institución</label>
-            <select value={institucion} onChange={(e) => setInstitucion(e.target.value)} className="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-primary focus:bg-white font-semibold">
-              <option value="FAE">FAE</option><option value="Armada">Armada</option>
-              <option value="Ejército">Ejército</option><option value="Policía">Policía</option>
-              <option value="MIES">MIES</option>
+            <select 
+              value={institucion} 
+              onChange={(e) => setInstitucion(e.target.value)} 
+              className="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-primary focus:bg-white font-semibold"
+            >
+              {institucionesDinamicas.map(inst => (
+                <option key={inst} value={inst}>{inst}</option>
+              ))}
             </select>
           </div>
           <div>
