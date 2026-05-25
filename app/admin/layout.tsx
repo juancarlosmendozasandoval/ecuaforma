@@ -2,8 +2,8 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-// 🌟 Se agregó 'Library' a las importaciones de iconos
-import { ShieldAlert, Key, BarChart, Settings, Library } from 'lucide-react';
+// 🌟 Se agregó 'GraduationCap' a las importaciones de iconos
+import { ShieldAlert, Key, BarChart, Settings, Library, GraduationCap } from 'lucide-react';
 
 // ⚠️ AQUÍ DEFINIMOS AL JEFE: Debe coincidir con el del SQL
 const ADMIN_EMAIL = 'juanjuacmend@gmail.com';
@@ -34,7 +34,16 @@ export default async function AdminLayout({
           <p className="text-xs text-gray-400 mt-1">Hola, {user.email}</p>
         </div>
         <nav className="p-4 space-y-2">
-          {/* Botón para ir al Panel CRUD */}
+          
+          {/* 🌟 NUEVO BOTÓN: Gestor de Cursos (LMS) */}
+          <Link 
+            href="/admin/cursos" 
+            className="flex items-center gap-3 px-4 py-3 bg-indigo-900/50 text-indigo-100 rounded-lg hover:bg-indigo-800 transition-colors border border-indigo-700/50 font-semibold"
+          >
+            <GraduationCap size={20} /> Gestor de Cursos
+          </Link>
+
+          {/* Botón para ir al Panel CRUD de Simuladores */}
           <Link 
             href="/admin/simuladores" 
             className="flex items-center gap-3 px-4 py-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
@@ -42,7 +51,7 @@ export default async function AdminLayout({
             <Settings size={20} /> Gestionar Simuladores
           </Link>
 
-          {/* 🌟 NUEVO BOTÓN: Constructor Mixto */}
+          {/* BOTÓN: Constructor Mixto */}
           <Link 
             href="/admin/constructor" 
             className="flex items-center gap-3 px-4 py-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
