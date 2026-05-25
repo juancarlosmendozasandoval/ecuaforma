@@ -61,9 +61,14 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
             ) : (
               <div className="space-y-3">
                 {lecciones.map((lec, idx) => (
-                  <div key={lec.id} className="flex items-center justify-between p-4 bg-gray-50 hover:bg-blue-50/40 rounded-xl transition group border border-transparent hover:border-blue-100">
+                  // 🌟 AQUI ESTA EL CAMBIO: Ahora es un Link clickeable
+                  <Link 
+                    href={`/cursos/${params.institucion}/${params.slug}/${lec.id}`}
+                    key={lec.id} 
+                    className="flex items-center justify-between p-4 bg-gray-50 hover:bg-blue-50/40 rounded-xl transition-all duration-200 group border border-transparent hover:border-blue-200 hover:shadow-sm"
+                  >
                     <div className="flex items-center gap-4">
-                      <span className="w-7 h-7 bg-white rounded-lg flex items-center justify-center font-bold text-xs text-gray-500 shadow-sm border border-gray-100">
+                      <span className="w-8 h-8 bg-white rounded-lg flex items-center justify-center font-bold text-sm text-gray-500 shadow-sm border border-gray-100 group-hover:bg-primary group-hover:text-white transition-colors">
                         {idx + 1}
                       </span>
                       <div>
@@ -76,13 +81,12 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
                       </div>
                     </div>
                     
-                    {/* Si la lección tiene un simulador enlazado, le damos acceso directo */}
                     {lec.simulador_id && (
                       <span className="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-md font-bold">
                         Incluye Examen
                       </span>
                     )}
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
