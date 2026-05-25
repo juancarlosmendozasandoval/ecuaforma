@@ -2,7 +2,6 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import Breadcrumbs from '../../../../components/Breadcrumbs';
-// 🌟 SOLUCIÓN: Agregué CheckCircle a la importación
 import { PlayCircle, FileText, CheckSquare, ArrowLeft, ArrowRight, ListVideo, CheckCircle } from 'lucide-react';
 
 // Función para transformar URLs de YouTube a formato Embed
@@ -29,14 +28,28 @@ export default async function AulaVirtualPage({ params }: { params: { institucio
     .eq('curso_id', curso.id)
     .order('orden', { ascending: true });
 
-  // 3. Traer la lección actual ESPECÍFICA (incluyendo el slug del simulador si lo tiene)
+  // 3. 🌟 CORRECCIÓN: Traer la lección de forma pura para evitar fallos por falta de llaves foráneas
   const { data: leccionActual } = await supabase
     .from('lecciones')
-    .select('*, simulador:simuladores(slug)')
+    .select('*')
     .eq('id', params.leccionId)
     .single();
 
   if (!leccionActual) return <div className="p-10 text-center">Lección no encontrada.</div>;
+
+  // 4. 🌟 CORRECCIÓN: Consultar el slug del simulador de forma independiente si existe un ID vinculado
+  let simuladorSlug = null;
+  if (leccionActual.simulador_id) {
+    const { data: simData } = await supabase
+      .from('simuladores')
+      .select('slug')
+      .eq('id', leccionActual.simulador_id)
+      .single();
+    
+    if (simData) {
+      simuladorSlug = simData.slug;
+    }
+  }
 
   // Calcular lección anterior y siguiente
   const currentIndex = lecciones?.findIndex(l => l.id === leccionActual.id) ?? 0;
@@ -98,16 +111,15 @@ export default async function AulaVirtualPage({ params }: { params: { institucio
             )}
 
             {/* Botón de Examen si hay un simulador enlazado */}
-            {leccionActual.simulador && (
+            {simuladorSlug && (
               <div className="p-6 md:p-8 bg-emerald-50 border-t border-emerald-100 flex flex-col items-center text-center">
                 <CheckSquare className="w-12 h-12 text-emerald-500 mb-3" />
                 <h3 className="text-lg font-bold text-emerald-900 mb-2">Examen del Módulo</h3>
                 <p className="text-sm text-emerald-700 mb-4 max-w-md">
                   Pon a prueba los conocimientos adquiridos en esta lección. Necesitarás aprobar para asegurar tu progreso.
                 </p>
-                {/* Nota: Forzamos la lectura con any para evitar que TS se queje */}
                 <Link 
-                  href={`/simulador/${(leccionActual.simulador as any).slug || (leccionActual.simulador as any)[0]?.slug}`}
+                  href={`/simulador/${simuladorSlug}`}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold shadow-md transition-all transform hover:-translate-y-1"
                 >
                   Rendir Examen Ahora
