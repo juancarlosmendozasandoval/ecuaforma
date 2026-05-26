@@ -2,68 +2,172 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import Card from '../components/Card';
-import { Lock } from 'lucide-react';
+import { Lock, GraduationCap, ArrowRight, Settings, Award, BookOpen } from 'lucide-react';
 
-// Esta es la nueva página para mostrar los simuladores privados a los que un usuario tiene acceso.
 export default async function MisCursosPage() {
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   
+  // 1. Obtener la sesión del usuario
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return (
-      <div className="text-center mt-10 p-8">
+      <div className="text-center mt-10 p-8 main-container">
         <h1 className="text-2xl font-bold">Inicia Sesión</h1>
-        <p className="mt-2 text-gray-600">Por favor, inicia sesión para ver tus cursos privados.</p>
+        <p className="mt-2 text-gray-600">Por favor, inicia sesión para ver tu contenido privado.</p>
       </div>
     );
   }
 
-  // Obtenemos los IDs de los simuladores a los que el usuario tiene acceso
-  const { data: accesos, error: accesosError } = await supabase
+  // 2. PARTE A: Consultar los Simuladores Privados (Tu lógica original intacta)
+  const { data: accesosSims } = await supabase
     .from('accesos_simuladores')
     .select('simulador_id')
     .eq('usuario_id', user.id);
 
-  if (accesosError || !accesos || accesos.length === 0) {
+  const simuladorIds = accesosSims ? accesosSims.map(a => a.simulador_id) : [];
+
+  let simuladoresPrivados: any[] = [];
+  if (simuladorIds.length > 0) {
+    const { data: simsData } = await supabase
+      .from('simuladores')
+      .select('*')
+      .in('id', simuladorIds);
+    if (simsData) simuladoresPrivados = simsData;
+  }
+
+  // 3. PARTE B: Consultar los Cursos Multimedia con su Progreso Dinámico
+  const { data: accesosCursos } = await supabase
+    .from('accesos_cursos')
+    .select(`
+      curso_id,
+      cursos (
+        id,
+        nombre,
+        slug,
+        institucion,
+        descripcion
+      )
+    `)
+    .eq('usuario_id', user.id);
+
+  // Descargar el catálogo completo de lecciones y progreso para mapear porcentajes
+  const { data: todasLasLecciones } = await supabase.from('lecciones').select('id, curso_id');
+  const { data: progresoUsuario } = await supabase.from('progreso_lecciones').select('leccion_id').eq('usuario_id', user.id);
+  
+  const leccionesCompletadasIds = progresoUsuario ? progresoUsuario.map(p => p.leccion_id) : [];
+
+  // Mapear y calcular progreso de los cursos multimedia inscritos
+  const cursosMultimedia = accesosCursos
+    ? accesosCursos.map((acceso: any) => {
+        const c = acceso.cursos;
+        if (!c) return null;
+
+        const leccionesEsteCurso = todasLasLecciones ? todasLasLecciones.filter(l => l.curso_id === c.id) : [];
+        const totalLecciones = leccionesEsteCurso.length;
+        
+        const completadasEsteCurso = leccionesEsteCurso.filter(l => leccionesCompletadasIds.includes(l.id)).length;
+        const porcentaje = totalLecciones > 0 ? Math.round((completadasEsteCurso / totalLecciones) * 100) : 0;
+
+        return {
+          ...c,
+          totalLecciones,
+          completadasEsteCurso,
+          porcentaje
+        };
+      }).filter(Boolean)
+    : [];
+
+  // Validar si el alumno no tiene absolutamente nada asignado aún
+  const estaVacio = simuladoresPrivados.length === 0 && cursosMultimedia.length === 0;
+
+  if (estaVacio) {
     return (
-       <div className="text-center mt-10 p-8">
-        <h1 className="text-2xl font-bold">No tienes cursos privados</h1>
-        <p className="mt-2 text-gray-600">Aún no se te ha asignado acceso a ningún simulador privado.</p>
+       <div className="text-center mt-10 p-8 main-container max-w-xl mx-auto space-y-4">
+        <BookOpen className="mx-auto w-12 h-12 text-gray-300" />
+        <h1 className="text-2xl font-bold text-gray-800">No tienes material privado asignado</h1>
+        <p className="text-gray-600">Aún no se te ha matriculado en ningún curso multimedia ni simulador exclusivo.</p>
       </div>
     );
   }
-  
-  const simuladorIds = accesos.map(a => a.simulador_id);
 
-  // Ahora obtenemos los detalles de esos simuladores privados
-  const { data: simuladores, error: simuladoresError } = await supabase
-    .from('simuladores')
-    .select('*')
-    .in('id', simuladorIds);
-
-  if (simuladoresError || !simuladores) {
-     return <p>Error al cargar tus cursos.</p>;
-  }
-  
   return (
-    <div className="main-container py-10">
-      <div className="flex items-center gap-4 mb-6">
+    <div className="main-container py-10 min-h-screen bg-gray-50/50">
+      
+      {/* Cabecera Principal */}
+      <div className="flex items-center gap-4 mb-2">
         <Lock className="w-8 h-8 text-primary"/>
-        <h1 className="text-3xl font-bold">Mis Cursos Privados</h1>
+        <h1 className="text-3xl font-bold">Mi Aula Virtual</h1>
       </div>
-      <p className="mb-8 text-text-secondary">Aquí encontrarás todos los simuladores exclusivos a los que se te ha dado acceso.</p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {simuladores.map(sim => (
-          <Card 
-            key={sim.slug} 
-            title={sim.nombre} 
-            href={`/simulador/${sim.slug}`} 
-            description={`${sim.institucion} - ${sim.categoria}`}
-          />
-        ))}
-      </div>
+      <p className="mb-10 text-text-secondary">Gestiona tu ritmo de estudio y accede al contenido exclusivo asignado a tu cuenta.</p>
+
+      {/* ================= SECCIÓN 1: CURSOS MULTIMEDIA (LMS) ================= */}
+      {cursosMultimedia.length > 0 && (
+        <div className="mb-12">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2 border-b border-gray-200 pb-2">
+            <GraduationCap className="text-primary w-5 h-5"/> Programas de Estudio Completos
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {cursosMultimedia.map((curso: any) => (
+              <div key={curso.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col group hover:shadow-md transition-all">
+                <div className="p-6 flex-1 flex flex-col">
+                  <span className="text-[10px] font-bold uppercase bg-blue-50 text-blue-600 px-2.5 py-1 rounded-md border border-blue-100 w-fit mb-3">
+                    {curso.institucion}
+                  </span>
+                  <h3 className="text-lg font-bold text-gray-800 mb-2">{curso.nombre}</h3>
+                  <p className="text-xs text-gray-400 line-clamp-2 mb-6 flex-1">{curso.descripcion}</p>
+
+                  {/* Barra de Progreso Visual */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs font-semibold text-gray-500">
+                      <span>Progreso</span>
+                      <span className="text-primary font-bold">{curso.porcentaje}%</span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                      <div className="bg-primary h-2 rounded-full transition-all duration-500" style={{ width: `${curso.porcentaje}%` }}></div>
+                    </div>
+                    <div className="flex justify-between text-[11px] text-gray-400 pt-0.5">
+                      <span>{curso.completadasEsteCurso} de {curso.totalLecciones} clases</span>
+                      {curso.porcentaje === 100 && (
+                        <span className="text-emerald-600 font-bold flex items-center gap-0.5"><Award size={12}/> Completado</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4 bg-gray-50 border-t border-gray-50 flex items-center justify-end">
+                  <Link 
+                    href={`/cursos/${curso.institucion.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}/${curso.slug}`}
+                    className="text-sm font-bold text-primary flex items-center gap-1 group-hover:text-blue-700 transition-colors"
+                  >
+                    Entrar al Aula <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ================= SECCIÓN 2: SIMULADORES EXCLUSIVOS ================= */}
+      {simuladoresPrivados.length > 0 && (
+        <div>
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2 border-b border-gray-200 pb-2">
+            <Settings className="text-primary w-5 h-5"/> Bancos de Preguntas y Simuladores
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {simuladoresPrivados.map(sim => (
+              <Card 
+                key={sim.slug} 
+                title={sim.nombre} 
+                href={`/simulador/${sim.slug}`} 
+                description={`${sim.institucion} - ${sim.categoria}`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -1,12 +1,15 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
-import Link from 'next/link'; // 🌟 Esta es la línea que faltaba
+import Link from 'next/link';
 import Card from '../../components/Card';
 import Breadcrumbs from '../../components/Breadcrumbs';
 
 export default async function CursosInstitucionPage({ params }: { params: { institucion: string } }) {
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
+
+  // 1. Obtener el usuario actual si está logueado
+  const { data: { user } } = await supabase.auth.getUser();
 
   const decodedInstitucion = decodeURIComponent(params.institucion);
 
@@ -22,13 +25,36 @@ export default async function CursosInstitucionPage({ params }: { params: { inst
 
   const nombreReal = mapping[decodedInstitucion.toLowerCase()] || decodedInstitucion;
 
-  // Consultar cursos de esta institución que estén activos y públicos
-  const { data: cursos, error } = await supabase
+  // 2. Construir la consulta base de cursos activos para esta institución
+  let query = supabase
     .from('cursos')
     .select('*')
     .eq('institucion', nombreReal)
-    .eq('publico', true)
     .eq('is_deleted', false);
+
+  // 3. 🌟 APLICAR FILTRO DE PERMISOS
+  if (!user) {
+    // Si no está logueado, solo ve cursos 100% públicos
+    query = query.eq('publico', true);
+  } else {
+    // Si está logueado, buscamos a qué cursos privados tiene acceso
+    const { data: accessData } = await supabase
+      .from('accesos_cursos')
+      .select('curso_id')
+      .eq('usuario_id', user.id);
+    
+    const accessibleCourseIds = accessData ? accessData.map(a => a.curso_id) : [];
+
+    if (accessibleCourseIds.length > 0) {
+      // Ve los públicos OR los privados que tengan su ID asignado en la tabla de accesos
+      query = query.or(`publico.eq.true,id.in.(${accessibleCourseIds.join(',')})`);
+    } else {
+      // Si no tiene accesos asignados, solo ve públicos
+      query = query.eq('publico', true);
+    }
+  }
+
+  const { data: cursos, error } = await query;
 
   if (error || !cursos) {
     return <div className="main-container py-10"><p>No se encontraron cursos para esta institución.</p></div>;
@@ -60,9 +86,17 @@ export default async function CursosInstitucionPage({ params }: { params: { inst
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {cursos.map(curso => (
             <div key={curso.id} className="flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition group">
-              <span className="text-[10px] font-bold uppercase bg-blue-50 text-blue-600 px-2.5 py-1 rounded-md w-fit mb-3">
-                {curso.institucion}
-              </span>
+              <div className="flex justify-between items-start mb-3">
+                <span className="text-[10px] font-bold uppercase bg-blue-50 text-blue-600 px-2.5 py-1 rounded-md border border-blue-100">
+                  {curso.institucion}
+                </span>
+                {/* Pequeño indicador si el curso es privado/premium */}
+                {!curso.publico && (
+                  <span className="text-[10px] font-bold uppercase bg-purple-50 text-purple-600 px-2.5 py-1 rounded-md border border-purple-100">
+                    Premium ⭐
+                  </span>
+                )}
+              </div>
               <h3 className="text-lg font-bold text-gray-800 group-hover:text-primary transition-colors">
                 {curso.nombre}
               </h3>
