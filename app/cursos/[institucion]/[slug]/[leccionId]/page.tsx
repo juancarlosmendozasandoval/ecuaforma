@@ -5,7 +5,9 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Breadcrumbs from '../../../../components/Breadcrumbs';
 import Simulator from '../../../../components/Simulator';
-import { PlayCircle, FileText, CheckSquare, ArrowLeft, ArrowRight, ListVideo, CheckCircle, X } from 'lucide-react';
+import { PlayCircle, FileText, CheckSquare, ArrowLeft, ArrowRight, ListVideo, CheckCircle, X, Loader2 } from 'lucide-react';
+// Importamos los tipos necesarios (asegúrate de que la ruta relativa coincida con donde definiste estos tipos)
+import type { SimulatorType, QuestionType } from '../../../../simulador/[slug]/page';
 
 // Función para transformar URLs de YouTube a formato Embed
 function getYouTubeEmbedUrl(url: string | null) {
@@ -21,11 +23,12 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
   const [curso, setCurso] = useState<any>(null);
   const [lecciones, setLecciones] = useState<any[]>([]);
   const [leccionActual, setLeccionActual] = useState<any>(null);
-  const [simuladorSlug, setSimuladorSlug] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   
-  // Estado para controlar la visibilidad del Modal del Simulador
+  // Estados para el Simulador
   const [mostrarSimulador, setMostrarSimulador] = useState(false);
+  const [cargandoSimulador, setCargandoSimulador] = useState(false);
+  const [simuladorData, setSimuladorData] = useState<{ sim: SimulatorType, pregs: QuestionType[] } | null>(null);
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -54,17 +57,6 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
       
       if (leccionData) {
         setLeccionActual(leccionData);
-        
-        // 4. Si hay simulador, traer su slug
-        if (leccionData.simulador_id) {
-          const { data: simData } = await supabase
-            .from('simuladores')
-            .select('slug')
-            .eq('id', leccionData.simulador_id)
-            .single();
-          
-          if (simData) setSimuladorSlug(simData.slug);
-        }
       }
 
       setLoading(false);
@@ -72,6 +64,42 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
 
     cargarDatos();
   }, [params.slug, params.leccionId, supabase]);
+
+  // Función para cargar los datos del simulador cuando el usuario decide rendirlo
+  const iniciarExamen = async () => {
+    if (!leccionActual?.simulador_id) return;
+    
+    setCargandoSimulador(true);
+    
+    try {
+      // Fetch del simulador
+      const { data: sim, error: simError } = await supabase
+        .from('simuladores')
+        .select('*')
+        .eq('id', leccionActual.simulador_id)
+        .single();
+        
+      if (simError || !sim) throw new Error('No se pudo cargar el simulador');
+
+      // Fetch de las preguntas
+      const { data: pregs, error: pregsError } = await supabase
+        .from('preguntas')
+        .select('*')
+        .eq('simulador_id', sim.id)
+        .order('orden', { ascending: true });
+
+      if (pregsError) throw new Error('No se pudieron cargar las preguntas');
+
+      setSimuladorData({ sim: sim as SimulatorType, pregs: pregs as QuestionType[] });
+      setMostrarSimulador(true);
+      
+    } catch (error) {
+      console.error("Error al cargar el examen:", error);
+      alert("Hubo un problema al cargar el examen. Por favor, inténtalo de nuevo.");
+    } finally {
+      setCargandoSimulador(false);
+    }
+  };
 
   if (loading) return <div className="p-10 text-center animate-pulse text-indigo-500">Cargando el Aula Virtual...</div>;
   if (!curso || !leccionActual) return <div className="p-10 text-center">Contenido no encontrado.</div>;
@@ -94,19 +122,27 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
     <div className="main-container py-6 min-h-screen bg-gray-50/50 relative">
       
       {/* 🌟 EL MODAL DEL SIMULADOR A PANTALLA COMPLETA 🌟 */}
-      {mostrarSimulador && simuladorSlug && (
+      {mostrarSimulador && simuladorData && (
         <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
           {/* Botón flotante para cerrar el examen y volver al curso */}
           <button 
-            onClick={() => setMostrarSimulador(false)}
+            onClick={() => {
+                // Confirmación opcional para no perder progreso por accidente
+                if(window.confirm('¿Estás seguro de salir? Perderás el progreso de este intento.')){
+                    setMostrarSimulador(false);
+                }
+            }}
             className="fixed top-4 right-4 z-[60] bg-gray-900 text-white p-3 rounded-full hover:bg-rose-600 transition-colors shadow-lg flex items-center gap-2 font-bold text-sm"
           >
             <X size={20} /> Salir del Examen
           </button>
 
-          {/* Incrustamos el componente de tu simulador original */}
+          {/* Incrustamos el componente de tu simulador original pasándole las props correctas */}
           <div className="pt-16 pb-10">
-            <Simulator slug={simuladorSlug} />
+            <Simulator 
+              initialSimulator={simuladorData.sim} 
+              initialQuestions={simuladorData.pregs} 
+            />
           </div>
         </div>
       )}
@@ -157,7 +193,7 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
               )}
 
               {/* 🌟 BOTÓN QUE ABRE EL MODAL DEL EXAMEN */}
-              {simuladorSlug && (
+              {leccionActual.simulador_id && (
                 <div className="p-6 md:p-8 bg-emerald-50 border-t border-emerald-100 flex flex-col items-center text-center">
                   <CheckSquare className="w-12 h-12 text-emerald-500 mb-3" />
                   <h3 className="text-lg font-bold text-emerald-900 mb-2">Examen del Módulo</h3>
@@ -165,12 +201,17 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
                     Pon a prueba los conocimientos adquiridos en esta lección. Necesitarás aprobar para asegurar tu progreso.
                   </p>
                   
-                  {/* Este botón ahora cambia el estado para mostrar el Modal flotante */}
+                  {/* El botón ahora ejecuta la función iniciarExamen que descarga los datos antes de abrir el modal */}
                   <button 
-                    onClick={() => setMostrarSimulador(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold shadow-md transition-all transform hover:-translate-y-1"
+                    onClick={iniciarExamen}
+                    disabled={cargandoSimulador}
+                    className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white px-8 py-3 rounded-xl font-bold shadow-md transition-all transform hover:-translate-y-1 flex items-center gap-2"
                   >
-                    Rendir Examen Ahora
+                    {cargandoSimulador ? (
+                      <><Loader2 className="w-5 h-5 animate-spin" /> Cargando examen...</>
+                    ) : (
+                      "Rendir Examen Ahora"
+                    )}
                   </button>
                 </div>
               )}
