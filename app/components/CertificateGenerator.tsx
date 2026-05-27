@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Download, Loader2, Award } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -15,7 +15,7 @@ export default function CertificateGenerator({ nombreAlumno, nombreCurso, instit
   const certificateRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Formatear el correo para que parezca un nombre (ej: juan.perez@gmail.com -> Juan Perez)
+  // Formatear el correo para que parezca un nombre
   const formatearNombre = (email: string) => {
     const prefijo = email.split('@')[0];
     return prefijo.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -31,11 +31,10 @@ export default function CertificateGenerator({ nombreAlumno, nombreCurso, instit
     setIsGenerating(true);
 
     try {
-      // Tomamos una "foto" del diseño HTML en alta calidad (escala 2)
+      // Tomamos la "foto" del diseño HTML
       const canvas = await html2canvas(element, { scale: 2, useCORS: true });
       const imgData = canvas.toDataURL('image/png');
 
-      // Creamos el PDF en formato horizontal (landscape), tamaño A4
       const pdf = new jsPDF('landscape', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
@@ -62,20 +61,28 @@ export default function CertificateGenerator({ nombreAlumno, nombreCurso, instit
         {isGenerating ? 'Generando...' : 'Descargar Certificado'}
       </button>
 
-      {/* 🌟 PLANTILLA DEL CERTIFICADO (Oculta fuera de la pantalla) */}
+      {/* 🌟 PLANTILLA DEL CERTIFICADO (Oculta) */}
       <div className="absolute -left-[9999px] top-0">
         <div 
           ref={certificateRef} 
-          // Dimensiones exactas para formato A4 Horizontal
           className="w-[1123px] h-[794px] bg-white relative overflow-hidden flex flex-col items-center justify-center font-sans"
         >
           {/* Marco Decorativo */}
           <div className="absolute inset-4 border-[12px] border-slate-900"></div>
           <div className="absolute inset-8 border-[2px] border-slate-300"></div>
 
-          {/* Logo / Icono Central */}
-          <div className="mb-6 text-slate-900">
-             <Award size={80} strokeWidth={1.5} />
+          {/* 🌟 LOGO DE ECUAFORMA */}
+          <div className="mb-8">
+            <img 
+              src="/logo.png" 
+              alt="Ecuaforma Logo" 
+              className="h-24 object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                const parent = e.currentTarget.parentElement;
+                if(parent) parent.innerHTML = '<span class="text-4xl font-black tracking-widest text-slate-900">ECUAFORMA</span>';
+              }}
+            />
           </div>
 
           {/* Cabecera */}
@@ -99,8 +106,11 @@ export default function CertificateGenerator({ nombreAlumno, nombreCurso, instit
           </h3>
 
           {/* Firmas y Fecha */}
-          <div className="flex w-full max-w-4xl justify-between items-end mt-8 px-12">
-            <div className="flex flex-col items-center">
+          <div className="flex w-full max-w-4xl justify-between items-end mt-4 px-12">
+            
+            {/* 🌟 FIRMA DE JUAN MENDOZA (Solo texto elegante) */}
+            <div className="flex flex-col items-center relative">
+              <span className="text-slate-700 italic font-serif text-4xl absolute bottom-12">Juan Mendoza</span>
               <div className="w-64 border-b-2 border-slate-800 mb-2"></div>
               <p className="text-lg font-bold text-slate-800">Ing. Juan Mendoza</p>
               <p className="text-sm text-slate-500 uppercase tracking-wider">Director Académico</p>
@@ -111,18 +121,17 @@ export default function CertificateGenerator({ nombreAlumno, nombreCurso, instit
                <p className="text-sm text-slate-500 uppercase tracking-wider border-t border-slate-300 pt-1">Fecha de Emisión</p>
             </div>
 
-            <div className="flex flex-col items-center">
-              <div className="w-64 border-b-2 border-slate-800 mb-2 flex justify-center pb-2">
-                {/* Espacio para una firma digital de tu colega si lo deseas */}
-                <span className="text-slate-400 italic font-serif text-2xl">Sargento García</span>
-              </div>
+            {/* FIRMA SARGENTO GARCÍA */}
+            <div className="flex flex-col items-center relative">
+              <span className="text-slate-400 italic font-serif text-3xl absolute bottom-12">Sargento García</span>
+              <div className="w-64 border-b-2 border-slate-800 mb-2"></div>
               <p className="text-lg font-bold text-slate-800">Entrenamiento Puma</p>
               <p className="text-sm text-slate-500 uppercase tracking-wider">Coordinador Físico</p>
             </div>
           </div>
           
-          {/* Marca de agua o logo inferior */}
-          <div className="absolute bottom-12 text-slate-300 font-black text-2xl tracking-[1em] opacity-30 select-none">
+          {/* Marca de agua */}
+          <div className="absolute bottom-12 text-slate-300 font-black text-2xl tracking-[1em] opacity-30 select-none pointer-events-none">
             ECUAFORMA
           </div>
         </div>
