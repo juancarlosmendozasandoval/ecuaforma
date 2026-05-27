@@ -31,7 +31,6 @@ export default function CertificateGenerator({ nombreAlumno, nombreCurso, instit
     setIsGenerating(true);
 
     try {
-      // Configuraciones óptimas para evitar recortes o fallos en la foto
       const canvas = await html2canvas(element, { 
         scale: 2, 
         useCORS: true,
@@ -57,7 +56,6 @@ export default function CertificateGenerator({ nombreAlumno, nombreCurso, instit
 
   return (
     <>
-      {/* BOTÓN VISIBLE */}
       <button
         onClick={handleDownloadPdf}
         disabled={isGenerating}
@@ -67,18 +65,17 @@ export default function CertificateGenerator({ nombreAlumno, nombreCurso, instit
         {isGenerating ? 'Generando...' : 'Descargar Certificado'}
       </button>
 
-      {/* PLANTILLA DEL CERTIFICADO (Oculta) */}
       <div className="absolute -left-[9999px] top-0">
         <div 
           ref={certificateRef} 
           className="w-[1123px] h-[794px] bg-white relative overflow-hidden flex flex-col items-center justify-center font-sans"
         >
-          {/* Marcos Decorativos Clásicos */}
+          {/* Marcos Decorativos */}
           <div className="absolute inset-4 border-[12px] border-slate-900 pointer-events-none"></div>
           <div className="absolute inset-8 border-[2px] border-slate-300 pointer-events-none"></div>
 
-          {/* LOGO DE ECUAFORMA */}
-          <div className="mb-6 mt-2">
+          {/* LOGO */}
+          <div className="mb-4 mt-2">
             <img 
               src="/logo.png" 
               alt="Ecuaforma Logo" 
@@ -91,62 +88,52 @@ export default function CertificateGenerator({ nombreAlumno, nombreCurso, instit
             />
           </div>
 
-          {/* Cabecera */}
           <h1 className="text-5xl font-black text-slate-900 tracking-widest uppercase mb-4">
             Certificado de Finalización
           </h1>
-          <p className="text-xl text-slate-500 tracking-widest uppercase mb-10">
+          <p className="text-xl text-slate-500 tracking-widest uppercase mb-8">
             Otorgado por la Academia Digital Ecuaforma
           </p>
 
-          {/* Cuerpo del Certificado */}
           <p className="text-2xl text-slate-600 mb-2">Se certifica formalmente que</p>
-          <h2 className="text-6xl font-serif text-blue-800 italic capitalize mb-4">
+          
+          <h2 className="text-6xl font-serif text-blue-800 italic capitalize mb-10">
             {nombreLimpio}
           </h2>
-          <div className="w-2/3 border-b border-slate-200 mb-8"></div>
 
           <p className="text-2xl text-slate-600 mb-4 max-w-3xl text-center leading-relaxed">
             Ha completado satisfactoriamente todos los módulos y evaluaciones del programa académico:
           </p>
-          <h3 className="text-4xl font-bold text-slate-800 mb-16 max-w-4xl text-center px-8">
+          <h3 className="text-4xl font-bold text-slate-800 mb-12 max-w-4xl text-center px-8">
             {nombreCurso} - Aspirantes a la {institucion}
           </h3>
 
-          {/* 🌟 FIRMAS Y FECHA: DISEÑO SÓLIDO A PRUEBA DE ERRORES 🌟 */}
-          <div className="flex flex-row justify-between items-end w-full max-w-5xl px-12 mt-4">
+          {/* 🌟 FIRMAS Y FECHA SIN LÍNEAS Y CON MÁRGENES REDUCIDOS 🌟 */}
+          <div className="flex flex-row justify-between items-end w-full max-w-5xl px-12 mb-6">
             
-            {/* FIRMA DE JUAN MENDOZA */}
+            {/* DIRECTOR */}
             <div className="flex flex-col items-center w-72">
-              <div className="h-16 flex items-end justify-center pb-2">
-                <span className="text-slate-700 italic font-serif text-4xl leading-none">Juan Mendoza</span>
-              </div>
-              <div className="w-full border-t-2 border-slate-800"></div>
-              <p className="text-xl font-bold text-slate-900 mt-3">Ing. Juan Mendoza</p>
+              <span className="text-slate-700 italic font-serif text-4xl mb-3">Juan Mendoza</span>
+              <p className="text-xl font-bold text-slate-900">Ing. Juan Mendoza</p>
               <p className="text-sm text-slate-500 uppercase tracking-widest mt-1">Director Académico</p>
             </div>
             
-            {/* FECHA CENTRAL */}
-            <div className="flex flex-col items-center w-64 pb-2">
+            {/* FECHA */}
+            <div className="flex flex-col items-center w-64">
                <p className="text-2xl font-bold text-slate-800 mb-3">{fechaHoy}</p>
-               <div className="w-full border-t border-slate-300"></div>
-               <p className="text-sm text-slate-500 uppercase tracking-widest mt-3">Fecha de Emisión</p>
+               <p className="text-sm text-slate-500 uppercase tracking-widest">Fecha de Emisión</p>
             </div>
 
-            {/* FIRMA SARGENTO GARCÍA */}
+            {/* COORDINADOR */}
             <div className="flex flex-col items-center w-72">
-              <div className="h-16 flex items-end justify-center pb-2">
-                <span className="text-slate-700 italic font-serif text-4xl leading-none">Sargento García</span>
-              </div>
-              <div className="w-full border-t-2 border-slate-800"></div>
-              <p className="text-xl font-bold text-slate-900 mt-3">Entrenamiento Puma</p>
+              <span className="text-slate-700 italic font-serif text-4xl mb-3">Sargento García</span>
+              <p className="text-xl font-bold text-slate-900">Entrenamiento Puma</p>
               <p className="text-sm text-slate-500 uppercase tracking-widest mt-1">Coordinador Físico</p>
             </div>
 
           </div>
           
-          {/* Marca de agua pequeña e inofensiva */}
-          <div className="absolute bottom-6 text-slate-300 font-black text-xl tracking-[1em] opacity-50 select-none">
+          <div className="absolute bottom-10 text-slate-300 font-black text-xl tracking-[1em] opacity-50 select-none">
             ECUAFORMA
           </div>
         </div>
