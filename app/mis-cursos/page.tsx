@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import Card from '../components/Card';
 import { Lock, GraduationCap, ArrowRight, Settings, Award, BookOpen } from 'lucide-react';
+import CertificateGenerator from '../components/CertificateGenerator';
 
 export default async function MisCursosPage() {
   const cookieStore = cookies();
@@ -135,7 +136,19 @@ export default async function MisCursosPage() {
                     </div>
                   </div>
                 </div>
-                <div className="p-4 bg-gray-50 border-t border-gray-50 flex items-center justify-end">
+                
+                {/* 🌟 FOOTER CON BOTÓN DE CERTIFICADO CONDICIONAL Y ENLACE DE ACCESO */}
+                <div className="p-4 bg-gray-50 border-t border-gray-50 flex items-center justify-between">
+                  <div>
+                    {curso.porcentaje === 100 && (
+                      <CertificateGenerator 
+                        nombreAlumno={user.email || 'Estudiante'} 
+                        nombreCurso={curso.nombre} 
+                        institucion={curso.institucion} 
+                      />
+                    )}
+                  </div>
+                  
                   <Link 
                     href={`/cursos/${curso.institucion.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}/${curso.slug}`}
                     className="text-sm font-bold text-primary flex items-center gap-1 group-hover:text-blue-700 transition-colors"
