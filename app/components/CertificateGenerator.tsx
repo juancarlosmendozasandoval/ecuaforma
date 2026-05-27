@@ -108,22 +108,27 @@ export default function CertificateGenerator({ nombreAlumno, nombreCurso, instit
           {/* Firmas y Fecha */}
           <div className="flex w-full max-w-4xl justify-between items-end mt-4 px-12">
             
-            {/* 🌟 FIRMA DE JUAN MENDOZA (Solo texto elegante) */}
-            <div className="flex flex-col items-center relative">
-              <span className="text-slate-700 italic font-serif text-4xl absolute bottom-12">Juan Mendoza</span>
+            {/* 🌟 FIRMA DE JUAN MENDOZA (Corregida) */}
+            <div className="flex flex-col items-center">
+              <div className="h-16 flex items-end justify-center mb-1">
+                <span className="text-slate-800 italic font-serif text-4xl">Juan Mendoza</span>
+              </div>
               <div className="w-64 border-b-2 border-slate-800 mb-2"></div>
               <p className="text-lg font-bold text-slate-800">Ing. Juan Mendoza</p>
               <p className="text-sm text-slate-500 uppercase tracking-wider">Director Académico</p>
             </div>
             
+            {/* FECHA CENTRAL */}
             <div className="flex flex-col items-center">
                <p className="text-xl font-bold text-slate-800 mb-1">{fechaHoy}</p>
                <p className="text-sm text-slate-500 uppercase tracking-wider border-t border-slate-300 pt-1">Fecha de Emisión</p>
             </div>
 
-            {/* FIRMA SARGENTO GARCÍA */}
-            <div className="flex flex-col items-center relative">
-              <span className="text-slate-400 italic font-serif text-3xl absolute bottom-12">Sargento García</span>
+            {/* 🌟 FIRMA SARGENTO GARCÍA (Corregida y unificada) */}
+            <div className="flex flex-col items-center">
+              <div className="h-16 flex items-end justify-center mb-1">
+                <span className="text-slate-800 italic font-serif text-4xl">Sargento García</span>
+              </div>
               <div className="w-64 border-b-2 border-slate-800 mb-2"></div>
               <p className="text-lg font-bold text-slate-800">Entrenamiento Puma</p>
               <p className="text-sm text-slate-500 uppercase tracking-wider">Coordinador Físico</p>
