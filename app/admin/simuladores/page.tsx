@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSupabase } from '../../components/AuthProvider';
 import { 
   Eye, EyeOff, Copy, Move, Trash2, Search, 
-  Plus, RefreshCw, CheckCircle, AlertCircle, Sparkles, Pencil, Save
+  Plus, RefreshCw, CheckCircle, AlertCircle, Sparkles, Pencil, Save, ListChecks
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -435,6 +435,16 @@ export default function GestionSimuladoresPage() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-end gap-2">
+                            
+                            {/* 🌟 BOTÓN RESTAURADO: IR AL PANEL DE PREGUNTAS */}
+                            <Link
+                              href={`/admin/preguntas/${sim.slug}`}
+                              className="px-3 py-2 text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-bold shadow-md"
+                              title="Gestionar Preguntas"
+                            >
+                              <ListChecks className="w-4 h-4" /> Preguntas
+                            </Link>
+
                             <button
                               onClick={() => iniciarEdicion(sim)}
                               disabled={actionLoading !== null}
