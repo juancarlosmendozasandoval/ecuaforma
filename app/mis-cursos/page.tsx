@@ -5,6 +5,9 @@ import Card from '../components/Card';
 import { Lock, GraduationCap, ArrowRight, Settings, Award, BookOpen } from 'lucide-react';
 import CertificateGenerator from '../components/CertificateGenerator';
 
+// 🌟 OBLIGA A NEXT.JS A RECALCULAR EL PROGRESO EN TIEMPO REAL (Evita problemas de caché)
+export const dynamic = 'force-dynamic';
+
 export default async function MisCursosPage() {
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
@@ -142,7 +145,11 @@ export default async function MisCursosPage() {
                   <div>
                     {curso.porcentaje === 100 && (
                       <CertificateGenerator 
-                        nombreAlumno={user.email || 'Estudiante'} 
+                        nombrePorDefecto={
+                          user.user_metadata?.full_name || 
+                          user.user_metadata?.name || 
+                          (user.email ? user.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Estudiante')
+                        } 
                         nombreCurso={curso.nombre} 
                         institucion={curso.institucion} 
                       />

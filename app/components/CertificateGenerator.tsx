@@ -6,52 +6,67 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 interface CertificateProps {
-  nombreAlumno: string;
+  nombrePorDefecto: string;
   nombreCurso: string;
   institucion: string;
 }
 
-export default function CertificateGenerator({ nombreAlumno, nombreCurso, institucion }: CertificateProps) {
+export default function CertificateGenerator({ nombrePorDefecto, nombreCurso, institucion }: CertificateProps) {
   const certificateRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  // Guardamos el nombre final que se va a imprimir en el certificado
+  const [nombreImpreso, setNombreImpreso] = useState(nombrePorDefecto);
 
-  // Formatear el correo para que parezca un nombre
-  const formatearNombre = (email: string) => {
-    const prefijo = email.split('@')[0];
-    return prefijo.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  };
-
-  const nombreLimpio = formatearNombre(nombreAlumno);
   const fechaHoy = new Date().toLocaleDateString('es-EC', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const handleDownloadPdf = async () => {
-    const element = certificateRef.current;
-    if (!element) return;
+    // 1. Preguntamos al alumno cómo quiere que aparezca su nombre
+    const nombreConfirmado = window.prompt(
+      "Por favor, ingresa tus nombres y apellidos completos para el certificado:", 
+      nombreImpreso
+    );
 
+    // Si el usuario cancela o lo deja vacío, no hacemos nada
+    if (!nombreConfirmado || nombreConfirmado.trim() === '') {
+      return; 
+    }
+
+    // 2. Actualizamos el estado con el nombre elegido
+    setNombreImpreso(nombreConfirmado);
     setIsGenerating(true);
 
-    try {
-      const canvas = await html2canvas(element, { 
-        scale: 2, 
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
-      
-      const imgData = canvas.toDataURL('image/png');
+    // 3. Esperamos 300ms para que React pinte el nuevo nombre en el div oculto antes de tomar la foto
+    setTimeout(async () => {
+      const element = certificateRef.current;
+      if (!element) {
+        setIsGenerating(false);
+        return;
+      }
 
-      const pdf = new jsPDF('landscape', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      try {
+        const canvas = await html2canvas(element, { 
+          scale: 2, 
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
 
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`Certificado_Ecuaforma_${institucion}.pdf`);
-    } catch (error) {
-      console.error("Error al generar el certificado:", error);
-      alert("Hubo un problema al generar tu certificado. Inténtalo de nuevo.");
-    } finally {
-      setIsGenerating(false);
-    }
+        const pdf = new jsPDF('landscape', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`Certificado_Ecuaforma_${institucion}.pdf`);
+      } catch (error) {
+        console.error("Error al generar el certificado:", error);
+        alert("Hubo un problema al generar tu certificado. Inténtalo de nuevo.");
+      } finally {
+        setIsGenerating(false);
+      }
+    }, 300);
   };
 
   return (
@@ -98,7 +113,7 @@ export default function CertificateGenerator({ nombreAlumno, nombreCurso, instit
           <p className="text-2xl text-slate-600 mb-2">Se certifica formalmente que</p>
           
           <h2 className="text-6xl font-serif text-blue-800 italic capitalize mb-10">
-            {nombreLimpio}
+            {nombreImpreso}
           </h2>
 
           <p className="text-2xl text-slate-600 mb-4 max-w-3xl text-center leading-relaxed">
