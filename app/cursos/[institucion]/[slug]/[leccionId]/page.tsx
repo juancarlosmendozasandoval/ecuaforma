@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Breadcrumbs from '../../../../components/Breadcrumbs';
 import Simulator from '../../../../components/Simulator';
-import { PlayCircle, FileText, CheckSquare, ArrowLeft, ArrowRight, ListVideo, CheckCircle, X, Loader2, Circle } from 'lucide-react';
+import { PlayCircle, FileText, CheckSquare, ArrowLeft, ArrowRight, ListVideo, CheckCircle, X, Loader2, Circle, DownloadCloud } from 'lucide-react';
 import type { SimulatorType, QuestionType } from '../../../../simulador/[slug]/page';
 import { useSupabase } from '../../../../components/AuthProvider';
 
@@ -53,7 +53,7 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
       if (cursoData) {
         const { data: leccionesData } = await supabase
           .from('lecciones')
-          .select('id, titulo, orden')
+          .select('id, titulo, orden, seccion, adjuntos') // 🌟 AGREGAMOS SECCION Y ADJUNTOS AQUÍ
           .eq('curso_id', cursoData.id)
           .order('orden', { ascending: true });
         if (leccionesData) setLecciones(leccionesData);
@@ -237,6 +237,33 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
                 </div>
               )}
 
+              {/* 🌟 RECURSOS ADICIONALES (ADJUNTOS) */}
+              {leccionActual.adjuntos && Array.isArray(leccionActual.adjuntos) && leccionActual.adjuntos.length > 0 && (
+                <div className="p-6 md:p-8 bg-slate-50 border-t border-slate-100">
+                  <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <DownloadCloud className="w-5 h-5"/> Material Adicional Descargable
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {leccionActual.adjuntos.map((adjunto: any, idx: number) => (
+                      <a 
+                        key={idx} 
+                        href={adjunto.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-md transition-all group"
+                      >
+                        <div className="bg-blue-50 text-blue-600 p-2 rounded-lg group-hover:bg-primary group-hover:text-white transition-colors">
+                          <FileText size={20} />
+                        </div>
+                        <span className="font-semibold text-slate-700 text-sm group-hover:text-primary transition-colors line-clamp-1">
+                          {adjunto.titulo || `Archivo Adjunto ${idx + 1}`}
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {leccionActual.simulador_id && (
                 <div className="p-6 md:p-8 bg-emerald-50 border-t border-emerald-100 flex flex-col items-center text-center">
                   <CheckSquare className="w-12 h-12 text-emerald-500 mb-3" />
@@ -284,34 +311,46 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
                   {leccionesCompletadas.length} / {lecciones.length}
                 </span>
               </div>
-              <div className="max-h-[600px] overflow-y-auto divide-y divide-gray-50">
+              <div className="max-h-[600px] overflow-y-auto">
                 {lecciones.map((lec, idx) => {
                   const isActive = lec.id === leccionActual.id;
                   const isCompleted = leccionesCompletadas.includes(lec.id);
+                  // Lógica para saber si es el inicio de un nuevo subnivel
+                  const mostrarHeaderSeccion = idx === 0 || lecciones[idx - 1].seccion !== lec.seccion;
                   
                   return (
-                    <Link 
-                      key={lec.id} 
-                      href={`/cursos/${params.institucion}/${params.slug}/${lec.id}`}
-                      className={`block p-4 transition-colors border-l-4 ${isActive ? 'bg-blue-50 border-primary' : 'hover:bg-gray-50 border-transparent'} flex items-start gap-3`}
-                    >
-                      <div className="mt-0.5 shrink-0">
-                        {isCompleted ? (
-                          <CheckCircle className="w-5 h-5 text-green-500" />
-                        ) : (
-                          <div className="w-5 h-5 rounded-full border-2 border-gray-300"></div>
-                        )}
-                      </div>
-                      
-                      <div>
-                        <span className={`text-xs font-bold block mb-0.5 ${isActive ? 'text-primary' : 'text-gray-400'}`}>
-                          Clase {idx + 1}
-                        </span>
-                        <h4 className={`text-sm font-medium leading-tight ${isActive ? 'text-blue-900 font-bold' : 'text-gray-600'}`}>
-                          {lec.titulo}
-                        </h4>
-                      </div>
-                    </Link>
+                    <div key={lec.id}>
+                      {/* 🌟 HEADER DEL SUBNIVEL */}
+                      {mostrarHeaderSeccion && (
+                        <div className="bg-indigo-50/80 border-y border-indigo-100 px-4 py-2 mt-2 first:mt-0 sticky top-0 z-10 backdrop-blur-sm">
+                          <h4 className="text-[10px] font-extrabold text-indigo-800 uppercase tracking-wider">
+                            {lec.seccion || 'Módulo Principal'}
+                          </h4>
+                        </div>
+                      )}
+
+                      <Link 
+                        href={`/cursos/${params.institucion}/${params.slug}/${lec.id}`}
+                        className={`block p-4 transition-colors border-l-4 border-b border-b-gray-50 ${isActive ? 'bg-blue-50/50 border-l-primary' : 'hover:bg-gray-50 border-l-transparent'} flex items-start gap-3`}
+                      >
+                        <div className="mt-0.5 shrink-0">
+                          {isCompleted ? (
+                            <CheckCircle className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <div className="w-5 h-5 rounded-full border-2 border-gray-300"></div>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <span className={`text-xs font-bold block mb-0.5 ${isActive ? 'text-primary' : 'text-gray-400'}`}>
+                            Clase {idx + 1}
+                          </span>
+                          <h4 className={`text-sm leading-tight ${isActive ? 'text-blue-900 font-bold' : 'text-gray-600 font-medium'}`}>
+                            {lec.titulo}
+                          </h4>
+                        </div>
+                      </Link>
+                    </div>
                   );
                 })}
               </div>
