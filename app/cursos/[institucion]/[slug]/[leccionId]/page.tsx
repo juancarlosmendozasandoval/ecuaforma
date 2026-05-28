@@ -9,6 +9,13 @@ import { PlayCircle, FileText, CheckSquare, ArrowLeft, ArrowRight, ListVideo, Ch
 import type { SimulatorType, QuestionType } from '../../../../simulador/[slug]/page';
 import { useSupabase } from '../../../../components/AuthProvider';
 
+// 🌟 IMPORTACIONES PARA TEXTO ENRIQUECIDO Y MATEMÁTICAS
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+// @ts-ignore
+import 'katex/dist/katex.min.css';
+
 function getYouTubeEmbedUrl(url: string | null) {
   if (!url) return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -30,7 +37,7 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
   const [cargandoSimulador, setCargandoSimulador] = useState(false);
   const [simuladorData, setSimuladorData] = useState<{ sim: SimulatorType, pregs: QuestionType[] } | null>(null);
 
-  // 🌟 ESTADOS PARA EL PROGRESO
+  // Estados para el Progreso
   const [leccionesCompletadas, setLeccionesCompletadas] = useState<string[]>([]);
   const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
 
@@ -60,7 +67,7 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
         .single();
       if (leccionData) setLeccionActual(leccionData);
 
-      // 4. 🌟 CARGAR EL PROGRESO DEL USUARIO
+      // 4. Cargar Progreso
       if (user) {
         const { data: progresoData } = await supabase
           .from('progreso_lecciones')
@@ -100,7 +107,6 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
     }
   };
 
-  // 🌟 FUNCIÓN PARA MARCAR/DESMARCAR LECCIÓN
   const toggleProgreso = async () => {
     if (!user) {
       alert("Debes iniciar sesión para guardar tu progreso.");
@@ -112,12 +118,10 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
 
     try {
       if (yaCompletada) {
-        // Desmarcar
         await supabase.from('progreso_lecciones').delete()
           .eq('usuario_id', user.id).eq('leccion_id', leccionActual.id);
         setLeccionesCompletadas(prev => prev.filter(id => id !== leccionActual.id));
       } else {
-        // Marcar
         await supabase.from('progreso_lecciones').insert({
           usuario_id: user.id,
           leccion_id: leccionActual.id
@@ -138,8 +142,6 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
   const prevLeccion = currentIndex > 0 ? lecciones[currentIndex - 1] : null;
   const nextLeccion = currentIndex < lecciones.length - 1 ? lecciones[currentIndex + 1] : null;
   const embedUrl = getYouTubeEmbedUrl(leccionActual.video_url);
-
-  // Variable para saber si la lección actual está completada
   const isActualCompleted = leccionesCompletadas.includes(leccionActual.id);
 
   const breadcrumbs = [
@@ -195,7 +197,6 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
                   <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">{leccionActual.titulo}</h1>
                 </div>
 
-                {/* 🌟 BOTÓN DE MARCAR COMPLETADO */}
                 <button 
                   onClick={toggleProgreso}
                   disabled={isUpdatingProgress}
@@ -212,9 +213,27 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
                 </button>
               </div>
 
+              {/* 🌟 MOTOR DE RENDERIZADO AVANZADO (MARKDOWN + MATEMÁTICAS) */}
               {leccionActual.contenido_texto && (
-                <div className="p-6 md:p-8 text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {leccionActual.contenido_texto}
+                <div className="p-6 md:p-8">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                    components={{
+                      img: ({node, ...props}) => <img {...props} className="mx-auto rounded-xl shadow-md my-6 max-w-full" alt={props.alt || 'Imagen de la lección'} />,
+                      h1: ({node, ...props}) => <h1 {...props} className="text-2xl font-bold text-gray-900 mt-8 mb-4 border-b pb-2" />,
+                      h2: ({node, ...props}) => <h2 {...props} className="text-xl font-bold text-gray-800 mt-6 mb-3" />,
+                      p: ({node, ...props}) => <p {...props} className="mb-4 text-gray-700 leading-relaxed text-[15px]" />,
+                      a: ({node, ...props}) => <a {...props} className="text-blue-600 hover:underline font-semibold" target="_blank" rel="noopener noreferrer" />,
+                      ul: ({node, ...props}) => <ul {...props} className="list-disc pl-6 mb-4 space-y-2 text-gray-700" />,
+                      ol: ({node, ...props}) => <ol {...props} className="list-decimal pl-6 mb-4 space-y-2 text-gray-700" />,
+                      li: ({node, ...props}) => <li {...props} className="pl-1" />,
+                      strong: ({node, ...props}) => <strong {...props} className="font-extrabold text-gray-900" />
+                    }}
+                  >
+                    {/* Transformamos \[ \] a $$ $$ para que el motor entienda los bloques LaTeX */}
+                    {leccionActual.contenido_texto.replace(/\\\[/g, '$$$').replace(/\\\]/g, '$$$')}
+                  </ReactMarkdown>
                 </div>
               )}
 
@@ -276,7 +295,6 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
                       href={`/cursos/${params.institucion}/${params.slug}/${lec.id}`}
                       className={`block p-4 transition-colors border-l-4 ${isActive ? 'bg-blue-50 border-primary' : 'hover:bg-gray-50 border-transparent'} flex items-start gap-3`}
                     >
-                      {/* 🌟 VISTO VERDE EN LA PLAYLIST */}
                       <div className="mt-0.5 shrink-0">
                         {isCompleted ? (
                           <CheckCircle className="w-5 h-5 text-green-500" />
