@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useSupabase } from '../../../components/AuthProvider';
-import { Trash2, Plus, Save, ArrowLeft, CheckCircle, Youtube, ImageIcon, Type, ArrowUp, ArrowDown } from 'lucide-react';
+import { 
+  Trash2, Plus, Save, ArrowLeft, CheckCircle, Youtube, 
+  ImageIcon, Type, ArrowUp, ArrowDown, Edit3, X 
+} from 'lucide-react';
 import Link from 'next/link';
 
 // Estructura de una opción para la BD
@@ -18,7 +21,10 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
   const [loading, setLoading] = useState(true);
   const [reordering, setReordering] = useState(false);
 
-  // Estado del formulario de nueva pregunta
+  // 🌟 ESTADO NUEVO: Controlar si estamos editando
+  const [editingId, setEditingId] = useState<number | null>(null);
+
+  // Estado del formulario
   const [newQuestion, setNewQuestion] = useState({
     pregunta: '',
     opcionA: '',
@@ -81,38 +87,76 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     setNewQuestion({ ...newQuestion, [`type${letra}`]: type });
   };
 
+  // 🌟 FUNCIÓN PARA LIMPIAR EL FORMULARIO
+  const resetForm = () => {
+    setEditingId(null);
+    setNewQuestion({
+      pregunta: '',
+      opcionA: '', opcionB: '', opcionC: '', opcionD: '',
+      typeA: 'text', typeB: 'text', typeC: 'text', typeD: 'text',
+      correcta: 'A',
+      feedback: '',
+      imgUrl: '',
+      youtubeUrl: ''
+    });
+  };
+
+  // 🌟 FUNCIÓN PARA INICIAR LA EDICIÓN
+  const iniciarEdicion = (p: any) => {
+    setEditingId(p.id);
+
+    // Mapear las opciones de la BD al formulario
+    const opA = p.opciones?.[0] || { value: '', type: 'text' };
+    const opB = p.opciones?.[1] || { value: '', type: 'text' };
+    const opC = p.opciones?.[2] || { value: '', type: 'text' };
+    const opD = p.opciones?.[3] || { value: '', type: 'text' };
+
+    // Determinar cuál es la correcta
+    let correcta = 'A';
+    if (p.respuesta?.value === opB.value) correcta = 'B';
+    else if (p.respuesta?.value === opC.value) correcta = 'C';
+    else if (p.respuesta?.value === opD.value) correcta = 'D';
+
+    setNewQuestion({
+      pregunta: p.pregunta || '',
+      opcionA: opA.value,
+      opcionB: opB.value,
+      opcionC: opC.value,
+      opcionD: opD.value,
+      typeA: opA.type,
+      typeB: opB.type,
+      typeC: opC.type,
+      typeD: opD.type,
+      correcta: correcta,
+      feedback: p.feedback || '',
+      imgUrl: p.pregunta_img_url || '',
+      youtubeUrl: p.youtube_url || ''
+    });
+    
+    // Subir scroll al formulario
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // --- LÓGICA DE REORDENAMIENTO CORREGIDA ---
-  
   const reorderQuestion = async (currentIndex: number, newPositionDisplay: number) => {
     const targetIndex = newPositionDisplay - 1;
-
-    // Validaciones básicas
     if (targetIndex < 0 || targetIndex >= preguntas.length || targetIndex === currentIndex) return;
 
     setReordering(true);
 
-    // 1. Manipulación local del array
     const newPreguntas = [...preguntas];
     const [movedItem] = newPreguntas.splice(currentIndex, 1);
     newPreguntas.splice(targetIndex, 0, movedItem);
 
-    // 2. Preparar el paquete de actualización
     const updates = newPreguntas.map((p, index) => ({
-      ...p, // <--- ¡AQUÍ ESTABA EL ERROR! (Ahora enviamos todo el objeto: id, pregunta, opciones, etc.)
+      ...p,
       orden: index + 1
     }));
 
     try {
-      // 3. Enviar a Supabase
-      const { error } = await supabase
-        .from('preguntas')
-        .upsert(updates, { onConflict: 'id' });
-
+      const { error } = await supabase.from('preguntas').upsert(updates, { onConflict: 'id' });
       if (error) throw error;
-
-      // 4. Recargar
       cargarPreguntas(simulador.id);
-      
     } catch (error: any) {
       console.error(error);
       alert('Error al reordenar: ' + error.message);
@@ -121,13 +165,11 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
   };
 
   const handleArrowMove = (index: number, direction: 'up' | 'down') => {
-    // Si sube (up), va al índice actual (que visualmente es index). 
-    // Si baja (down), va al index + 2 (porque index+1 es su posición actual visual).
     reorderQuestion(index, direction === 'up' ? index : index + 2);
   };
-
   // --- FIN LÓGICA DE REORDENAMIENTO ---
 
+  // 🌟 GUARDAR O ACTUALIZAR LA PREGUNTA
   const handleSaveQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!simulador) return;
@@ -144,35 +186,41 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
       case 'B': respuestaCorrecta = opciones[1]; break;
       case 'C': respuestaCorrecta = opciones[2]; break;
       case 'D': respuestaCorrecta = opciones[3]; break;
-      default: respuestaCorrecta = opciones[0]; // A
+      default: respuestaCorrecta = opciones[0];
     }
 
     try {
-      // Al crear, el orden será el último + 1
-      const nextOrder = preguntas.length + 1;
+      if (editingId) {
+        // ACTUALIZAR PREGUNTA EXISTENTE
+        const { error } = await supabase.from('preguntas').update({
+          pregunta: newQuestion.pregunta,
+          opciones: opciones,
+          respuesta: respuestaCorrecta,
+          feedback: newQuestion.feedback,
+          pregunta_img_url: newQuestion.imgUrl || null,
+          youtube_url: newQuestion.youtubeUrl || null,
+        }).eq('id', editingId);
 
-      const { error } = await supabase.from('preguntas').insert({
-        simulador_id: simulador.id,
-        pregunta: newQuestion.pregunta,
-        opciones: opciones,
-        respuesta: respuestaCorrecta,
-        feedback: newQuestion.feedback,
-        pregunta_img_url: newQuestion.imgUrl || null,
-        youtube_url: newQuestion.youtubeUrl || null,
-        orden: nextOrder
-      });
+        if (error) throw error;
+        alert('Pregunta actualizada correctamente');
+      } else {
+        // CREAR NUEVA PREGUNTA
+        const nextOrder = preguntas.length + 1;
+        const { error } = await supabase.from('preguntas').insert({
+          simulador_id: simulador.id,
+          pregunta: newQuestion.pregunta,
+          opciones: opciones,
+          respuesta: respuestaCorrecta,
+          feedback: newQuestion.feedback,
+          pregunta_img_url: newQuestion.imgUrl || null,
+          youtube_url: newQuestion.youtubeUrl || null,
+          orden: nextOrder
+        });
 
-      if (error) throw error;
+        if (error) throw error;
+      }
 
-      setNewQuestion({
-        pregunta: '',
-        opcionA: '', opcionB: '', opcionC: '', opcionD: '',
-        typeA: 'text', typeB: 'text', typeC: 'text', typeD: 'text',
-        correcta: 'A',
-        feedback: '',
-        imgUrl: '',
-        youtubeUrl: ''
-      });
+      resetForm();
       cargarPreguntas(simulador.id);
       
     } catch (err: any) {
@@ -194,8 +242,8 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
       {/* Cabecera */}
       <div className="flex items-center justify-between">
         <div>
-          <Link href="/admin" className="text-gray-500 hover:text-blue-600 flex items-center gap-1 mb-2 text-sm">
-            <ArrowLeft size={16}/> Volver al panel
+          <Link href="/admin/simuladores" className="text-gray-500 hover:text-blue-600 flex items-center gap-1 mb-2 text-sm">
+            <ArrowLeft size={16}/> Volver a Simuladores
           </Link>
           <h1 className="text-2xl font-bold text-gray-800">
             Editando: {simulador.nombre}
@@ -212,9 +260,9 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Columna Izquierda: FORMULARIO */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg border border-blue-100">
-          <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-blue-800 border-b pb-2">
-            <Plus size={20}/> Agregar Nueva Pregunta
+        <div className={`lg:col-span-2 p-6 rounded-xl shadow-lg border ${editingId ? 'bg-indigo-50/50 border-indigo-200' : 'bg-white border-blue-100'}`}>
+          <h2 className={`text-lg font-bold mb-4 flex items-center gap-2 border-b pb-2 ${editingId ? 'text-indigo-800' : 'text-blue-800'}`}>
+            {editingId ? <><Edit3 size={20}/> Editando Pregunta #{preguntas.findIndex(p => p.id === editingId) + 1}</> : <><Plus size={20}/> Agregar Nueva Pregunta</>}
           </h2>
           
           <form onSubmit={handleSaveQuestion} className="space-y-4">
@@ -229,6 +277,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
                 placeholder="Escribe la pregunta..."
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
               />
+              <p className="text-[10px] text-gray-500 mt-1">Soporta formato avanzado. Usa LaTeX para matemáticas: \[ x^2 \]</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -239,7 +288,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
                 const currentValue = newQuestion[`opcion${letra}`];
                 
                 return (
-                  <div key={letra} className={`relative p-3 rounded-lg border-2 ${newQuestion.correcta === letra ? 'border-green-500 bg-green-50' : 'border-gray-200'}`}>
+                  <div key={letra} className={`relative p-3 rounded-lg border-2 ${newQuestion.correcta === letra ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white'}`}>
                     
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -296,7 +345,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
               })}
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg space-y-3 border border-gray-200">
+            <div className="bg-white p-4 rounded-lg space-y-3 border border-gray-200">
                <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Recursos Extra</h3>
                <div>
                 <label className="block text-xs font-bold text-gray-600 mb-1">Feedback / Explicación</label>
@@ -340,31 +389,48 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
               </div>
             </div>
 
-            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg">
-              <Save size={18}/> Guardar Pregunta
-            </button>
+            <div className="flex gap-3 pt-2">
+              {editingId && (
+                <button 
+                  type="button" 
+                  onClick={resetForm} 
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all"
+                >
+                  <X size={18}/> Cancelar
+                </button>
+              )}
+              <button 
+                type="submit" 
+                className={`flex-[2] text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg ${editingId ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+              >
+                <Save size={18}/> {editingId ? 'Guardar Cambios' : 'Guardar Pregunta'}
+              </button>
+            </div>
           </form>
         </div>
 
-        {/* Columna Derecha: LISTA */}
+        {/* Columna Derecha: LISTA DE PREGUNTAS */}
         <div className="lg:col-span-1 flex flex-col h-[calc(100vh-100px)]">
-          <h3 className="font-bold text-gray-500 uppercase text-xs tracking-wider mb-3 flex justify-between items-center">
-            <span>Preguntas Agregadas ({preguntas.length})</span>
+          <h3 className="font-bold text-gray-500 uppercase text-xs tracking-wider mb-3 flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <span>Preguntas ({preguntas.length})</span>
             {reordering && <span className="text-orange-500 text-xs animate-pulse">Guardando orden...</span>}
           </h3>
           
           <div className="flex-1 overflow-y-auto pr-2 space-y-3">
             {preguntas.map((p, index) => {
               const youtubeId = getYoutubeId(p.youtube_url);
+              const isEditingThis = editingId === p.id;
+              
               return (
-                <div key={`${p.id}-${index}`} className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 transition-all group relative">
+                <div key={`${p.id}-${index}`} className={`bg-white p-3 rounded-lg shadow-sm border transition-all group relative ${isEditingThis ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-gray-200 hover:border-blue-400'}`}>
+                  
                   <div className="flex justify-between items-start mb-2 gap-2">
                     <div className="flex items-center gap-2 flex-1">
                        {/* INPUT DE ORDEN MANUAL */}
                        <div className="flex flex-col items-center">
                          <input 
                             type="number"
-                            disabled={reordering}
+                            disabled={reordering || isEditingThis}
                             defaultValue={index + 1}
                             onBlur={(e) => {
                                 const val = parseInt(e.target.value);
@@ -375,28 +441,33 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
                                 }
                             }}
                             onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    e.currentTarget.blur();
-                                }
+                                if (e.key === 'Enter') e.currentTarget.blur();
                             }}
                             className="w-10 h-8 text-center font-bold text-blue-700 bg-blue-50 rounded border border-blue-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                          />
                          
-                         {/* FLECHAS */}
+                         {/* FLECHAS DE ORDEN */}
                          <div className="flex gap-1 mt-1 opacity-20 group-hover:opacity-100 transition-opacity">
                             <button onClick={() => handleArrowMove(index, 'up')} disabled={index === 0 || reordering} className="hover:text-blue-600 disabled:opacity-0"><ArrowUp size={12}/></button>
                             <button onClick={() => handleArrowMove(index, 'down')} disabled={index === preguntas.length - 1 || reordering} className="hover:text-blue-600 disabled:opacity-0"><ArrowDown size={12}/></button>
                          </div>
                        </div>
                        
-                       <p className="text-sm text-gray-800 font-medium line-clamp-2 leading-tight flex-1 pt-1" title={p.pregunta}>
+                       <p className={`text-sm font-medium line-clamp-2 leading-tight flex-1 pt-1 ${isEditingThis ? 'text-indigo-700 font-bold' : 'text-gray-800'}`} title={p.pregunta}>
                          {p.pregunta}
                        </p>
                     </div>
 
-                    <button onClick={() => handleDelete(p.id)} disabled={reordering} className="text-gray-300 hover:text-red-500 transition-colors p-1">
-                      <Trash2 size={16}/>
-                    </button>
+                    <div className="flex flex-col gap-1">
+                      {/* BOTÓN EDITAR */}
+                      <button onClick={() => iniciarEdicion(p)} disabled={reordering} className="text-gray-300 hover:text-indigo-600 transition-colors p-1 bg-gray-50 hover:bg-indigo-50 rounded">
+                        <Edit3 size={16}/>
+                      </button>
+                      {/* BOTÓN ELIMINAR */}
+                      <button onClick={() => handleDelete(p.id)} disabled={reordering} className="text-gray-300 hover:text-red-500 transition-colors p-1 bg-gray-50 hover:bg-red-50 rounded">
+                        <Trash2 size={16}/>
+                      </button>
+                    </div>
                   </div>
 
                   <div className="flex flex-wrap gap-2 mt-1 ml-12">
@@ -409,8 +480,13 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
                       )}
                     </div>
                     {youtubeId && (
-                      <div className="w-6 h-5 bg-red-100 rounded flex items-center justify-center">
+                      <div className="w-6 h-5 bg-red-100 rounded flex items-center justify-center" title="Tiene video explicativo">
                          <Youtube size={10} className="text-red-600"/>
+                      </div>
+                    )}
+                    {p.pregunta_img_url && (
+                      <div className="w-6 h-5 bg-purple-100 rounded flex items-center justify-center" title="Tiene imagen adjunta">
+                         <ImageIcon size={10} className="text-purple-600"/>
                       </div>
                     )}
                   </div>
