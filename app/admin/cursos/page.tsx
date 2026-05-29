@@ -3,7 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useSupabase } from '../../components/AuthProvider';
 import Link from 'next/link';
-import { GraduationCap, Eye, EyeOff, Trash2, ListVideo, CheckCircle, AlertCircle, PlusCircle } from 'lucide-react';
+import { 
+  GraduationCap, Eye, EyeOff, Trash2, ListVideo, 
+  CheckCircle, AlertCircle, PlusCircle, Save, X 
+} from 'lucide-react';
 
 export default function AdminCursosPage() {
   const { supabase } = useSupabase();
@@ -11,6 +14,13 @@ export default function AdminCursosPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // 🌟 NUEVOS ESTADOS PARA CREAR CURSOS
+  const [isAdding, setIsAdding] = useState(false);
+  const [nombre, setNombre] = useState('');
+  const [slug, setSlug] = useState('');
+  const [institucion, setInstitucion] = useState('');
+  const [descripcion, setDescripcion] = useState('');
 
   const fetchCursos = async () => {
     setLoading(true);
@@ -34,6 +44,58 @@ export default function AdminCursosPage() {
     setTimeout(() => setAlert(null), 4000);
   };
 
+  // 🌟 AUTO-COMPLETAR EL SLUG (URL amigable)
+  const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const valor = e.target.value;
+    setNombre(valor);
+    const autoSlug = valor.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    setSlug(autoSlug);
+  };
+
+  const resetForm = () => {
+    setNombre('');
+    setSlug('');
+    setInstitucion('');
+    setDescripcion('');
+    setIsAdding(false);
+  };
+
+  // 🌟 GUARDAR NUEVO CURSO EN LA BASE DE DATOS
+  const guardarCurso = async () => {
+    if (!nombre.trim() || !slug.trim() || !institucion.trim()) {
+      return showAlert('error', 'Nombre, Slug e Institución son campos obligatorios.');
+    }
+
+    setActionLoading('saving');
+    
+    const { data, error } = await supabase
+      .from('cursos')
+      .insert([{ 
+        nombre: nombre.trim(), 
+        slug: slug.trim(), 
+        institucion: institucion.trim(), 
+        descripcion: descripcion.trim(),
+        publico: false // Los cursos nuevos nacen ocultos por defecto
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === '23505') {
+        showAlert('error', 'Ya existe un curso con esa URL (Slug). Usa uno distinto.');
+      } else {
+        showAlert('error', 'Error al crear el curso.');
+      }
+    } else {
+      // Agregamos el curso a la vista actualizando la tabla localmente (añadiendo el contador de lecciones en 0)
+      setCursos([{ ...data, lecciones: [{ count: 0 }] }, ...cursos]);
+      showAlert('success', 'Curso creado exitosamente. Ya puedes agregarle el temario.');
+      resetForm();
+    }
+    
+    setActionLoading(null);
+  };
+
   // Cambiar privacidad (Público/Privado)
   const togglePublico = async (id: string, currentStatus: boolean) => {
     setActionLoading(`public-${id}`);
@@ -52,8 +114,8 @@ export default function AdminCursosPage() {
   };
 
   // Borrado Lógico (Soft Delete)
-  const archivarCurso = async (id: string, nombre: string) => {
-    if (!confirm(`¿Archivar el curso "${nombre}"? Los alumnos ya no podrán verlo.`)) return;
+  const archivarCurso = async (id: string, nombreCurso: string) => {
+    if (!confirm(`¿Archivar el curso "${nombreCurso}"? Los alumnos ya no podrán verlo.`)) return;
     
     setActionLoading(`delete-${id}`);
     const { error } = await supabase
@@ -69,6 +131,9 @@ export default function AdminCursosPage() {
     }
     setActionLoading(null);
   };
+
+  // Obtener lista única de instituciones para el datalist
+  const institucionesUnicas = Array.from(new Set(cursos.map(c => c.institucion).filter(Boolean)));
 
   return (
     <div className="max-w-6xl mx-auto py-6 space-y-6">
@@ -89,10 +154,82 @@ export default function AdminCursosPage() {
           </h1>
           <p className="text-gray-500 mt-1 text-sm">Administra los programas académicos y estructura el temario de las clases.</p>
         </div>
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-md transition-all">
-          <PlusCircle className="w-5 h-5" /> Nuevo Curso
+        <button 
+          onClick={() => isAdding ? resetForm() : setIsAdding(true)}
+          className={`${isAdding ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' : 'bg-indigo-600 hover:bg-indigo-700 text-white'} px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-md transition-all`}
+        >
+          {isAdding ? <><X className="w-5 h-5" /> Cancelar</> : <><PlusCircle className="w-5 h-5" /> Nuevo Curso</>}
         </button>
       </div>
+
+      {/* 🌟 FORMULARIO DE CREACIÓN DE CURSO */}
+      {isAdding && (
+        <div className="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 shadow-inner animate-fade-in">
+          <h2 className="text-lg font-bold text-indigo-900 mb-4 flex items-center gap-2">
+            <PlusCircle className="w-5 h-5"/> Configurar Nuevo Curso
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-xs font-bold text-indigo-700 uppercase mb-1">Nombre del Curso *</label>
+              <input 
+                type="text" 
+                value={nombre} 
+                onChange={handleNombreChange} 
+                placeholder="Ej: Curso Completo Policía Nacional" 
+                className="w-full p-3 border border-indigo-200 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 outline-none" 
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-indigo-700 uppercase mb-1">URL Amigable (Slug) *</label>
+              <input 
+                type="text" 
+                value={slug} 
+                onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, '-'))} 
+                placeholder="ej: curso-policia" 
+                className="w-full p-3 border border-indigo-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-indigo-500 outline-none font-mono text-sm" 
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-indigo-700 uppercase mb-1">Institución / Fuerza *</label>
+              <input 
+                type="text" 
+                list="instituciones-list"
+                value={institucion} 
+                onChange={(e) => setInstitucion(e.target.value)} 
+                placeholder="Ej: Policía, FAE, Armada..." 
+                className="w-full p-3 border border-indigo-200 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 outline-none" 
+              />
+              <datalist id="instituciones-list">
+                {institucionesUnicas.map(inst => <option key={inst} value={inst} />)}
+              </datalist>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-indigo-700 uppercase mb-1">Descripción Corta</label>
+              <input 
+                type="text" 
+                value={descripcion} 
+                onChange={(e) => setDescripcion(e.target.value)} 
+                placeholder="Breve resumen del contenido del curso..." 
+                className="w-full p-3 border border-indigo-200 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 outline-none" 
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 mt-6">
+            <button 
+              onClick={guardarCurso} 
+              disabled={actionLoading === 'saving'}
+              className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all"
+            >
+              <Save className="w-5 h-5"/> Crear Curso
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Lista de Cursos */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
