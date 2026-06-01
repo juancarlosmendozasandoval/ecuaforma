@@ -47,9 +47,12 @@ export default async function SimuladorPage({ params }: { params: { slug: string
   
   // 2. Comprobar sesión y acceso
   const { data: { session } } = await supabase.auth.getSession();
-  let tieneAcceso = simulatorData.publico; // Si es público, tiene acceso por defecto
+  
+  // 🌟 CORRECCIÓN: El acceso gratuito depende de si "es_pago" es falso
+  let tieneAcceso = !simulatorData.es_pago; 
 
-  if (!tieneAcceso && session) {
+  // Si el simulador CUESTA DINERO y hay un usuario logueado, verificamos si ya pagó
+  if (simulatorData.es_pago && session) {
     const { data: accessData } = await supabase
       .from('accesos_simuladores')
       .select('id')
@@ -57,7 +60,7 @@ export default async function SimuladorPage({ params }: { params: { slug: string
       .eq('usuario_id', session.user.id)
       .single();
 
-    if (accessData) tieneAcceso = true;
+    if (accessData) tieneAcceso = true; // Si encontramos su registro de pago, le damos acceso
   }
 
   const breadcrumbs = [
