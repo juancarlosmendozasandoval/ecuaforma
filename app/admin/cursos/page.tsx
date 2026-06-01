@@ -5,7 +5,7 @@ import { useSupabase } from '../../components/AuthProvider';
 import Link from 'next/link';
 import { 
   GraduationCap, Eye, EyeOff, Trash2, ListVideo, 
-  CheckCircle, AlertCircle, PlusCircle, Save, X 
+  CheckCircle, AlertCircle, PlusCircle, Save, X, DollarSign 
 } from 'lucide-react';
 
 export default function AdminCursosPage() {
@@ -21,6 +21,10 @@ export default function AdminCursosPage() {
   const [slug, setSlug] = useState('');
   const [institucion, setInstitucion] = useState('');
   const [descripcion, setDescripcion] = useState('');
+
+  // 🌟 ESTADOS PARA EL MANEJO DE PRECIOS
+  const [esPago, setEsPago] = useState(false);
+  const [precio, setPrecio] = useState('0.00');
 
   const fetchCursos = async () => {
     setLoading(true);
@@ -57,10 +61,12 @@ export default function AdminCursosPage() {
     setSlug('');
     setInstitucion('');
     setDescripcion('');
+    setEsPago(false);
+    setPrecio('0.00');
     setIsAdding(false);
   };
 
-  // 🌟 GUARDAR NUEVO CURSO EN LA BASE DE DATOS
+  // 🌟 GUARDAR NUEVO CURSO EN LA BASE DE DATOS (CON PRECIOS)
   const guardarCurso = async () => {
     if (!nombre.trim() || !slug.trim() || !institucion.trim()) {
       return showAlert('error', 'Nombre, Slug e Institución son campos obligatorios.');
@@ -75,7 +81,9 @@ export default function AdminCursosPage() {
         slug: slug.trim(), 
         institucion: institucion.trim(), 
         descripcion: descripcion.trim(),
-        publico: false // Los cursos nuevos nacen ocultos por defecto
+        publico: false, // Los cursos nuevos nacen ocultos por defecto
+        es_pago: esPago,
+        precio: esPago ? parseFloat(precio) : 0.00
       }])
       .select()
       .single();
@@ -87,7 +95,7 @@ export default function AdminCursosPage() {
         showAlert('error', 'Error al crear el curso.');
       }
     } else {
-      // Agregamos el curso a la vista actualizando la tabla localmente (añadiendo el contador de lecciones en 0)
+      // Agregamos el curso a la vista actualizando la tabla localmente
       setCursos([{ ...data, lecciones: [{ count: 0 }] }, ...cursos]);
       showAlert('success', 'Curso creado exitosamente. Ya puedes agregarle el temario.');
       resetForm();
@@ -217,6 +225,49 @@ export default function AdminCursosPage() {
                 className="w-full p-3 border border-indigo-200 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 outline-none" 
               />
             </div>
+
+            {/* 🌟 CONFIGURACIÓN DE PRECIO */}
+            <div className="p-4 bg-white rounded-xl border border-indigo-100 flex items-center justify-between shadow-sm md:col-span-2">
+              <div>
+                <span className="text-xs font-bold text-gray-700 uppercase block">Tipo de Acceso</span>
+                <span className="text-xs text-gray-400">¿Este curso requiere un pago?</span>
+              </div>
+              <div className="flex bg-gray-100 p-1 rounded-xl">
+                <button 
+                  type="button" 
+                  onClick={() => setEsPago(false)} 
+                  className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${!esPago ? 'bg-white text-slate-800 shadow' : 'text-gray-400'}`}
+                >
+                  Gratuito
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => setEsPago(true)} 
+                  className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${esPago ? 'bg-indigo-600 text-white shadow' : 'text-gray-400'}`}
+                >
+                  De Pago
+                </button>
+              </div>
+            </div>
+
+            {esPago && (
+              <div className="p-4 bg-white rounded-xl border border-indigo-100 flex items-center gap-3 shadow-sm animate-fade-in md:col-span-2">
+                <div className="flex-1">
+                  <label className="block text-xs font-bold text-indigo-700 uppercase mb-1">Precio del Curso (USD)</label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-3 text-emerald-600 w-5 h-5"/>
+                    <input 
+                      type="number" 
+                      step="0.01" 
+                      min="0.50" 
+                      value={precio} 
+                      onChange={(e) => setPrecio(e.target.value)} 
+                      className="w-full pl-10 p-3 border border-indigo-200 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-emerald-700" 
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end gap-3 mt-6">
@@ -253,9 +304,14 @@ export default function AdminCursosPage() {
                   <tr key={curso.id} className="hover:bg-gray-50/70 transition-colors">
                     <td className="p-4">
                       <div className="flex flex-col">
-                        <span className="px-2.5 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded-md uppercase border border-blue-100 w-fit mb-1">
-                          {curso.institucion}
-                        </span>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="px-2.5 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded-md uppercase border border-blue-100 w-fit">
+                            {curso.institucion}
+                          </span>
+                          <span className={`px-2 py-0.5 text-[10px] font-bold rounded-md border w-fit ${curso.es_pago ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-100 text-gray-600 border-gray-200'}`}>
+                            {curso.es_pago ? `$${curso.precio}` : 'GRATIS'}
+                          </span>
+                        </div>
                         <div className="font-bold text-gray-800 text-base">{curso.nombre}</div>
                         <div className="text-xs text-gray-400 mt-0.5 max-w-md truncate" title={curso.descripcion}>
                           {curso.descripcion}
