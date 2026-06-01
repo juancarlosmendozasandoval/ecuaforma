@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import Link from 'next/link';
 import { BookOpen, PlayCircle, FileText, Lock, CheckCircle, CreditCard, MessageCircle } from 'lucide-react';
+import BotonInscripcionGratis from '../../../components/BotonInscripcionGratis';
 
 export default async function DetalleCursoPage({ params }: { params: { institucion: string, slug: string } }) {
   const cookieStore = cookies();
@@ -47,7 +48,7 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
   ];
 
   const mensajeWhatsApp = `Hola Ecuaforma, quiero adquirir el curso: *${curso.nombre}*. Mi correo de registro es: ${session?.user?.email || '[Mi Correo]'}`;
-  const linkWhatsApp = `https://wa.me/593900000000?text=${encodeURIComponent(mensajeWhatsApp)}`; // Reemplaza con tu número
+  const linkWhatsApp = `https://wa.me/593992893010?text=${encodeURIComponent(mensajeWhatsApp)}`; // Reemplaza con tu número
 
   return (
     <div className="main-container py-10 min-h-screen bg-gray-50/50">
@@ -96,9 +97,7 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
                     </a>
                   </div>
                 ) : (
-                  <button className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-md hover:bg-blue-700 transition-colors">
-                    Inscribirme Ahora
-                  </button>
+                  <BotonInscripcionGratis cursoId={curso.id} usuarioId={session.user.id} />
                 )}
               </div>
             )}
