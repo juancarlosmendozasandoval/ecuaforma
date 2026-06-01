@@ -5,7 +5,7 @@ import { useSupabase } from '../../components/AuthProvider';
 import Link from 'next/link';
 import { 
   GraduationCap, Eye, EyeOff, Trash2, ListVideo, 
-  CheckCircle, AlertCircle, PlusCircle, Save, X, DollarSign 
+  CheckCircle, AlertCircle, PlusCircle, Save, X, DollarSign, Edit3
 } from 'lucide-react';
 
 export default function AdminCursosPage() {
@@ -15,20 +15,26 @@ export default function AdminCursosPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // 🌟 NUEVOS ESTADOS PARA CREAR CURSOS
+  // 🌟 ESTADOS PARA CREAR CURSOS
   const [isAdding, setIsAdding] = useState(false);
   const [nombre, setNombre] = useState('');
   const [slug, setSlug] = useState('');
   const [institucion, setInstitucion] = useState('');
   const [descripcion, setDescripcion] = useState('');
-
-  // 🌟 ESTADOS PARA EL MANEJO DE PRECIOS
   const [esPago, setEsPago] = useState(false);
   const [precio, setPrecio] = useState('0.00');
 
+  // 🌟 ESTADOS PARA EDITAR CURSOS EXISTENTES
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editNombre, setEditNombre] = useState('');
+  const [editSlug, setEditSlug] = useState('');
+  const [editInstitucion, setEditInstitucion] = useState('');
+  const [editDescripcion, setEditDescripcion] = useState('');
+  const [editEsPago, setEditEsPago] = useState(false);
+  const [editPrecio, setEditPrecio] = useState('0.00');
+
   const fetchCursos = async () => {
     setLoading(true);
-    // Traemos los cursos y el conteo de cuántas lecciones tiene cada uno
     const { data, error } = await supabase
       .from('cursos')
       .select('*, lecciones(count)')
@@ -48,7 +54,6 @@ export default function AdminCursosPage() {
     setTimeout(() => setAlert(null), 4000);
   };
 
-  // 🌟 AUTO-COMPLETAR EL SLUG (URL amigable)
   const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const valor = e.target.value;
     setNombre(valor);
@@ -66,7 +71,6 @@ export default function AdminCursosPage() {
     setIsAdding(false);
   };
 
-  // 🌟 GUARDAR NUEVO CURSO EN LA BASE DE DATOS (CON PRECIOS)
   const guardarCurso = async () => {
     if (!nombre.trim() || !slug.trim() || !institucion.trim()) {
       return showAlert('error', 'Nombre, Slug e Institución son campos obligatorios.');
@@ -81,7 +85,7 @@ export default function AdminCursosPage() {
         slug: slug.trim(), 
         institucion: institucion.trim(), 
         descripcion: descripcion.trim(),
-        publico: false, // Los cursos nuevos nacen ocultos por defecto
+        publico: false,
         es_pago: esPago,
         precio: esPago ? parseFloat(precio) : 0.00
       }])
@@ -95,7 +99,6 @@ export default function AdminCursosPage() {
         showAlert('error', 'Error al crear el curso.');
       }
     } else {
-      // Agregamos el curso a la vista actualizando la tabla localmente
       setCursos([{ ...data, lecciones: [{ count: 0 }] }, ...cursos]);
       showAlert('success', 'Curso creado exitosamente. Ya puedes agregarle el temario.');
       resetForm();
@@ -104,7 +107,54 @@ export default function AdminCursosPage() {
     setActionLoading(null);
   };
 
-  // Cambiar privacidad (Público/Privado)
+  // 🌟 FUNCIONES PARA EDITAR EN LÍNEA
+  const iniciarEdicion = (curso: any) => {
+    setEditingId(curso.id);
+    setEditNombre(curso.nombre);
+    setEditSlug(curso.slug);
+    setEditInstitucion(curso.institucion);
+    setEditDescripcion(curso.descripcion || '');
+    setEditEsPago(curso.es_pago || false);
+    setEditPrecio(curso.precio ? curso.precio.toString() : '0.00');
+  };
+
+  const cancelarEdicion = () => {
+    setEditingId(null);
+  };
+
+  const guardarEdicion = async (id: string) => {
+    if (!editNombre.trim() || !editSlug.trim() || !editInstitucion.trim()) {
+      return showAlert('error', 'Faltan campos obligatorios.');
+    }
+    setActionLoading(`edit-${id}`);
+    
+    const { error } = await supabase.from('cursos').update({
+      nombre: editNombre.trim(),
+      slug: editSlug.trim(),
+      institucion: editInstitucion.trim(),
+      descripcion: editDescripcion.trim(),
+      es_pago: editEsPago,
+      precio: editEsPago ? parseFloat(editPrecio) : 0.00
+    }).eq('id', id);
+
+    if (error) {
+      showAlert('error', 'Error al actualizar el curso.');
+    } else {
+      setCursos(cursos.map(c => c.id === id ? {
+        ...c, 
+        nombre: editNombre.trim(), 
+        slug: editSlug.trim(), 
+        institucion: editInstitucion.trim(), 
+        descripcion: editDescripcion.trim(),
+        es_pago: editEsPago, 
+        precio: editEsPago ? parseFloat(editPrecio) : 0.00
+      } : c));
+      showAlert('success', 'Curso actualizado correctamente.');
+      setEditingId(null);
+    }
+    setActionLoading(null);
+  };
+
   const togglePublico = async (id: string, currentStatus: boolean) => {
     setActionLoading(`public-${id}`);
     const { error } = await supabase
@@ -121,14 +171,13 @@ export default function AdminCursosPage() {
     setActionLoading(null);
   };
 
-  // Borrado Lógico (Soft Delete)
   const archivarCurso = async (id: string, nombreCurso: string) => {
     if (!confirm(`¿Archivar el curso "${nombreCurso}"? Los alumnos ya no podrán verlo.`)) return;
     
     setActionLoading(`delete-${id}`);
     const { error } = await supabase
       .from('cursos')
-      .update({ is_deleted: true, publico: false }) // Lo ocultamos por seguridad
+      .update({ is_deleted: true, publico: false })
       .eq('id', id);
 
     if (error) {
@@ -140,7 +189,6 @@ export default function AdminCursosPage() {
     setActionLoading(null);
   };
 
-  // Obtener lista única de instituciones para el datalist
   const institucionesUnicas = Array.from(new Set(cursos.map(c => c.institucion).filter(Boolean)));
 
   return (
@@ -170,7 +218,7 @@ export default function AdminCursosPage() {
         </button>
       </div>
 
-      {/* 🌟 FORMULARIO DE CREACIÓN DE CURSO */}
+      {/* FORMULARIO DE CREACIÓN DE CURSO */}
       {isAdding && (
         <div className="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 shadow-inner animate-fade-in">
           <h2 className="text-lg font-bold text-indigo-900 mb-4 flex items-center gap-2">
@@ -226,7 +274,7 @@ export default function AdminCursosPage() {
               />
             </div>
 
-            {/* 🌟 CONFIGURACIÓN DE PRECIO */}
+            {/* CONFIGURACIÓN DE PRECIO EN CREACIÓN */}
             <div className="p-4 bg-white rounded-xl border border-indigo-100 flex items-center justify-between shadow-sm md:col-span-2">
               <div>
                 <span className="text-xs font-bold text-gray-700 uppercase block">Tipo de Acceso</span>
@@ -300,7 +348,70 @@ export default function AdminCursosPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {cursos.map((curso) => (
+                {cursos.map((curso) => editingId === curso.id ? (
+                  
+                  /* 🌟 FILA DE EDICIÓN EN LÍNEA 🌟 */
+                  <tr key={curso.id} className="bg-indigo-50/40">
+                    <td colSpan={4} className="p-4">
+                      <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-2 border-b border-indigo-100 pb-2">
+                          <Edit3 className="w-4 h-4 text-indigo-600"/>
+                          <h3 className="font-bold text-indigo-800 text-sm">Editando Curso: {curso.nombre}</h3>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                          <div>
+                            <label className="text-[10px] font-bold text-indigo-700 uppercase block mb-1">Nombre</label>
+                            <input value={editNombre} onChange={(e) => setEditNombre(e.target.value)} className="w-full p-2.5 text-sm border border-indigo-200 rounded-lg outline-none focus:border-indigo-500" />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-bold text-indigo-700 uppercase block mb-1">Slug</label>
+                            <input value={editSlug} onChange={(e) => setEditSlug(e.target.value)} className="w-full p-2.5 text-sm border border-indigo-200 rounded-lg outline-none font-mono text-gray-600" />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-bold text-indigo-700 uppercase block mb-1">Institución</label>
+                            <input value={editInstitucion} onChange={(e) => setEditInstitucion(e.target.value)} className="w-full p-2.5 text-sm border border-indigo-200 rounded-lg outline-none" />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-bold text-indigo-700 uppercase block mb-1">Descripción</label>
+                            <input value={editDescripcion} onChange={(e) => setEditDescripcion(e.target.value)} className="w-full p-2.5 text-sm border border-indigo-200 rounded-lg outline-none" />
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row items-center gap-4 mt-2 p-3 bg-white rounded-xl border border-indigo-100">
+                          <div className="flex bg-gray-100 border border-gray-200 rounded-lg p-1">
+                            <button onClick={() => setEditEsPago(false)} className={`px-4 py-1.5 text-xs font-bold rounded-md ${!editEsPago ? 'bg-white text-gray-800 shadow' : 'text-gray-400'}`}>Gratis</button>
+                            <button onClick={() => setEditEsPago(true)} className={`px-4 py-1.5 text-xs font-bold rounded-md ${editEsPago ? 'bg-indigo-600 text-white shadow' : 'text-gray-400'}`}>De Pago</button>
+                          </div>
+                          
+                          {editEsPago && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-bold text-gray-600">Precio USD $</span>
+                              <input 
+                                type="number" 
+                                step="0.01" 
+                                value={editPrecio} 
+                                onChange={(e)=>setEditPrecio(e.target.value)} 
+                                className="p-2 w-28 text-sm border border-emerald-300 rounded-lg font-bold text-emerald-700 outline-none focus:border-emerald-500" 
+                              />
+                            </div>
+                          )}
+
+                          <div className="sm:ml-auto flex gap-2 w-full sm:w-auto">
+                            <button onClick={cancelarEdicion} className="flex-1 sm:flex-none px-4 py-2.5 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                              Cancelar
+                            </button>
+                            <button onClick={() => guardarEdicion(curso.id)} disabled={actionLoading !== null} className="flex-1 sm:flex-none px-4 py-2.5 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 flex items-center justify-center gap-2 transition-colors">
+                              <Save size={16}/> Guardar Cambios
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  
+                  /* FILA NORMAL DE VISTA */
                   <tr key={curso.id} className="hover:bg-gray-50/70 transition-colors">
                     <td className="p-4">
                       <div className="flex flex-col">
@@ -341,7 +452,6 @@ export default function AdminCursosPage() {
 
                     <td className="p-4">
                       <div className="flex items-center justify-end gap-2">
-                        {/* Botón para abrir el estructurador de lecciones */}
                         <Link
                           href={`/admin/cursos/${curso.slug}`}
                           className="px-3 py-2 bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-700 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 border border-indigo-100 hover:border-indigo-600"
@@ -349,6 +459,16 @@ export default function AdminCursosPage() {
                           <ListVideo className="w-4 h-4" /> Temario
                         </Link>
                         
+                        {/* 🌟 BOTÓN DE EDITAR EN LÍNEA */}
+                        <button
+                          onClick={() => iniciarEdicion(curso)}
+                          disabled={actionLoading !== null}
+                          className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          title="Editar Curso"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+
                         <button
                           onClick={() => archivarCurso(curso.id, curso.nombre)}
                           disabled={actionLoading !== null}
