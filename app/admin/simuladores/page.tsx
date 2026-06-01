@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSupabase } from '../../components/AuthProvider';
 import { 
   Eye, EyeOff, Copy, Move, Trash2, Search, 
-  Plus, RefreshCw, CheckCircle, AlertCircle, Sparkles, Pencil, Save, ListChecks
+  Plus, RefreshCw, CheckCircle, AlertCircle, Sparkles, Pencil, Save, ListChecks, DollarSign, X
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -23,6 +23,10 @@ export default function GestionSimuladoresPage() {
   const [editSlug, setEditSlug] = useState('');
   const [editCategoria, setEditCategoria] = useState('');
   const [editMateria, setEditMateria] = useState('');
+  
+  // 🌟 NUEVOS ESTADOS PARA MANEJAR PRECIOS EN SIMULADORES
+  const [editEsPago, setEditEsPago] = useState(false);
+  const [editPrecio, setEditPrecio] = useState('0.00');
 
   const fetchSimuladores = async () => {
     setLoading(true);
@@ -60,6 +64,10 @@ export default function GestionSimuladoresPage() {
     setEditSlug(sim.slug);
     setEditCategoria(sim.categoria || '');
     setEditMateria(sim.materia || '');
+    
+    // 🌟 CARGAMOS LOS DATOS DEL PRECIO
+    setEditEsPago(sim.es_pago || false);
+    setEditPrecio(sim.precio ? sim.precio.toString() : '0.00');
   };
 
   const cancelarEdicion = () => {
@@ -68,9 +76,11 @@ export default function GestionSimuladoresPage() {
     setEditSlug('');
     setEditCategoria('');
     setEditMateria('');
+    setEditEsPago(false);
+    setEditPrecio('0.00');
   };
 
-  // 🌟 GUARDAR TODOS LOS CAMPOS EDITADOS
+  // 🌟 GUARDAR TODOS LOS CAMPOS EDITADOS (INCLUYENDO PRECIO)
   const guardarEdicion = async (id: string) => {
     if (!editNombre.trim() || !editSlug.trim()) {
       showAlert('error', 'El nombre y la URL no pueden estar vacíos.');
@@ -92,7 +102,9 @@ export default function GestionSimuladoresPage() {
       nombre: editNombre.trim(), 
       slug: slugLimpio,
       categoria: editCategoria.trim(),
-      materia: editMateria.trim()
+      materia: editMateria.trim(),
+      es_pago: editEsPago, // 🌟 Actualizamos si es de pago
+      precio: editEsPago ? parseFloat(editPrecio) : 0.00 // 🌟 Actualizamos el precio
     };
 
     const { error } = await supabase
@@ -164,7 +176,9 @@ export default function GestionSimuladoresPage() {
           institucion: destinoInst,
           categoria: simulador.categoria,
           materia: simulador.materia,
-          publico: simulador.publico
+          publico: simulador.publico,
+          es_pago: simulador.es_pago, // 🌟 Copiamos configuración de pago
+          precio: simulador.precio // 🌟 Copiamos el precio
         }])
         .select()
         .single();
@@ -318,14 +332,25 @@ export default function GestionSimuladoresPage() {
                     <tr key={sim.id} className="hover:bg-gray-50/70 transition-colors">
                       <td className="p-4 align-top">
                         <div className="flex items-start gap-2 flex-col w-full">
-                          <span className="px-2.5 py-0.5 bg-slate-100 text-slate-800 text-xs font-bold rounded-md uppercase border border-slate-200">
-                            {sim.institucion}
-                          </span>
+                          
+                          {/* 🌟 INSIGNIAS DE INSTITUCIÓN Y PRECIO */}
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="px-2.5 py-0.5 bg-slate-100 text-slate-800 text-[10px] font-bold rounded-md uppercase border border-slate-200">
+                              {sim.institucion}
+                            </span>
+                            <span className={`px-2 py-0.5 text-[10px] font-bold rounded-md border ${sim.es_pago ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-100 text-gray-600 border-gray-200'}`}>
+                              {sim.es_pago ? `$${sim.precio}` : 'GRATIS'}
+                            </span>
+                          </div>
                           
                           {isEditing ? (
-                            <div className="flex flex-col gap-3 w-full mt-2 min-w-[280px] bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
+                            <div className="flex flex-col gap-3 w-full mt-2 min-w-[280px] bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 shadow-inner">
+                              <h3 className="text-sm font-bold text-indigo-800 flex items-center gap-2 border-b border-indigo-100 pb-2 mb-1">
+                                <Pencil className="w-4 h-4"/> Editando Simulador
+                              </h3>
+                              
                               <div>
-                                <label className="text-[10px] font-bold text-indigo-700 uppercase">Nombre del Simulador</label>
+                                <label className="text-[10px] font-bold text-indigo-700 uppercase mb-1 block">Nombre del Simulador</label>
                                 <input
                                   type="text"
                                   value={editNombre}
@@ -335,7 +360,7 @@ export default function GestionSimuladoresPage() {
                               </div>
                               
                               <div>
-                                <label className="text-[10px] font-bold text-indigo-700 uppercase">URL (Slug)</label>
+                                <label className="text-[10px] font-bold text-indigo-700 uppercase mb-1 block">URL (Slug)</label>
                                 <div className="flex items-center gap-1 text-xs text-gray-500 w-full">
                                   <span className="font-mono bg-indigo-100 p-2 rounded-lg border border-indigo-200">/simulador/</span>
                                   <input
@@ -349,7 +374,7 @@ export default function GestionSimuladoresPage() {
 
                               <div className="grid grid-cols-2 gap-2">
                                 <div>
-                                  <label className="text-[10px] font-bold text-indigo-700 uppercase">Categoría</label>
+                                  <label className="text-[10px] font-bold text-indigo-700 uppercase mb-1 block">Categoría</label>
                                   <input
                                     type="text"
                                     value={editCategoria}
@@ -359,7 +384,7 @@ export default function GestionSimuladoresPage() {
                                   />
                                 </div>
                                 <div>
-                                  <label className="text-[10px] font-bold text-indigo-700 uppercase">Materia</label>
+                                  <label className="text-[10px] font-bold text-indigo-700 uppercase mb-1 block">Materia</label>
                                   <input
                                     type="text"
                                     value={editMateria}
@@ -369,6 +394,44 @@ export default function GestionSimuladoresPage() {
                                   />
                                 </div>
                               </div>
+
+                              {/* 🌟 CONFIGURACIÓN DE PRECIO AL EDITAR */}
+                              <div className="mt-2 pt-3 border-t border-indigo-100">
+                                <label className="text-[10px] font-bold text-indigo-700 uppercase mb-2 block">Costo de Acceso</label>
+                                <div className="flex items-center gap-3">
+                                  <div className="flex bg-white border border-indigo-200 rounded-lg p-1">
+                                    <button 
+                                      type="button" 
+                                      onClick={() => setEditEsPago(false)} 
+                                      className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors ${!editEsPago ? 'bg-gray-100 text-gray-800 shadow-sm' : 'text-gray-400 hover:bg-gray-50'}`}
+                                    >
+                                      Gratis
+                                    </button>
+                                    <button 
+                                      type="button" 
+                                      onClick={() => setEditEsPago(true)} 
+                                      className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors ${editEsPago ? 'bg-indigo-600 text-white shadow-sm' : 'text-gray-400 hover:bg-gray-50'}`}
+                                    >
+                                      De Pago
+                                    </button>
+                                  </div>
+                                  
+                                  {editEsPago && (
+                                    <div className="flex items-center gap-1.5 bg-white border border-emerald-200 rounded-lg p-1 animate-fade-in pl-2">
+                                      <DollarSign className="w-4 h-4 text-emerald-600"/>
+                                      <input 
+                                        type="number" 
+                                        step="0.01" 
+                                        min="0"
+                                        value={editPrecio} 
+                                        onChange={(e)=>setEditPrecio(e.target.value)} 
+                                        className="w-20 p-1 text-sm font-bold text-emerald-700 outline-none" 
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
                             </div>
                           ) : (
                             <>
@@ -428,15 +491,14 @@ export default function GestionSimuladoresPage() {
                             </button>
                             <button
                               onClick={cancelarEdicion}
-                              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl text-xs font-bold transition-colors w-full justify-center"
+                              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl text-xs font-bold transition-colors w-full justify-center flex items-center gap-1"
                             >
-                              Cancelar
+                              <X className="w-4 h-4"/> Cancelar
                             </button>
                           </div>
                         ) : (
                           <div className="flex items-center justify-end gap-2">
                             
-                            {/* 🌟 BOTÓN RESTAURADO: IR AL PANEL DE PREGUNTAS */}
                             <Link
                               href={`/admin/preguntas/${sim.slug}`}
                               className="px-3 py-2 text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-bold shadow-md"
@@ -449,7 +511,7 @@ export default function GestionSimuladoresPage() {
                               onClick={() => iniciarEdicion(sim)}
                               disabled={actionLoading !== null}
                               className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-gray-100 shadow-sm bg-white"
-                              title="Editar Simulador"
+                              title="Editar Metadatos"
                             >
                               <Pencil className="w-4 h-4" />
                             </button>
