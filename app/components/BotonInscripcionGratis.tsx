@@ -1,30 +1,34 @@
 'use client';
 
 import { useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 export default function BotonInscripcionGratis({ cursoId, usuarioId }: { cursoId: string, usuarioId: string }) {
   const [loading, setLoading] = useState(false);
-  const supabase = createClientComponentClient();
   const router = useRouter();
 
   const inscribirse = async () => {
     setLoading(true);
     
-    // Insertamos el acceso en la base de datos
-    const { error } = await supabase
-      .from('accesos_cursos')
-      .insert([{ curso_id: cursoId, usuario_id: usuarioId }]);
+    try {
+      // Llamamos a nuestra API segura
+      const res = await fetch('/api/inscribir-gratis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cursoId, usuarioId }),
+      });
 
-    if (error) {
+      if (!res.ok) {
+        throw new Error('Error en la inscripción');
+      }
+
+      // Si todo sale bien, refrescamos la página para desaparecer los candados
+      router.refresh();
+    } catch (error) {
       console.error(error);
       alert('Hubo un problema al inscribirte. Inténtalo de nuevo.');
-      setLoading(false);
-    } else {
-      // Si fue exitoso, refrescamos la página. El servidor detectará que ya tiene acceso y quitará los candados.
-      router.refresh();
+      setLoading(false); // Solo quitamos el loading si hay error, si hay éxito la página se recargará sola
     }
   };
 
