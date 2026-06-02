@@ -12,23 +12,27 @@ export default function BotonInscripcionGratis({ cursoId, usuarioId }: { cursoId
     setLoading(true);
     
     try {
-      // Llamamos a nuestra API segura
       const res = await fetch('/api/inscribir-gratis', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cursoId, usuarioId }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error('Error en la inscripción');
+        // Ahora capturamos el mensaje REAL que manda la API (ej. "Datos incompletos", "Curso no encontrado", etc)
+        throw new Error(data.error || 'Error desconocido en el servidor');
       }
 
-      // Si todo sale bien, refrescamos la página para desaparecer los candados
+      // Si fue exitoso (o si ya estaba inscrito), refrescamos la página
       router.refresh();
-    } catch (error) {
+      
+    } catch (error: any) {
       console.error(error);
-      alert('Hubo un problema al inscribirte. Inténtalo de nuevo.');
-      setLoading(false); // Solo quitamos el loading si hay error, si hay éxito la página se recargará sola
+      // Mostramos la alerta con el error exacto para saber qué corregir
+      alert(`Fallo en la inscripción: ${error.message}`);
+      setLoading(false); 
     }
   };
 
@@ -38,7 +42,7 @@ export default function BotonInscripcionGratis({ cursoId, usuarioId }: { cursoId
       disabled={loading}
       className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-md hover:bg-blue-700 transition-colors flex justify-center items-center gap-2 disabled:opacity-70"
     >
-      {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Inscribiendo...</> : 'Inscribirme Ahora (Gratis)'}
+      {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Procesando...</> : 'Inscribirme Ahora (Gratis)'}
     </button>
   );
 }
