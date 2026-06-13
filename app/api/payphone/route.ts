@@ -5,7 +5,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { nombre, precio, institucion } = body;
 
-    // Limpiamos el token por si se copió con espacios en blanco invisibles
     const token = process.env.PAYPHONE_TOKEN?.trim();
     if (!token) {
       return NextResponse.json({ error: 'Falta configurar el Token' }, { status: 500 });
@@ -13,13 +12,14 @@ export async function POST(request: Request) {
 
     const amountInCents = Math.round(parseFloat(precio) * 100);
     
-    // El servidor de PayPhone a veces colapsa si recibe tildes o caracteres raros.
-    // Aquí limpiamos el nombre (Ej: "Matemáticas (FAE)" -> "Matematicas (FAE)")
+    // Limpieza de caracteres que puedan romper el servidor del banco
     const rawReference = institucion ? `${nombre} (${institucion})` : nombre || "Acceso Ecuaforma";
     const safeReference = rawReference.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9 ()-]/g, "").substring(0, 50);
     
-    // Generamos un ID más corto
-    const transactionId = `EC-${Date.now()}`;
+    const transactionId = `EC${Date.now()}`;
+
+    // 🌟 MAGIA: Obtenemos el dominio real donde está el usuario automáticamente
+    const origin = request.headers.get('origin') || 'https://www.ecuaforma.com';
 
     const payphoneBody = {
       amount: amountInCents,
@@ -31,22 +31,19 @@ export async function POST(request: Request) {
       currency: "USD",
       clientTransactionId: transactionId,
       reference: safeReference,
-      responseUrl: process.env.NEXT_PUBLIC_BASE_URL 
-        ? `${process.env.NEXT_PUBLIC_BASE_URL}/mis-cursos` 
-        : "http://localhost:3000/mis-cursos",
-      cancellationUrl: process.env.NEXT_PUBLIC_BASE_URL 
-        ? `${process.env.NEXT_PUBLIC_BASE_URL}/checkout` 
-        : "http://localhost:3000/checkout"
+      // Ahora la URL será segura y dinámica
+      responseUrl: `${origin}/mis-cursos`,
+      cancellationUrl: `${origin}/checkout`
     };
 
-    // Imprimimos los datos exactos en Vercel para depuración
-    console.log("Datos enviados a PayPhone:", JSON.stringify(payphoneBody));
+    console.log("Enviando a PayPhone Links:", JSON.stringify(payphoneBody));
 
-    const payphoneResponse = await fetch('https://pay.payphonetodoesposible.com/api/button/Prepare', {
+    // Volvemos al endpoint oficial de creación de Links de pago seguros
+    const payphoneResponse = await fetch('https://pay.payphonetodoesposible.com/api/Links', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json', // Súper importante para evitar el error HTML
+        'Accept': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(payphoneBody),
@@ -56,8 +53,8 @@ export async function POST(request: Request) {
     const contentType = payphoneResponse.headers.get("content-type");
     if (contentType && contentType.includes("text/html")) {
         const text = await payphoneResponse.text();
-        console.error("PayPhone devolvió HTML (Posible caída de su API):", text);
-        return NextResponse.json({ error: 'Error en los servidores del banco' }, { status: 500 });
+        console.error("PayPhone colapsó (HTML):", text);
+        return NextResponse.json({ error: 'El servidor del banco falló.' }, { status: 500 });
     }
 
     const data = await payphoneResponse.json();
@@ -67,7 +64,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: data.message || 'Error en PayPhone' }, { status: 400 });
     }
 
-    return NextResponse.json({ url: data.paymentUrl });
+    // Retornamos la URL oficial de la pasarela
+    return NextResponse.json({ url: data.url || data.paymentUrl });
 
   } catch (error) {
     console.error("Error crítico interno:", error);
