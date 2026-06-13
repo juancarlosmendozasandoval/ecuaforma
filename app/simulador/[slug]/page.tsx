@@ -104,7 +104,7 @@ export default async function SimuladorPage({ params }: { params: { slug: string
           ) : simulatorData.es_pago ? (
             <div className="max-w-md mx-auto">
               <Link 
-                href={`/checkout?nombre=${encodeURIComponent(simulatorData.nombre)}&precio=${simulatorData.precio}`}
+                href={`/checkout?nombre=${encodeURIComponent(simulatorData.nombre)}&precio=${simulatorData.precio}&institucion=${encodeURIComponent(simulatorData.institucion)}`}
                 className="w-full bg-[#f37021] text-white py-4 rounded-xl font-bold shadow-md hover:bg-[#d9611b] transition-colors flex items-center justify-center gap-2 text-lg"
               >
                 <CreditCard className="w-6 h-6"/> Inscribirse y Pagar

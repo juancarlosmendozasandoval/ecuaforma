@@ -7,20 +7,24 @@ import { useSearchParams } from "next/navigation";
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
   
-  // Leemos los datos de la URL. Si alguien entra directo, mostramos valores por defecto.
+  // Leemos los datos de la URL
   const nombreItem = searchParams.get("nombre") || "Acceso Premium a Ecuaforma";
   const precio = searchParams.get("precio") || "50.00"; 
+  const institucion = searchParams.get("institucion") || ""; // NUEVO DATO
   
   const [loadingPayPhone, setLoadingPayPhone] = useState(false);
 
+  // Agregamos la institución al texto si es que existe
+  const institucionTexto = institucion ? ` (${institucion})` : "";
+
   // Configuración dinámica para el botón de WhatsApp
   const numeroWhatsApp = "593992893010";
-  const mensaje = `Hola Ecuaforma, deseo realizar el pago por transferencia/depósito de $${precio} para inscribirme en: *${nombreItem}*. ¿Me ayudas con los datos de cuenta?`;
+  const mensaje = `Hola Ecuaforma, deseo realizar el pago por transferencia/depósito de $${precio} para inscribirme en: *${nombreItem}*${institucionTexto}. ¿Me ayudas con los datos de cuenta?`;
   const linkWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
 
   const handlePayPhoneClick = async () => {
     setLoadingPayPhone(true);
-    console.log(`Iniciando pago de $${precio} para ${nombreItem} con PayPhone...`);
+    console.log(`Iniciando pago de $${precio} para ${nombreItem}${institucionTexto} con PayPhone...`);
     setTimeout(() => setLoadingPayPhone(false), 2000);
   };
 
@@ -36,13 +40,13 @@ export default function CheckoutPage() {
             </svg>
           </div>
           <h2 className="text-2xl font-extrabold text-gray-900">Resumen de Compra</h2>
-          <p className="text-md text-gray-600">{nombreItem}</p>
+          <p className="text-md text-gray-600 font-medium">{nombreItem} <span className="text-blue-600">{institucionTexto}</span></p>
           <div className="text-4xl font-black text-gray-900 pt-2">${precio} <span className="text-lg font-medium text-gray-500">USD</span></div>
         </div>
 
         <div className="space-y-4">
           
-          {/* BOTÓN 1: PAYPHONE (Elegante) */}
+          {/* BOTÓN 1: PAYPHONE */}
           <button
             onClick={handlePayPhoneClick}
             disabled={loadingPayPhone}
@@ -60,7 +64,7 @@ export default function CheckoutPage() {
             )}
           </button>
 
-          {/* BOTÓN 2: WHATSAPP (Elegante) */}
+          {/* BOTÓN 2: WHATSAPP */}
           <a
             href={linkWhatsApp}
             target="_blank"
@@ -96,7 +100,7 @@ export default function CheckoutPage() {
                     intent: "CAPTURE",
                     purchase_units: [{
                       amount: { currency_code: "USD", value: precio },
-                      description: nombreItem,
+                      description: `${nombreItem}${institucionTexto}`,
                     }],
                   });
                 }}

@@ -87,7 +87,7 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
                 ) : curso.es_pago ? (
                   <div className="space-y-3">
                     <Link 
-                      href={`/checkout?nombre=${encodeURIComponent(curso.nombre)}&precio=${curso.precio}`}
+                      href={`/checkout?nombre=${encodeURIComponent(curso.nombre)}&precio=${curso.precio}&institucion=${encodeURIComponent(curso.institucion)}`}
                       className="w-full bg-[#f37021] text-white py-3.5 rounded-xl font-bold shadow-md hover:bg-[#d9611b] transition-colors flex items-center justify-center gap-2 text-lg"
                     >
                       <CreditCard className="w-6 h-6"/> Inscribirse y Pagar
