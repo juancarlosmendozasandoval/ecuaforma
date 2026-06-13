@@ -2,7 +2,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import Link from 'next/link';
-import { BookOpen, PlayCircle, FileText, Lock, CheckCircle, CreditCard, MessageCircle } from 'lucide-react';
+import { BookOpen, PlayCircle, FileText, Lock, CheckCircle, CreditCard } from 'lucide-react';
 import BotonInscripcionGratis from '../../../components/BotonInscripcionGratis';
 
 export default async function DetalleCursoPage({ params }: { params: { institucion: string, slug: string } }) {
@@ -47,9 +47,6 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
     { label: curso.nombre, href: `/cursos/${params.institucion}/${params.slug}`, isActive: true }
   ];
 
-  const mensajeWhatsApp = `Hola Ecuaforma, quiero adquirir el curso: *${curso.nombre}*. Mi correo de registro es: ${session?.user?.email || '[Mi Correo]'}`;
-  const linkWhatsApp = `https://wa.me/593992893010?text=${encodeURIComponent(mensajeWhatsApp)}`; // Reemplaza con tu número
-
   return (
     <div className="main-container py-10 min-h-screen bg-gray-50/50">
       <Breadcrumbs items={breadcrumbs} />
@@ -89,12 +86,12 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
                   </Link>
                 ) : curso.es_pago ? (
                   <div className="space-y-3">
-                    <button className="w-full bg-[#f37021] text-white py-3 rounded-xl font-bold shadow-md hover:bg-[#d9611b] transition-colors flex items-center justify-center gap-2">
-                      <CreditCard className="w-5 h-5"/> Pagar con Tarjeta
-                    </button>
-                    <a href={linkWhatsApp} target="_blank" rel="noopener noreferrer" className="w-full bg-emerald-500 text-white py-3 rounded-xl font-bold shadow-md hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2">
-                      <MessageCircle className="w-5 h-5"/> Transferencia Bancaria
-                    </a>
+                    <Link 
+                      href={`/checkout?nombre=${encodeURIComponent(curso.nombre)}&precio=${curso.precio}`}
+                      className="w-full bg-[#f37021] text-white py-3.5 rounded-xl font-bold shadow-md hover:bg-[#d9611b] transition-colors flex items-center justify-center gap-2 text-lg"
+                    >
+                      <CreditCard className="w-6 h-6"/> Inscribirse y Pagar
+                    </Link>
                   </div>
                 ) : (
                   <BotonInscripcionGratis cursoId={curso.id} usuarioId={session.user.id} />

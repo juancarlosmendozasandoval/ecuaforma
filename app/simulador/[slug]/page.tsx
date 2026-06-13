@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import Simulator from '../../components/Simulator';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import Link from 'next/link';
-import { Lock, CreditCard, MessageCircle, CheckCircle } from 'lucide-react';
+import { Lock, CreditCard, CheckCircle } from 'lucide-react';
 
 export interface SimulatorType {
   id: string;
@@ -71,9 +71,6 @@ export default async function SimuladorPage({ params }: { params: { slug: string
     { label: simulatorData.nombre, href: `/simulador/${params.slug}`, isActive: true },
   ];
 
-  const mensajeWhatsApp = `Hola Ecuaforma, quiero adquirir el simulador: *${simulatorData.nombre}*. Mi correo es: ${session?.user?.email || '[Mi Correo]'}`;
-  const linkWhatsApp = `https://wa.me/593992893010?text=${encodeURIComponent(mensajeWhatsApp)}`;
-
   // 3. SI NO TIENE ACCESO -> Mostrar la Vitrina de Venta
   if (!tieneAcceso) {
     return (
@@ -105,13 +102,13 @@ export default async function SimuladorPage({ params }: { params: { slug: string
               Inicia Sesión para Acceder
             </Link>
           ) : simulatorData.es_pago ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto">
-              <button className="w-full bg-[#f37021] text-white py-3.5 rounded-xl font-bold shadow-md hover:bg-[#d9611b] transition-colors flex items-center justify-center gap-2">
-                <CreditCard className="w-5 h-5"/> Pagar Tarjeta
-              </button>
-              <a href={linkWhatsApp} target="_blank" rel="noopener noreferrer" className="w-full bg-emerald-500 text-white py-3.5 rounded-xl font-bold shadow-md hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2">
-                <MessageCircle className="w-5 h-5"/> Transferencia
-              </a>
+            <div className="max-w-md mx-auto">
+              <Link 
+                href={`/checkout?nombre=${encodeURIComponent(simulatorData.nombre)}&precio=${simulatorData.precio}`}
+                className="w-full bg-[#f37021] text-white py-4 rounded-xl font-bold shadow-md hover:bg-[#d9611b] transition-colors flex items-center justify-center gap-2 text-lg"
+              >
+                <CreditCard className="w-6 h-6"/> Inscribirse y Pagar
+              </Link>
             </div>
           ) : (
             <button className="inline-block w-full sm:w-auto bg-blue-600 text-white px-10 py-4 rounded-xl font-bold shadow-md hover:bg-blue-700 transition-colors">
