@@ -32,8 +32,8 @@ export async function POST(request: Request) {
       clientTransactionId: transactionId,
       reference: safeReference,
       // Ahora la URL será segura y dinámica
-      responseUrl: `${origin}/mis-cursos`,
-      cancellationUrl: `${origin}/checkout`
+        responseUrl: "https://www.ecuaforma.com/mis-cursos",
+        cancellationUrl: "https://www.ecuaforma.com/checkout"
     };
 
     console.log("Enviando a PayPhone Links:", JSON.stringify(payphoneBody));
