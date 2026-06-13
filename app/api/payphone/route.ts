@@ -5,24 +5,32 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { nombre, precio, institucion } = body;
 
-    // 1. Verificamos que el token exista en Vercel antes de llamar al banco
-    if (!process.env.PAYPHONE_TOKEN) {
-      console.error("Falta el PAYPHONE_TOKEN en las variables de entorno");
-      return NextResponse.json({ error: 'Error de configuración del servidor' }, { status: 500 });
+    // Limpiamos el token por si se copió con espacios en blanco invisibles
+    const token = process.env.PAYPHONE_TOKEN?.trim();
+    if (!token) {
+      return NextResponse.json({ error: 'Falta configurar el Token' }, { status: 500 });
     }
 
     const amountInCents = Math.round(parseFloat(precio) * 100);
-    const referenceText = institucion ? `${nombre} (${institucion})` : nombre;
-    const transactionId = `ECUAFORMA-${Date.now()}`;
+    
+    // El servidor de PayPhone a veces colapsa si recibe tildes o caracteres raros.
+    // Aquí limpiamos el nombre (Ej: "Matemáticas (FAE)" -> "Matematicas (FAE)")
+    const rawReference = institucion ? `${nombre} (${institucion})` : nombre || "Acceso Ecuaforma";
+    const safeReference = rawReference.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9 ()-]/g, "").substring(0, 50);
+    
+    // Generamos un ID más corto
+    const transactionId = `EC-${Date.now()}`;
 
     const payphoneBody = {
       amount: amountInCents,
       amountWithoutTax: amountInCents,
       amountWithTax: 0,
       tax: 0,
+      service: 0,
+      tip: 0,
       currency: "USD",
       clientTransactionId: transactionId,
-      reference: referenceText.substring(0, 50),
+      reference: safeReference,
       responseUrl: process.env.NEXT_PUBLIC_BASE_URL 
         ? `${process.env.NEXT_PUBLIC_BASE_URL}/mis-cursos` 
         : "http://localhost:3000/mis-cursos",
@@ -31,36 +39,38 @@ export async function POST(request: Request) {
         : "http://localhost:3000/checkout"
     };
 
-    // 2. URL CORREGIDA: api/button/Prepare
+    // Imprimimos los datos exactos en Vercel para depuración
+    console.log("Datos enviados a PayPhone:", JSON.stringify(payphoneBody));
+
     const payphoneResponse = await fetch('https://pay.payphonetodoesposible.com/api/button/Prepare', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.PAYPHONE_TOKEN}`
+        'Accept': 'application/json', // Súper importante para evitar el error HTML
+        'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(payphoneBody)
+      body: JSON.stringify(payphoneBody),
+      cache: 'no-store'
     });
 
-    // 3. Escudo protector: Si el banco devuelve HTML en vez de datos, lo interceptamos
     const contentType = payphoneResponse.headers.get("content-type");
     if (contentType && contentType.includes("text/html")) {
         const text = await payphoneResponse.text();
-        console.error("PayPhone devolvió HTML en vez de JSON:", text);
-        return NextResponse.json({ error: 'El banco rechazó la solicitud (Respuesta HTML)' }, { status: 500 });
+        console.error("PayPhone devolvió HTML (Posible caída de su API):", text);
+        return NextResponse.json({ error: 'Error en los servidores del banco' }, { status: 500 });
     }
 
     const data = await payphoneResponse.json();
 
     if (!payphoneResponse.ok) {
-      console.error("Error devuelto por PayPhone:", data);
-      return NextResponse.json({ error: 'No se pudo generar el link de pago' }, { status: 400 });
+      console.error("PayPhone rechazó los datos:", data);
+      return NextResponse.json({ error: data.message || 'Error en PayPhone' }, { status: 400 });
     }
 
-    // 4. El endpoint button/Prepare nos entrega el link en la variable paymentUrl
     return NextResponse.json({ url: data.paymentUrl });
 
   } catch (error) {
-    console.error("Error interno del servidor en ruta PayPhone:", error);
-    return NextResponse.json({ error: 'Error interno procesando el pago' }, { status: 500 });
+    console.error("Error crítico interno:", error);
+    return NextResponse.json({ error: 'Error procesando el pago' }, { status: 500 });
   }
 }
