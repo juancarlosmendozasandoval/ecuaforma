@@ -7,25 +7,48 @@ import { useSearchParams } from "next/navigation";
 export default function CheckoutPage() {
   const searchParams = useSearchParams();
   
-  // Leemos los datos de la URL
   const nombreItem = searchParams.get("nombre") || "Acceso Premium a Ecuaforma";
   const precio = searchParams.get("precio") || "50.00"; 
-  const institucion = searchParams.get("institucion") || ""; // NUEVO DATO
+  const institucion = searchParams.get("institucion") || ""; 
   
   const [loadingPayPhone, setLoadingPayPhone] = useState(false);
 
-  // Agregamos la institución al texto si es que existe
   const institucionTexto = institucion ? ` (${institucion})` : "";
-
-  // Configuración dinámica para el botón de WhatsApp
   const numeroWhatsApp = "593992893010";
   const mensaje = `Hola Ecuaforma, deseo realizar el pago por transferencia/depósito de $${precio} para inscribirme en: *${nombreItem}*${institucionTexto}. ¿Me ayudas con los datos de cuenta?`;
   const linkWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
 
+  // 🌟 NUEVA LÓGICA: Conectando con nuestra API de PayPhone
   const handlePayPhoneClick = async () => {
     setLoadingPayPhone(true);
-    console.log(`Iniciando pago de $${precio} para ${nombreItem}${institucionTexto} con PayPhone...`);
-    setTimeout(() => setLoadingPayPhone(false), 2000);
+    
+    try {
+      const response = await fetch('/api/payphone', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre: nombreItem,
+          precio: precio,
+          institucion: institucion
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        // Redirigimos al usuario a la ventana segura del banco
+        window.location.href = data.url;
+      } else {
+        alert("Hubo un problema generando el pago. Intenta de nuevo.");
+        setLoadingPayPhone(false);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error de conexión. Revisa tu internet.");
+      setLoadingPayPhone(false);
+    }
   };
 
   return (
@@ -53,7 +76,7 @@ export default function CheckoutPage() {
             className="w-full flex items-center justify-center px-4 py-3.5 border border-transparent text-base font-semibold rounded-lg text-white bg-[#FF6B00] hover:bg-[#e66000] shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6B00] transition-all disabled:opacity-70"
           >
             {loadingPayPhone ? (
-              "Procesando..."
+              "Conectando con el banco..."
             ) : (
               <>
                 <svg className="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
