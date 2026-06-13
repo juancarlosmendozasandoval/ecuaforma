@@ -12,15 +12,13 @@ export async function POST(request: Request) {
 
     const amountInCents = Math.round(parseFloat(precio) * 100);
     
-    // Limpieza de caracteres que puedan romper el servidor del banco
+    // Limpieza de caracteres para que el banco no rechace tildes o caracteres especiales
     const rawReference = institucion ? `${nombre} (${institucion})` : nombre || "Acceso Ecuaforma";
     const safeReference = rawReference.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9 ()-]/g, "").substring(0, 50);
     
-    const transactionId = `EC${Date.now()}`;
+    const transactionId = `EC-${Date.now()}`;
 
-    // 🌟 MAGIA: Obtenemos el dominio real donde está el usuario automáticamente
-    const origin = request.headers.get('origin') || 'https://www.ecuaforma.com';
-
+    // Payload limpio y seguro
     const payphoneBody = {
       amount: amountInCents,
       amountWithoutTax: amountInCents,
@@ -31,15 +29,15 @@ export async function POST(request: Request) {
       currency: "USD",
       clientTransactionId: transactionId,
       reference: safeReference,
-      // Ahora la URL será segura y dinámica
-        responseUrl: "https://www.ecuaforma.com/mis-cursos",
-        cancellationUrl: "https://www.ecuaforma.com/checkout"
+      // URLs seguras (HTTPS) para evitar que PayPhone bloquee la transacción
+      responseUrl: "https://www.ecuaforma.com/mis-cursos",
+      cancellationUrl: "https://www.ecuaforma.com/checkout"
     };
 
-    console.log("Enviando a PayPhone Links:", JSON.stringify(payphoneBody));
+    console.log("Enviando a PayPhone button/Prepare:", JSON.stringify(payphoneBody));
 
-    // Volvemos al endpoint oficial de creación de Links de pago seguros
-    const payphoneResponse = await fetch('https://pay.payphonetodoesposible.com/api/Links', {
+    // El endpoint correcto para redirecciones en la web es button/Prepare
+    const payphoneResponse = await fetch('https://pay.payphonetodoesposible.com/api/button/Prepare', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,8 +62,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: data.message || 'Error en PayPhone' }, { status: 400 });
     }
 
-    // Retornamos la URL oficial de la pasarela
-    return NextResponse.json({ url: data.url || data.paymentUrl });
+    // Retornamos la URL de pago segura del banco
+    return NextResponse.json({ url: data.paymentUrl });
 
   } catch (error) {
     console.error("Error crítico interno:", error);
