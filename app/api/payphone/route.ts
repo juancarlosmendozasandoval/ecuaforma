@@ -12,22 +12,27 @@ export async function POST(request: Request) {
 
     const amountInCents = Math.round(parseFloat(precio) * 100);
     
+    // Limpieza de caracteres para que el banco no rechace tildes o símbolos
     const rawReference = institucion ? `${nombre} (${institucion})` : nombre || "Acceso Ecuaforma";
     const safeReference = rawReference.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9 ()-]/g, "").substring(0, 50);
     
-    const transactionId = `EC-${Date.now()}`;
+    // Quitamos guiones del ID por si su validador es estricto
+    const transactionId = `EC${Date.now()}`;
 
-    // 🌟 EL SECRETO: Enviamos ÚNICAMENTE los 6 campos que la API de PayPhone Links reconoce.
+    // 🌟 EL SECRETO: Añadimos 'expireIn' (días) y 'currency'. 
+    // Sin el número de expireIn, el servidor ASP.NET de PayPhone colapsa.
     const payphoneBody = {
       amount: amountInCents,
       amountWithoutTax: amountInCents,
       amountWithTax: 0,
       tax: 0,
       clientTransactionId: transactionId,
-      reference: safeReference
+      reference: safeReference,
+      expireIn: 1, // Obligatorio: El link expirará en 1 día
+      currency: "USD"
     };
 
-    console.log("Enviando a PayPhone Links (Payload estricto):", JSON.stringify(payphoneBody));
+    console.log("Enviando a PayPhone Links (Payload final):", JSON.stringify(payphoneBody));
 
     const payphoneResponse = await fetch('https://pay.payphonetodoesposible.com/api/Links', {
       method: 'POST',
