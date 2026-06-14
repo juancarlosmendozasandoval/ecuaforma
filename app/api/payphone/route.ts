@@ -12,13 +12,15 @@ export async function POST(request: Request) {
 
     const amountInCents = Math.round(parseFloat(precio) * 100);
     
-    // Limpieza estricta de caracteres
-    const rawReference = institucion ? `${nombre} (${institucion})` : nombre || "Acceso Ecuaforma";
-    const safeReference = rawReference.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9 ()-]/g, "").substring(0, 50);
+    // Limpieza estricta: quitamos TODO caracter raro para no romper el banco
+    const rawReference = institucion ? `${nombre} (${institucion})` : nombre || "Ecuaforma";
+    const safeReference = rawReference.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9 ]/g, "").substring(0, 50);
     
+    // ID único para la transacción
     const transactionId = `EC${Date.now()}`;
 
-    // 🌟 PAYLOAD SINCRONIZADO CON TU PANEL DE PAYPHONE
+    // 🌟 PAYLOAD BLINDADO PARA API/LINKS
+    // No enviamos URLs aquí, PayPhone usará las que configuraste en tu panel.
     const payphoneBody = {
       amount: amountInCents,
       amountWithoutTax: amountInCents,
@@ -26,32 +28,28 @@ export async function POST(request: Request) {
       tax: 0,
       service: 0,
       tip: 0,
-      currency: "USD",
       clientTransactionId: transactionId,
       reference: safeReference,
-      // ESTAS URLS DEBEN SER EXACTAMENTE LAS QUE PUSISTE EN TU PANEL:
-      responseUrl: "https://www.ecuaforma.com/mis-cursos",
-      cancellationUrl: "https://www.ecuaforma.com"
+      expireIn: 1 // VITAL: Sin este número, la base de datos de PayPhone colapsa
     };
 
-    console.log("Enviando a PayPhone button/Prepare:", JSON.stringify(payphoneBody));
+    console.log("Enviando a PayPhone Links (Blindado):", JSON.stringify(payphoneBody));
 
-    const payphoneResponse = await fetch('https://pay.payphonetodoesposible.com/api/button/Prepare', {
+    const payphoneResponse = await fetch('https://pay.payphonetodoesposible.com/api/Links', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}` // Next.js agrega "Bearer" automáticamente aquí
       },
       body: JSON.stringify(payphoneBody),
       cache: 'no-store'
     });
 
+    // Si el banco vuelve a escupir HTML, lo atrapamos
     const contentType = payphoneResponse.headers.get("content-type");
     if (contentType && contentType.includes("text/html")) {
-        const text = await payphoneResponse.text();
-        console.error("PayPhone colapsó (HTML). Las URLs enviadas no coinciden con las del panel.", text);
-        return NextResponse.json({ error: 'Fallo en la sincronización con el banco.' }, { status: 500 });
+        console.error("PayPhone colapsó de nuevo (HTML).");
+        return NextResponse.json({ error: 'Error interno en los servidores de PayPhone.' }, { status: 500 });
     }
 
     const data = await payphoneResponse.json();
@@ -61,11 +59,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: data.message || 'Error en PayPhone' }, { status: 400 });
     }
 
-    // Retornamos la URL de la ventana de pago seguro
-    return NextResponse.json({ url: data.paymentUrl });
+    // El endpoint api/Links devuelve directamente 'url'
+    return NextResponse.json({ url: data.url });
 
   } catch (error) {
-    console.error("Error crítico interno:", error);
+    console.error("Error crítico en Vercel:", error);
     return NextResponse.json({ error: 'Error procesando el pago' }, { status: 500 });
   }
 }
