@@ -12,32 +12,24 @@ export async function POST(request: Request) {
 
     const amountInCents = Math.round(parseFloat(precio) * 100);
     
-    // Limpieza de caracteres para que el banco no rechace tildes o caracteres especiales
     const rawReference = institucion ? `${nombre} (${institucion})` : nombre || "Acceso Ecuaforma";
     const safeReference = rawReference.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9 ()-]/g, "").substring(0, 50);
     
     const transactionId = `EC-${Date.now()}`;
 
-    // Payload limpio y seguro
+    // 🌟 EL SECRETO: Enviamos ÚNICAMENTE los 6 campos que la API de PayPhone Links reconoce.
     const payphoneBody = {
       amount: amountInCents,
       amountWithoutTax: amountInCents,
       amountWithTax: 0,
       tax: 0,
-      service: 0,
-      tip: 0,
-      currency: "USD",
       clientTransactionId: transactionId,
-      reference: safeReference,
-      // URLs seguras (HTTPS) para evitar que PayPhone bloquee la transacción
-      responseUrl: "https://www.ecuaforma.com/mis-cursos",
-      cancellationUrl: "https://www.ecuaforma.com/checkout"
+      reference: safeReference
     };
 
-    console.log("Enviando a PayPhone button/Prepare:", JSON.stringify(payphoneBody));
+    console.log("Enviando a PayPhone Links (Payload estricto):", JSON.stringify(payphoneBody));
 
-    // El endpoint correcto para redirecciones en la web es button/Prepare
-    const payphoneResponse = await fetch('https://pay.payphonetodoesposible.com/api/button/Prepare', {
+    const payphoneResponse = await fetch('https://pay.payphonetodoesposible.com/api/Links', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -62,8 +54,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: data.message || 'Error en PayPhone' }, { status: 400 });
     }
 
-    // Retornamos la URL de pago segura del banco
-    return NextResponse.json({ url: data.paymentUrl });
+    // Retornamos el link directo generado por el banco
+    return NextResponse.json({ url: data.url });
 
   } catch (error) {
     console.error("Error crítico interno:", error);
