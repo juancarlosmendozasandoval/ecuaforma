@@ -18,6 +18,9 @@ export async function POST(request: Request) {
     const rawReference = institucion ? `${nombre} (${institucion})` : nombre || "Ecuaforma";
     const safeReference = rawReference.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9 ()-]/g, "").substring(0, 50);
 
+    // 🌟 CORRECCIÓN AQUÍ: Agregamos el nombre del curso a la URL de respuesta
+    const urlRespuesta = `https://www.ecuaforma.com/mis-cursos?curso=${encodeURIComponent(nombre)}`;
+
     // Payload con el StoreId correcto
     const payphoneBody = {
       amount: amountInCents,
@@ -30,7 +33,7 @@ export async function POST(request: Request) {
       clientTransactionId: transactionId,
       reference: safeReference,
       storeId: "f2a3b1bc-f8bd-4d5a-9d5a-22648de632b4",
-      responseUrl: "https://www.ecuaforma.com/mis-cursos",
+      responseUrl: urlRespuesta, // 🌟 Usamos la URL dinámica aquí
       cancellationUrl: "https://www.ecuaforma.com/checkout"
     };
 
@@ -63,7 +66,7 @@ export async function POST(request: Request) {
 
     console.log("¡ÉXITO! Respuesta de PayPhone:", JSON.stringify(response.data));
 
-    // 🌟 AQUÍ ESTÁ EL CAMBIO: Capturamos el link exacto que nos mandó el banco
+    // Capturamos el link exacto que nos mandó el banco
     const linkDePago = response.data.payWithCard || response.data.payWithPayPhone;
 
     if (!linkDePago) {

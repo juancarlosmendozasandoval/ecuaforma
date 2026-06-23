@@ -5,10 +5,15 @@ import Card from '../components/Card';
 import { Lock, GraduationCap, ArrowRight, Settings, Award, BookOpen } from 'lucide-react';
 import CertificateGenerator from '../components/CertificateGenerator';
 
-// 🌟 OBLIGA A NEXT.JS A RECALCULAR EL PROGRESO EN TIEMPO REAL (Evita problemas de caché)
+// OBLIGA A NEXT.JS A RECALCULAR EL PROGRESO EN TIEMPO REAL
 export const dynamic = 'force-dynamic';
 
-export default async function MisCursosPage() {
+// 🌟 Añadimos searchParams para poder leer lo que nos manda el banco en la URL
+export default async function MisCursosPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) {
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   
@@ -24,7 +29,70 @@ export default async function MisCursosPage() {
     );
   }
 
-  // 2. PARTE A: Consultar los Simuladores Privados (Tu lógica original intacta)
+  // =========================================================================
+  // 🌟 LÓGICA DE VALIDACIÓN Y MATRICULACIÓN AUTOMÁTICA (PAYPHONE)
+  // =========================================================================
+  const paymentId = searchParams.id;
+  const cursoComprado = searchParams.curso;
+  let mensajeAlerta = null;
+
+  if (paymentId && cursoComprado) {
+    try {
+      const token = process.env.PAYPHONE_TOKEN?.trim();
+      
+      // Le preguntamos en secreto a PayPhone si la transacción de la URL es real y fue pagada
+      const verifyResponse = await fetch(`https://pay.payphonetodoesposible.com/api/button/V2/Confirm?id=${paymentId}`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` },
+        cache: 'no-store'
+      });
+      
+      const verifyData = await verifyResponse.json();
+      
+      if (verifyData.transactionStatus === 'Approved') {
+        // El pago es real. Buscamos el ID del curso en tu base de datos
+        const { data: cursoEncontrado } = await supabase
+          .from('cursos')
+          .select('id')
+          .ilike('nombre', cursoComprado)
+          .single();
+
+        if (cursoEncontrado) {
+          // Verificamos si ya estaba inscrito para no duplicar
+          const { data: yaInscrito } = await supabase
+            .from('accesos_cursos')
+            .select('id')
+            .eq('usuario_id', user.id)
+            .eq('curso_id', cursoEncontrado.id)
+            .single();
+
+          if (!yaInscrito) {
+            // Matricular al alumno guardando el acceso
+            const { error: errorInscripcion } = await supabase
+              .from('accesos_cursos')
+              .insert({ usuario_id: user.id, curso_id: cursoEncontrado.id });
+
+            if (!errorInscripcion) {
+              mensajeAlerta = { tipo: 'success', texto: `¡Pago exitoso! Se ha habilitado tu acceso al curso de ${cursoComprado}.` };
+            } else {
+              mensajeAlerta = { tipo: 'error', texto: 'Tu pago fue aprobado, pero hubo un error al activar el curso. Por favor contáctanos por WhatsApp.' };
+            }
+          } else {
+            mensajeAlerta = { tipo: 'success', texto: `El pago se procesó correctamente, ya tenías acceso a ${cursoComprado}.` };
+          }
+        } else {
+           mensajeAlerta = { tipo: 'error', texto: 'Pago aprobado, pero no logramos identificar el curso exacto. Por favor contáctanos.' };
+        }
+      } else {
+        mensajeAlerta = { tipo: 'error', texto: `El pago no fue procesado. Estado devuelto por el banco: ${verifyData.transactionStatus}` };
+      }
+    } catch (err) {
+       mensajeAlerta = { tipo: 'error', texto: 'Tuvimos un problema verificando tu pago con el banco. Si el dinero fue descontado, contáctanos.' };
+    }
+  }
+  // =========================================================================
+
+  // 2. PARTE A: Consultar los Simuladores Privados
   const { data: accesosSims } = await supabase
     .from('accesos_simuladores')
     .select('simulador_id')
@@ -41,7 +109,7 @@ export default async function MisCursosPage() {
     if (simsData) simuladoresPrivados = simsData;
   }
 
-  // 3. PARTE B: Consultar los Cursos Multimedia con su Progreso Dinámico
+  // 3. PARTE B: Consultar los Cursos Multimedia
   const { data: accesosCursos } = await supabase
     .from('accesos_cursos')
     .select(`
@@ -56,13 +124,11 @@ export default async function MisCursosPage() {
     `)
     .eq('usuario_id', user.id);
 
-  // Descargar el catálogo completo de lecciones y progreso para mapear porcentajes
   const { data: todasLasLecciones } = await supabase.from('lecciones').select('id, curso_id');
   const { data: progresoUsuario } = await supabase.from('progreso_lecciones').select('leccion_id').eq('usuario_id', user.id);
   
   const leccionesCompletadasIds = progresoUsuario ? progresoUsuario.map(p => p.leccion_id) : [];
 
-  // Mapear y calcular progreso de los cursos multimedia inscritos
   const cursosMultimedia = accesosCursos
     ? accesosCursos.map((acceso: any) => {
         const c = acceso.cursos;
@@ -83,12 +149,17 @@ export default async function MisCursosPage() {
       }).filter(Boolean)
     : [];
 
-  // Validar si el alumno no tiene absolutamente nada asignado aún
   const estaVacio = simuladoresPrivados.length === 0 && cursosMultimedia.length === 0;
 
   if (estaVacio) {
     return (
        <div className="text-center mt-10 p-8 main-container max-w-xl mx-auto space-y-4">
+        {/* Mostramos la alerta de pago incluso si falló y no tiene cursos */}
+        {mensajeAlerta && (
+          <div className={`p-4 rounded-xl font-medium border text-sm ${mensajeAlerta.tipo === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+            {mensajeAlerta.texto}
+          </div>
+        )}
         <BookOpen className="mx-auto w-12 h-12 text-gray-300" />
         <h1 className="text-2xl font-bold text-gray-800">No tienes material privado asignado</h1>
         <p className="text-gray-600">Aún no se te ha matriculado en ningún curso multimedia ni simulador exclusivo.</p>
@@ -99,6 +170,13 @@ export default async function MisCursosPage() {
   return (
     <div className="main-container py-10 min-h-screen bg-gray-50/50">
       
+      {/* 🌟 MUESTRA EL RESULTADO DE LA TRANSACCIÓN DE PAYPHONE SI EXISTE */}
+      {mensajeAlerta && (
+        <div className={`p-4 mb-6 rounded-xl font-medium border shadow-sm ${mensajeAlerta.tipo === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+          {mensajeAlerta.texto}
+        </div>
+      )}
+
       {/* Cabecera Principal */}
       <div className="flex items-center gap-4 mb-2">
         <Lock className="w-8 h-8 text-primary"/>
@@ -122,7 +200,6 @@ export default async function MisCursosPage() {
                   <h3 className="text-lg font-bold text-gray-800 mb-2">{curso.nombre}</h3>
                   <p className="text-xs text-gray-400 line-clamp-2 mb-6 flex-1">{curso.descripcion}</p>
 
-                  {/* Barra de Progreso Visual */}
                   <div className="space-y-2">
                     <div className="flex justify-between text-xs font-semibold text-gray-500">
                       <span>Progreso</span>
@@ -140,7 +217,6 @@ export default async function MisCursosPage() {
                   </div>
                 </div>
                 
-                {/* 🌟 FOOTER CON BOTÓN DE CERTIFICADO CONDICIONAL Y ENLACE DE ACCESO */}
                 <div className="p-4 bg-gray-50 border-t border-gray-50 flex items-center justify-between">
                   <div>
                     {curso.porcentaje === 100 && (
@@ -187,7 +263,6 @@ export default async function MisCursosPage() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
