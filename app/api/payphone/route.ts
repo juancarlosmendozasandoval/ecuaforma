@@ -61,17 +61,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: response.data?.message || 'Error en PayPhone' }, { status: 400 });
     }
 
-    // 🌟 NUEVO: Imprimimos la victoria en la consola
     console.log("¡ÉXITO! Respuesta de PayPhone:", JSON.stringify(response.data));
 
-    // Cubrimos ambos posibles nombres que el banco le da al link de pago
-    const linkDePago = response.data.paymentUrl || response.data.url;
+    // 🌟 AQUÍ ESTÁ EL CAMBIO: Capturamos el link exacto que nos mandó el banco
+    const linkDePago = response.data.payWithCard || response.data.payWithPayPhone;
 
     if (!linkDePago) {
       console.error("El banco respondió 200, pero no incluyó un enlace válido.");
       return NextResponse.json({ error: 'Respuesta incompleta del banco' }, { status: 500 });
     }
 
+    // Le devolvemos el link a tu frontend
     return NextResponse.json({ url: linkDePago });
 
   } catch (error) {
