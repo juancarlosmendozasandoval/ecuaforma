@@ -34,9 +34,6 @@ export async function POST(request: Request) {
       cancellationUrl: "https://www.ecuaforma.com/checkout"
     };
 
-    console.log("Enviando a PayPhone mediante AXIOS...");
-
-    // 🌟 LA MAGIA: Usamos Axios en lugar de Fetch
     const response = await axios.post(
       'https://pay.payphonetodoesposible.com/api/button/Prepare',
       payphoneBody,
@@ -46,15 +43,12 @@ export async function POST(request: Request) {
           'Accept': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        // Esto evita que Axios se detenga si el banco envía un error, 
-        // para poder leer el mensaje real.
         validateStatus: function (status) {
           return status >= 200 && status < 600; 
         }
       }
     );
 
-    // Si el banco vuelve a escupir HTML, lo atrapamos
     if (typeof response.data === 'string' && response.data.includes('<html')) {
         console.error("=================== ERROR HTML DE PAYPHONE ===================");
         console.error(response.data);
@@ -62,14 +56,23 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Error del banco. Revisa los logs.' }, { status: 500 });
     }
 
-    // Si la petición no fue exitosa (diferente de 200 OK)
     if (response.status !== 200) {
       console.error("PayPhone rechazó los datos (Axios):", response.data);
       return NextResponse.json({ error: response.data?.message || 'Error en PayPhone' }, { status: 400 });
     }
 
-    // Retornamos la URL generada
-    return NextResponse.json({ url: response.data.paymentUrl });
+    // 🌟 NUEVO: Imprimimos la victoria en la consola
+    console.log("¡ÉXITO! Respuesta de PayPhone:", JSON.stringify(response.data));
+
+    // Cubrimos ambos posibles nombres que el banco le da al link de pago
+    const linkDePago = response.data.paymentUrl || response.data.url;
+
+    if (!linkDePago) {
+      console.error("El banco respondió 200, pero no incluyó un enlace válido.");
+      return NextResponse.json({ error: 'Respuesta incompleta del banco' }, { status: 500 });
+    }
+
+    return NextResponse.json({ url: linkDePago });
 
   } catch (error) {
     console.error("Error crítico interno (Axios):", error);
