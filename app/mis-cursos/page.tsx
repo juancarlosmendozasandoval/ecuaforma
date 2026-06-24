@@ -5,18 +5,12 @@ import Card from '../components/Card';
 import { Lock, GraduationCap, ArrowRight, Settings, Award, BookOpen } from 'lucide-react';
 import CertificateGenerator from '../components/CertificateGenerator';
 
-// OBLIGA A NEXT.JS A RECALCULAR EL PROGRESO EN TIEMPO REAL
 export const dynamic = 'force-dynamic';
 
-export default async function MisCursosPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | undefined };
-}) {
+export default async function MisCursosPage(props: any) {
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   
-  // 1. Obtener la sesión del usuario
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
@@ -29,27 +23,30 @@ export default async function MisCursosPage({
   }
 
   // =========================================================================
-  // 🌟 NUEVA LÓGICA DE VALIDACIÓN (Basada en los parámetros de la URL)
+  // 🌟 LÓGICA DE VALIDACIÓN Y MATRICULACIÓN AUTOMÁTICA
   // =========================================================================
-  const paymentId = searchParams.id;
-  const clientTxId = searchParams.clientTransactionId;
-  const cursoComprado = searchParams.curso;
+  const searchParams = await props.searchParams;
+  const paymentId = searchParams?.id;
+  const clientTxId = searchParams?.clientTransactionId;
+  const cursoComprado = searchParams?.curso;
   let mensajeAlerta = null;
 
-  // Si PayPhone nos devuelve a esta página con un ID de transacción y el ClientTxId, asumimos éxito
   if (paymentId && clientTxId && cursoComprado) {
     try {
       console.log(`[PAGO DETECTADO] ID: ${paymentId}, Curso: ${cursoComprado}`);
       
-      // Buscamos el ID del curso en tu base de datos
-      const { data: cursoEncontrado } = await supabase
-        .from('cursos')
-        .select('id')
-        .ilike('nombre', cursoComprado)
-        .single();
+      // 🌟 SOLUCIÓN: Buscamos todos los cursos y los limpiamos de tildes para asegurar la coincidencia
+      const { data: listaCursos } = await supabase.from('cursos').select('id, nombre');
+      
+      const cursoNormalizado = cursoComprado.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+      
+      const cursoEncontrado = listaCursos?.find(c => 
+        c.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() === cursoNormalizado
+      );
 
       if (cursoEncontrado) {
-        // Verificamos si ya estaba inscrito para no duplicar
+        console.log(`[CURSO IDENTIFICADO EN BD] ID: ${cursoEncontrado.id}`);
+        
         const { data: yaInscrito } = await supabase
           .from('accesos_cursos')
           .select('id')
@@ -58,7 +55,6 @@ export default async function MisCursosPage({
           .single();
 
         if (!yaInscrito) {
-          // Matricular al alumno guardando el acceso
           const { error: errorInscripcion } = await supabase
             .from('accesos_cursos')
             .insert({ usuario_id: user.id, curso_id: cursoEncontrado.id });
@@ -73,20 +69,19 @@ export default async function MisCursosPage({
           mensajeAlerta = { tipo: 'success', texto: `El pago se procesó correctamente, ya tenías acceso a ${cursoComprado}.` };
         }
       } else {
-         console.error(`[ERROR BD] No se encontró el curso: ${cursoComprado}`);
+         console.error(`[ERROR BD] No se encontró el curso en Supabase parecido a: ${cursoComprado}`);
          mensajeAlerta = { tipo: 'error', texto: `Pago aprobado, pero no logramos identificar el curso exacto (${cursoComprado}). Contáctanos para habilitarlo manualmente.` };
       }
     } catch (err) {
        console.error("Error grave en la matriculación:", err);
        mensajeAlerta = { tipo: 'error', texto: 'Tuvimos un problema procesando tu curso. Si el dinero fue descontado, contáctanos.' };
     }
-  } else if (searchParams.id && !clientTxId) {
-    // Si la URL trae un ID pero NO trae clientTransactionId, podría ser un error o una cancelación
+  } else if (searchParams?.id && !clientTxId) {
     mensajeAlerta = { tipo: 'error', texto: 'La transacción fue cancelada o no se completó correctamente.' };
   }
   // =========================================================================
 
-  // 2. PARTE A: Consultar los Simuladores Privados
+  // PARTE A: Consultar los Simuladores Privados
   const { data: accesosSims } = await supabase
     .from('accesos_simuladores')
     .select('simulador_id')
@@ -103,7 +98,7 @@ export default async function MisCursosPage({
     if (simsData) simuladoresPrivados = simsData;
   }
 
-  // 3. PARTE B: Consultar los Cursos Multimedia
+  // PARTE B: Consultar los Cursos Multimedia
   const { data: accesosCursos } = await supabase
     .from('accesos_cursos')
     .select(`
@@ -148,7 +143,6 @@ export default async function MisCursosPage({
   if (estaVacio) {
     return (
        <div className="text-center mt-10 p-8 main-container max-w-xl mx-auto space-y-4">
-        {/* Mostramos la alerta de pago incluso si falló y no tiene cursos */}
         {mensajeAlerta && (
           <div className={`p-4 rounded-xl font-medium border text-sm ${mensajeAlerta.tipo === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
             {mensajeAlerta.texto}
@@ -164,21 +158,18 @@ export default async function MisCursosPage({
   return (
     <div className="main-container py-10 min-h-screen bg-gray-50/50">
       
-      {/* 🌟 MUESTRA EL RESULTADO DE LA TRANSACCIÓN DE PAYPHONE SI EXISTE */}
       {mensajeAlerta && (
         <div className={`p-4 mb-6 rounded-xl font-medium border shadow-sm ${mensajeAlerta.tipo === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
           {mensajeAlerta.texto}
         </div>
       )}
 
-      {/* Cabecera Principal */}
       <div className="flex items-center gap-4 mb-2">
         <Lock className="w-8 h-8 text-primary"/>
         <h1 className="text-3xl font-bold">Mi Aula Virtual</h1>
       </div>
       <p className="mb-10 text-text-secondary">Gestiona tu ritmo de estudio y accede al contenido exclusivo asignado a tu cuenta.</p>
 
-      {/* ================= SECCIÓN 1: CURSOS MULTIMEDIA (LMS) ================= */}
       {cursosMultimedia.length > 0 && (
         <div className="mb-12">
           <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2 border-b border-gray-200 pb-2">
@@ -239,7 +230,6 @@ export default async function MisCursosPage({
         </div>
       )}
 
-      {/* ================= SECCIÓN 2: SIMULADORES EXCLUSIVOS ================= */}
       {simuladoresPrivados.length > 0 && (
         <div>
           <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2 border-b border-gray-200 pb-2">
