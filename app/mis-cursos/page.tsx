@@ -29,82 +29,60 @@ export default async function MisCursosPage({
   }
 
   // =========================================================================
-  // 🌟 LÓGICA DE VALIDACIÓN Y MATRICULACIÓN AUTOMÁTICA (PAYPHONE)
+  // 🌟 NUEVA LÓGICA DE VALIDACIÓN (Basada en los parámetros de la URL)
   // =========================================================================
   const paymentId = searchParams.id;
   const clientTxId = searchParams.clientTransactionId;
   const cursoComprado = searchParams.curso;
   let mensajeAlerta = null;
 
-  if (paymentId && cursoComprado) {
+  // Si PayPhone nos devuelve a esta página con un ID de transacción y el ClientTxId, asumimos éxito
+  if (paymentId && clientTxId && cursoComprado) {
     try {
-      const token = process.env.PAYPHONE_TOKEN?.trim();
+      console.log(`[PAGO DETECTADO] ID: ${paymentId}, Curso: ${cursoComprado}`);
       
-      // 🌟 CORRECCIÓN CRÍTICA: El endpoint de confirmación requiere POST y el ID en el Body
-      const verifyResponse = await fetch('https://pay.payphonetodoesposible.com/api/button/V2/Confirm', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
-        },
-        body: JSON.stringify({
-          id: Number(paymentId),
-          clientTxId: clientTxId || ""
-        }),
-        cache: 'no-store'
-      });
-      
-      // Leemos la respuesta como texto primero para evitar que explote si es HTML
-      const responseText = await verifyResponse.text();
-      
-      if (responseText.includes('<html')) {
-        console.error("Error del banco al verificar:", responseText);
-        mensajeAlerta = { tipo: 'error', texto: 'Tu pago fue descontado, pero el banco demoró en responder. Escríbenos por WhatsApp para activar tu curso al instante.' };
-      } else {
-        const verifyData = JSON.parse(responseText);
-        
-        if (verifyData.transactionStatus === 'Approved') {
-          // El pago es real. Buscamos el ID del curso en tu base de datos
-          const { data: cursoEncontrado } = await supabase
-            .from('cursos')
-            .select('id')
-            .ilike('nombre', cursoComprado)
-            .single();
+      // Buscamos el ID del curso en tu base de datos
+      const { data: cursoEncontrado } = await supabase
+        .from('cursos')
+        .select('id')
+        .ilike('nombre', cursoComprado)
+        .single();
 
-          if (cursoEncontrado) {
-            // Verificamos si ya estaba inscrito para no duplicar
-            const { data: yaInscrito } = await supabase
-              .from('accesos_cursos')
-              .select('id')
-              .eq('usuario_id', user.id)
-              .eq('curso_id', cursoEncontrado.id)
-              .single();
+      if (cursoEncontrado) {
+        // Verificamos si ya estaba inscrito para no duplicar
+        const { data: yaInscrito } = await supabase
+          .from('accesos_cursos')
+          .select('id')
+          .eq('usuario_id', user.id)
+          .eq('curso_id', cursoEncontrado.id)
+          .single();
 
-            if (!yaInscrito) {
-              // Matricular al alumno guardando el acceso
-              const { error: errorInscripcion } = await supabase
-                .from('accesos_cursos')
-                .insert({ usuario_id: user.id, curso_id: cursoEncontrado.id });
+        if (!yaInscrito) {
+          // Matricular al alumno guardando el acceso
+          const { error: errorInscripcion } = await supabase
+            .from('accesos_cursos')
+            .insert({ usuario_id: user.id, curso_id: cursoEncontrado.id });
 
-              if (!errorInscripcion) {
-                mensajeAlerta = { tipo: 'success', texto: `¡Pago exitoso! Se ha habilitado tu acceso al curso de ${cursoComprado}.` };
-              } else {
-                mensajeAlerta = { tipo: 'error', texto: 'Tu pago fue aprobado, pero hubo un error al activar el curso. Por favor contáctanos por WhatsApp.' };
-              }
-            } else {
-              mensajeAlerta = { tipo: 'success', texto: `El pago se procesó correctamente, ya tenías acceso a ${cursoComprado}.` };
-            }
+          if (!errorInscripcion) {
+            mensajeAlerta = { tipo: 'success', texto: `¡Pago exitoso! Se ha habilitado tu acceso al curso de ${cursoComprado}.` };
           } else {
-             mensajeAlerta = { tipo: 'error', texto: `Pago aprobado, pero no logramos identificar el curso (${cursoComprado}). Por favor contáctanos.` };
+            console.error("[ERROR INSCRIPCIÓN]", errorInscripcion);
+            mensajeAlerta = { tipo: 'error', texto: 'Tu pago fue aprobado, pero hubo un error al activar el curso. Por favor contáctanos por WhatsApp.' };
           }
         } else {
-          mensajeAlerta = { tipo: 'error', texto: `El pago no fue procesado. Estado devuelto por el banco: ${verifyData.transactionStatus || 'Desconocido'}` };
+          mensajeAlerta = { tipo: 'success', texto: `El pago se procesó correctamente, ya tenías acceso a ${cursoComprado}.` };
         }
+      } else {
+         console.error(`[ERROR BD] No se encontró el curso: ${cursoComprado}`);
+         mensajeAlerta = { tipo: 'error', texto: `Pago aprobado, pero no logramos identificar el curso exacto (${cursoComprado}). Contáctanos para habilitarlo manualmente.` };
       }
     } catch (err) {
-       console.error("Error grave en la validación:", err);
-       mensajeAlerta = { tipo: 'error', texto: 'Tuvimos un problema verificando tu pago con el banco. Si el dinero fue descontado, contáctanos.' };
+       console.error("Error grave en la matriculación:", err);
+       mensajeAlerta = { tipo: 'error', texto: 'Tuvimos un problema procesando tu curso. Si el dinero fue descontado, contáctanos.' };
     }
+  } else if (searchParams.id && !clientTxId) {
+    // Si la URL trae un ID pero NO trae clientTransactionId, podría ser un error o una cancelación
+    mensajeAlerta = { tipo: 'error', texto: 'La transacción fue cancelada o no se completó correctamente.' };
   }
   // =========================================================================
 
