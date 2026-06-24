@@ -8,7 +8,6 @@ import CertificateGenerator from '../components/CertificateGenerator';
 // OBLIGA A NEXT.JS A RECALCULAR EL PROGRESO EN TIEMPO REAL
 export const dynamic = 'force-dynamic';
 
-// 🌟 Añadimos searchParams para poder leer lo que nos manda el banco en la URL
 export default async function MisCursosPage({
   searchParams,
 }: {
@@ -33,6 +32,7 @@ export default async function MisCursosPage({
   // 🌟 LÓGICA DE VALIDACIÓN Y MATRICULACIÓN AUTOMÁTICA (PAYPHONE)
   // =========================================================================
   const paymentId = searchParams.id;
+  const clientTxId = searchParams.clientTransactionId;
   const cursoComprado = searchParams.curso;
   let mensajeAlerta = null;
 
@@ -40,53 +40,69 @@ export default async function MisCursosPage({
     try {
       const token = process.env.PAYPHONE_TOKEN?.trim();
       
-      // Le preguntamos en secreto a PayPhone si la transacción de la URL es real y fue pagada
-      const verifyResponse = await fetch(`https://pay.payphonetodoesposible.com/api/button/V2/Confirm?id=${paymentId}`, {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${token}` },
+      // 🌟 CORRECCIÓN CRÍTICA: El endpoint de confirmación requiere POST y el ID en el Body
+      const verifyResponse = await fetch('https://pay.payphonetodoesposible.com/api/button/V2/Confirm', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          id: Number(paymentId),
+          clientTxId: clientTxId || ""
+        }),
         cache: 'no-store'
       });
       
-      const verifyData = await verifyResponse.json();
+      // Leemos la respuesta como texto primero para evitar que explote si es HTML
+      const responseText = await verifyResponse.text();
       
-      if (verifyData.transactionStatus === 'Approved') {
-        // El pago es real. Buscamos el ID del curso en tu base de datos
-        const { data: cursoEncontrado } = await supabase
-          .from('cursos')
-          .select('id')
-          .ilike('nombre', cursoComprado)
-          .single();
-
-        if (cursoEncontrado) {
-          // Verificamos si ya estaba inscrito para no duplicar
-          const { data: yaInscrito } = await supabase
-            .from('accesos_cursos')
+      if (responseText.includes('<html')) {
+        console.error("Error del banco al verificar:", responseText);
+        mensajeAlerta = { tipo: 'error', texto: 'Tu pago fue descontado, pero el banco demoró en responder. Escríbenos por WhatsApp para activar tu curso al instante.' };
+      } else {
+        const verifyData = JSON.parse(responseText);
+        
+        if (verifyData.transactionStatus === 'Approved') {
+          // El pago es real. Buscamos el ID del curso en tu base de datos
+          const { data: cursoEncontrado } = await supabase
+            .from('cursos')
             .select('id')
-            .eq('usuario_id', user.id)
-            .eq('curso_id', cursoEncontrado.id)
+            .ilike('nombre', cursoComprado)
             .single();
 
-          if (!yaInscrito) {
-            // Matricular al alumno guardando el acceso
-            const { error: errorInscripcion } = await supabase
+          if (cursoEncontrado) {
+            // Verificamos si ya estaba inscrito para no duplicar
+            const { data: yaInscrito } = await supabase
               .from('accesos_cursos')
-              .insert({ usuario_id: user.id, curso_id: cursoEncontrado.id });
+              .select('id')
+              .eq('usuario_id', user.id)
+              .eq('curso_id', cursoEncontrado.id)
+              .single();
 
-            if (!errorInscripcion) {
-              mensajeAlerta = { tipo: 'success', texto: `¡Pago exitoso! Se ha habilitado tu acceso al curso de ${cursoComprado}.` };
+            if (!yaInscrito) {
+              // Matricular al alumno guardando el acceso
+              const { error: errorInscripcion } = await supabase
+                .from('accesos_cursos')
+                .insert({ usuario_id: user.id, curso_id: cursoEncontrado.id });
+
+              if (!errorInscripcion) {
+                mensajeAlerta = { tipo: 'success', texto: `¡Pago exitoso! Se ha habilitado tu acceso al curso de ${cursoComprado}.` };
+              } else {
+                mensajeAlerta = { tipo: 'error', texto: 'Tu pago fue aprobado, pero hubo un error al activar el curso. Por favor contáctanos por WhatsApp.' };
+              }
             } else {
-              mensajeAlerta = { tipo: 'error', texto: 'Tu pago fue aprobado, pero hubo un error al activar el curso. Por favor contáctanos por WhatsApp.' };
+              mensajeAlerta = { tipo: 'success', texto: `El pago se procesó correctamente, ya tenías acceso a ${cursoComprado}.` };
             }
           } else {
-            mensajeAlerta = { tipo: 'success', texto: `El pago se procesó correctamente, ya tenías acceso a ${cursoComprado}.` };
+             mensajeAlerta = { tipo: 'error', texto: `Pago aprobado, pero no logramos identificar el curso (${cursoComprado}). Por favor contáctanos.` };
           }
         } else {
-           mensajeAlerta = { tipo: 'error', texto: 'Pago aprobado, pero no logramos identificar el curso exacto. Por favor contáctanos.' };
+          mensajeAlerta = { tipo: 'error', texto: `El pago no fue procesado. Estado devuelto por el banco: ${verifyData.transactionStatus || 'Desconocido'}` };
         }
-      } else {
-        mensajeAlerta = { tipo: 'error', texto: `El pago no fue procesado. Estado devuelto por el banco: ${verifyData.transactionStatus}` };
       }
     } catch (err) {
+       console.error("Error grave en la validación:", err);
        mensajeAlerta = { tipo: 'error', texto: 'Tuvimos un problema verificando tu pago con el banco. Si el dinero fue descontado, contáctanos.' };
     }
   }
