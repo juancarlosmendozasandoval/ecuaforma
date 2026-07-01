@@ -1,4 +1,5 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js'; // 🌟 Importamos el cliente estándar
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import Card from '../components/Card';
@@ -9,6 +10,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function MisCursosPage(props: any) {
   const cookieStore = cookies();
+  // Cliente normal para leer datos con los permisos del usuario
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   
   const { data: { user } } = await supabase.auth.getUser();
@@ -23,65 +25,95 @@ export default async function MisCursosPage(props: any) {
   }
 
   // =========================================================================
-  // 🌟 LÓGICA DE VALIDACIÓN Y MATRICULACIÓN AUTOMÁTICA
+  // 🌟 LÓGICA DE VALIDACIÓN Y MATRICULACIÓN (MODO DIOS)
   // =========================================================================
   const searchParams = await props.searchParams;
   const paymentId = searchParams?.id;
   const clientTxId = searchParams?.clientTransactionId;
   const cursoComprado = searchParams?.curso;
+  const institucionComprada = searchParams?.institucion;
   let mensajeAlerta = null;
 
   if (paymentId && clientTxId && cursoComprado) {
     try {
-      console.log(`[PAGO DETECTADO] ID: ${paymentId}, Curso: ${cursoComprado}`);
-      
-      // 🌟 SOLUCIÓN: Buscamos todos los cursos y los limpiamos de tildes para asegurar la coincidencia
-      const { data: listaCursos } = await supabase.from('cursos').select('id, nombre');
-      
-      const cursoNormalizado = cursoComprado.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-      
-      const cursoEncontrado = listaCursos?.find(c => 
-        c.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() === cursoNormalizado
-      );
+      console.log(`[VERIFICANDO PAGO] ID: ${paymentId}`);
+      const token = process.env.PAYPHONE_TOKEN?.trim();
 
-      if (cursoEncontrado) {
-        console.log(`[CURSO IDENTIFICADO EN BD] ID: ${cursoEncontrado.id}`);
+      // 1. Consultamos a la API estable de Transacciones de PayPhone
+      const verifyResponse = await fetch(`https://pay.payphonetodoesposible.com/api/Transactions/${paymentId}`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` },
+        cache: 'no-store'
+      });
+      
+      const verifyData = await verifyResponse.json();
+      console.log(`[ESTADO PAYPHONE]: ${verifyData.transactionStatus}`);
+
+      // 2. Solo si PayPhone confirma que SÍ se pagó y aprobó
+      if (verifyData.transactionStatus === 'Approved') {
         
-        const { data: yaInscrito } = await supabase
-          .from('accesos_cursos')
-          .select('id')
-          .eq('usuario_id', user.id)
-          .eq('curso_id', cursoEncontrado.id)
-          .single();
+        // 🌟 INICIALIZAMOS SUPABASE EN MODO DIOS (Salta el bloqueo RLS de inserción)
+        const supabaseAdmin = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+          process.env.SUPABASE_SERVICE_ROLE_KEY as string,
+          { auth: { persistSession: false } }
+        );
 
-        if (!yaInscrito) {
-          const { error: errorInscripcion } = await supabase
+        // Usamos el admin para buscar los cursos
+        const { data: listaCursos } = await supabaseAdmin.from('cursos').select('id, nombre, institucion');
+        
+        const cursoNormalizado = cursoComprado.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+        const instNormalizada = institucionComprada ? institucionComprada.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : "";
+        
+        const cursoEncontrado = listaCursos?.find(c => {
+          const matchNombre = c.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() === cursoNormalizado;
+          const matchInst = c.institucion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() === instNormalizada;
+          return instNormalizada ? (matchNombre && matchInst) : matchNombre;
+        });
+
+        if (cursoEncontrado) {
+          console.log(`[CURSO IDENTIFICADO EN BD] ID: ${cursoEncontrado.id}`);
+          
+          const { data: yaInscrito } = await supabaseAdmin
             .from('accesos_cursos')
-            .insert({ usuario_id: user.id, curso_id: cursoEncontrado.id });
+            .select('id')
+            .eq('usuario_id', user.id)
+            .eq('curso_id', cursoEncontrado.id)
+            .single();
 
-          if (!errorInscripcion) {
-            mensajeAlerta = { tipo: 'success', texto: `¡Pago exitoso! Se ha habilitado tu acceso al curso de ${cursoComprado}.` };
+          if (!yaInscrito) {
+            // 🌟 MATRICULAMOS AL ALUMNO USANDO EL MODO DIOS
+            const { error: errorInscripcion } = await supabaseAdmin
+              .from('accesos_cursos')
+              .insert({ usuario_id: user.id, curso_id: cursoEncontrado.id });
+
+            if (!errorInscripcion) {
+              mensajeAlerta = { tipo: 'success', texto: `¡Pago exitoso! Se ha habilitado tu acceso al curso de ${cursoComprado}.` };
+            } else {
+              console.error("[ERROR INSCRIPCIÓN ADMIN]", errorInscripcion);
+              mensajeAlerta = { tipo: 'error', texto: 'Tu pago fue aprobado, pero hubo un error al activar el curso. Por favor contáctanos por WhatsApp.' };
+            }
           } else {
-            console.error("[ERROR INSCRIPCIÓN]", errorInscripcion);
-            mensajeAlerta = { tipo: 'error', texto: 'Tu pago fue aprobado, pero hubo un error al activar el curso. Por favor contáctanos por WhatsApp.' };
+            mensajeAlerta = { tipo: 'success', texto: `El pago se procesó correctamente, ya tenías acceso a ${cursoComprado}.` };
           }
         } else {
-          mensajeAlerta = { tipo: 'success', texto: `El pago se procesó correctamente, ya tenías acceso a ${cursoComprado}.` };
+           console.error(`[ERROR BD] No se encontró el curso: ${cursoComprado} - ${institucionComprada}`);
+           mensajeAlerta = { tipo: 'error', texto: `Pago aprobado, pero no logramos identificar el curso exacto (${cursoComprado}). Contáctanos para habilitarlo manualmente.` };
         }
       } else {
-         console.error(`[ERROR BD] No se encontró el curso en Supabase parecido a: ${cursoComprado}`);
-         mensajeAlerta = { tipo: 'error', texto: `Pago aprobado, pero no logramos identificar el curso exacto (${cursoComprado}). Contáctanos para habilitarlo manualmente.` };
+        // Si el estado es "Canceled", "Declined", etc.
+        mensajeAlerta = { tipo: 'error', texto: `El pago no pudo procesarse correctamente (Estado: ${verifyData.transactionStatus}). No se han realizado cobros.` };
       }
     } catch (err) {
-       console.error("Error grave en la matriculación:", err);
-       mensajeAlerta = { tipo: 'error', texto: 'Tuvimos un problema procesando tu curso. Si el dinero fue descontado, contáctanos.' };
+       console.error("Error grave en la validación bancaria:", err);
+       mensajeAlerta = { tipo: 'error', texto: 'Tuvimos un problema comunicándonos con el banco para verificar tu pago. Contáctanos.' };
     }
   } else if (searchParams?.id && !clientTxId) {
     mensajeAlerta = { tipo: 'error', texto: 'La transacción fue cancelada o no se completó correctamente.' };
   }
   // =========================================================================
 
-  // PARTE A: Consultar los Simuladores Privados
+  // PARTE A: Consultar los Simuladores Privados (Usa el cliente normal)
   const { data: accesosSims } = await supabase
     .from('accesos_simuladores')
     .select('simulador_id')

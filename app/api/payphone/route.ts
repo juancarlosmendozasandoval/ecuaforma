@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const safeReference = rawReference.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9 ()-]/g, "").substring(0, 50);
 
     // 🌟 CORRECCIÓN AQUÍ: Agregamos el nombre del curso a la URL de respuesta
-    const urlRespuesta = `https://www.ecuaforma.com/mis-cursos?curso=${encodeURIComponent(nombre)}`;
+    const urlRespuesta = `https://www.ecuaforma.com/mis-cursos?curso=${encodeURIComponent(nombre)}&institucion=${encodeURIComponent(institucion || '')}`;
 
     // Payload con el StoreId correcto
     const payphoneBody = {
