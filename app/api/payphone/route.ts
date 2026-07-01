@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
 export async function POST(request: Request) {
   try {
+    // 1. Obtenemos el usuario que está intentando pagar
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const { data: { user } } = await supabase.auth.getUser();
+
     const body = await request.json();
     const { nombre, precio, institucion } = body;
 
@@ -14,14 +21,11 @@ export async function POST(request: Request) {
     const amountInCents = Math.round(parseFloat(precio) * 100);
     const transactionId = `EC${Date.now()}`;
     
-    // Limpieza de caracteres
     const rawReference = institucion ? `${nombre} (${institucion})` : nombre || "Ecuaforma";
     const safeReference = rawReference.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9 ()-]/g, "").substring(0, 50);
 
-    // 🌟 CORRECCIÓN AQUÍ: Agregamos el nombre del curso a la URL de respuesta
     const urlRespuesta = `https://www.ecuaforma.com/mis-cursos?curso=${encodeURIComponent(nombre)}&institucion=${encodeURIComponent(institucion || '')}`;
 
-    // Payload con el StoreId correcto
     const payphoneBody = {
       amount: amountInCents,
       amountWithoutTax: amountInCents,
@@ -33,8 +37,12 @@ export async function POST(request: Request) {
       clientTransactionId: transactionId,
       reference: safeReference,
       storeId: "f2a3b1bc-f8bd-4d5a-9d5a-22648de632b4",
-      responseUrl: urlRespuesta, // 🌟 Usamos la URL dinámica aquí
-      cancellationUrl: "https://www.ecuaforma.com/checkout"
+      responseUrl: urlRespuesta,
+      cancellationUrl: "https://www.ecuaforma.com/checkout",
+      // 🌟 INYECCIÓN PARA EL WEBHOOK: Enviamos datos clave escondidos al banco
+      optionalParameter1: user?.id || 'anonimo',
+      optionalParameter2: nombre,
+      optionalParameter3: institucion || "N/A"
     };
 
     const response = await axios.post(
@@ -54,27 +62,19 @@ export async function POST(request: Request) {
 
     if (typeof response.data === 'string' && response.data.includes('<html')) {
         console.error("=================== ERROR HTML DE PAYPHONE ===================");
-        console.error(response.data);
-        console.error("==============================================================");
         return NextResponse.json({ error: 'Error del banco. Revisa los logs.' }, { status: 500 });
     }
 
     if (response.status !== 200) {
-      console.error("PayPhone rechazó los datos (Axios):", response.data);
       return NextResponse.json({ error: response.data?.message || 'Error en PayPhone' }, { status: 400 });
     }
 
-    console.log("¡ÉXITO! Respuesta de PayPhone:", JSON.stringify(response.data));
-
-    // Capturamos el link exacto que nos mandó el banco
     const linkDePago = response.data.payWithCard || response.data.payWithPayPhone;
 
     if (!linkDePago) {
-      console.error("El banco respondió 200, pero no incluyó un enlace válido.");
       return NextResponse.json({ error: 'Respuesta incompleta del banco' }, { status: 500 });
     }
 
-    // Le devolvemos el link a tu frontend
     return NextResponse.json({ url: linkDePago });
 
   } catch (error) {
