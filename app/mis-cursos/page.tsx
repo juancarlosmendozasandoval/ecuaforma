@@ -56,8 +56,8 @@ export default async function MisCursosPage(props: any) {
       const responseText = await verifyResponse.text();
       
       if (responseText.includes('<html')) {
-        console.error("PayPhone devolvió HTML de error:", responseText);
-        mensajeAlerta = { tipo: 'error', texto: 'El banco demoró en confirmar tu pago. Nuestro sistema lo verificará en breve, o contáctanos por WhatsApp.' };
+        console.error("PayPhone devolvió HTML (Transacción rechazada/fallida):", responseText);
+        mensajeAlerta = { tipo: 'error', texto: 'Tu tarjeta fue declinada o el pago no pudo procesarse. Por favor, intenta con otro método de pago o contáctanos por WhatsApp.' };
       } else {
         const verifyData = JSON.parse(responseText);
         console.log(`[ESTADO PAYPHONE]: ${verifyData.transactionStatus}`);
