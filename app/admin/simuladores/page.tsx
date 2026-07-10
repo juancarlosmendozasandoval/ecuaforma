@@ -49,23 +49,23 @@ export default function GestionSimuladoresPage() {
     setTimeout(() => setAlert(null), 4000);
   };
 
-  // Lista dinámica de instituciones
+  // 🛡️ ESCUDO: Protegemos el mapeo de instituciones por si alguna es null
   const instituciones = Array.from(
     new Set([
       'FAE', 'Armada', 'Ejército', 'Policía', 
-      ...simuladores.map(sim => sim.institucion)
+      ...simuladores.map(sim => sim.institucion || '')
     ])
   ).filter(Boolean).sort();
 
   // Activar el modo edición guardando todos los valores actuales
   const iniciarEdicion = (sim: any) => {
     setEditingId(sim.id);
-    setEditNombre(sim.nombre);
-    setEditSlug(sim.slug);
+    // 🛡️ ESCUDO: Evitamos strings nulos en los inputs
+    setEditNombre(sim.nombre || '');
+    setEditSlug(sim.slug || '');
     setEditCategoria(sim.categoria || '');
     setEditMateria(sim.materia || '');
     
-    // 🌟 CARGAMOS LOS DATOS DEL PRECIO
     setEditEsPago(sim.es_pago || false);
     setEditPrecio(sim.precio ? sim.precio.toString() : '0.00');
   };
@@ -80,7 +80,6 @@ export default function GestionSimuladoresPage() {
     setEditPrecio('0.00');
   };
 
-  // 🌟 GUARDAR TODOS LOS CAMPOS EDITADOS (INCLUYENDO PRECIO)
   const guardarEdicion = async (id: string) => {
     if (!editNombre.trim() || !editSlug.trim()) {
       showAlert('error', 'El nombre y la URL no pueden estar vacíos.');
@@ -103,8 +102,8 @@ export default function GestionSimuladoresPage() {
       slug: slugLimpio,
       categoria: editCategoria.trim(),
       materia: editMateria.trim(),
-      es_pago: editEsPago, // 🌟 Actualizamos si es de pago
-      precio: editEsPago ? parseFloat(editPrecio) : 0.00 // 🌟 Actualizamos el precio
+      es_pago: editEsPago, 
+      precio: editEsPago ? parseFloat(editPrecio) : 0.00 
     };
 
     const { error } = await supabase
@@ -165,20 +164,20 @@ export default function GestionSimuladoresPage() {
   // COPIAR/DUPLICAR SIMULADOR
   const duplicarSimulador = async (simulador: any, destinoInst: string) => {
     setActionLoading(`copy-${simulador.id}`);
-    const nuevoSlug = `${simulador.slug}-copia-${Math.floor(Math.random() * 10000)}`;
+    const nuevoSlug = `${simulador.slug || 'sim'}-copia-${Math.floor(Math.random() * 10000)}`;
 
     try {
       const { data: nuevoSim, error: errSim } = await supabase
         .from('simuladores')
         .insert([{
-          nombre: `${simulador.nombre} (Copia)`,
+          nombre: `${simulador.nombre || 'Sin nombre'} (Copia)`,
           slug: nuevoSlug,
           institucion: destinoInst,
           categoria: simulador.categoria,
           materia: simulador.materia,
           publico: simulador.publico,
-          es_pago: simulador.es_pago, // 🌟 Copiamos configuración de pago
-          precio: simulador.precio // 🌟 Copiamos el precio
+          es_pago: simulador.es_pago, 
+          precio: simulador.precio 
         }])
         .select()
         .single();
@@ -211,7 +210,7 @@ export default function GestionSimuladoresPage() {
 
   // ELIMINAR SIMULADOR (Soft Delete)
   const eliminarSimulador = async (id: string, nombre: string) => {
-    if (!confirm(`¿Mandar el simulador "${nombre}" al archivo? Los alumnos ya no podrán verlo.`)) return;
+    if (!confirm(`¿Mandar el simulador "${nombre || 'Sin nombre'}" al archivo? Los alumnos ya no podrán verlo.`)) return;
     
     setActionLoading(`delete-${id}`);
     
@@ -229,17 +228,21 @@ export default function GestionSimuladoresPage() {
     setActionLoading(null);
   };
 
-  // Filtrado lógico
+  // 🛡️ ESCUDO: Filtrado lógico blindado contra valores nulos
   const simuladoresFiltrados = simuladores.filter(sim => {
-    const term = search.toLowerCase();
-    const materiaStr = sim.materia ? sim.materia.toLowerCase() : '';
-    const categoriaStr = sim.categoria ? sim.categoria.toLowerCase() : '';
+    const term = (search || '').toLowerCase();
     
-    const matchesSearch = sim.nombre.toLowerCase().includes(term) || 
+    // Forzamos a que sean strings para que .toLowerCase() nunca explote
+    const nombreStr = (sim.nombre || '').toLowerCase();
+    const materiaStr = (sim.materia || '').toLowerCase();
+    const categoriaStr = (sim.categoria || '').toLowerCase();
+    const institucionStr = sim.institucion || '';
+    
+    const matchesSearch = nombreStr.includes(term) || 
                           materiaStr.includes(term) ||
                           categoriaStr.includes(term);
                           
-    const matchesInst = selectedInst === 'TODAS' || sim.institucion === selectedInst;
+    const matchesInst = selectedInst === 'TODAS' || institucionStr === selectedInst;
     return matchesSearch && matchesInst;
   });
 
@@ -336,7 +339,7 @@ export default function GestionSimuladoresPage() {
                           {/* 🌟 INSIGNIAS DE INSTITUCIÓN Y PRECIO */}
                           <div className="flex items-center gap-2 mb-1">
                             <span className="px-2.5 py-0.5 bg-slate-100 text-slate-800 text-[10px] font-bold rounded-md uppercase border border-slate-200">
-                              {sim.institucion}
+                              {sim.institucion || 'Sin Institución'}
                             </span>
                             <span className={`px-2 py-0.5 text-[10px] font-bold rounded-md border ${sim.es_pago ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-100 text-gray-600 border-gray-200'}`}>
                               {sim.es_pago ? `$${sim.precio}` : 'GRATIS'}
@@ -435,9 +438,9 @@ export default function GestionSimuladoresPage() {
                             </div>
                           ) : (
                             <>
-                              <div className="font-bold text-gray-800 text-base mt-1">{sim.nombre}</div>
+                              <div className="font-bold text-gray-800 text-base mt-1">{sim.nombre || 'Simulador sin nombre'}</div>
                               <div className="text-xs text-gray-500 font-mono bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100 mt-1">
-                                URL: /simulador/{sim.slug}
+                                URL: /simulador/{sim.slug || 'sin-url'}
                               </div>
                               <div className="text-xs text-gray-500 mt-1.5 font-medium flex items-center gap-1.5">
                                 <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-600">{sim.categoria || 'Sin categoría'}</span>
@@ -468,7 +471,7 @@ export default function GestionSimuladoresPage() {
 
                       <td className="p-4 align-top pt-8">
                         <select
-                          value={sim.institucion}
+                          value={sim.institucion || ''}
                           onChange={(e) => moverSimulador(sim.id, e.target.value)}
                           disabled={actionLoading !== null || isEditing}
                           className={`bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg p-2 outline-none focus:ring-2 focus:ring-primary focus:bg-white font-semibold cursor-pointer w-full max-w-[150px] ${isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
