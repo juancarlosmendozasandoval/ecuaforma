@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X, BookOpen, Shield, Home, Phone, LogOut, Lock, History } from 'lucide-react'; // Agregado History
+import { Menu, X, BookOpen, Shield, Home, Phone, LogOut, Lock, History } from 'lucide-react';
 import { useSupabase } from './AuthProvider';
 import Image from 'next/image';
 import Logo from './Logo';
@@ -20,7 +20,8 @@ export default function Navbar() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${location.origin}/auth/callback`,
+        // 🌟 CORRECCIÓN: Usamos window.location.origin de forma explícita
+        redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
   };

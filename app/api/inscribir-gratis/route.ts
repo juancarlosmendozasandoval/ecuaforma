@@ -1,57 +1,62 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { createAdminClient } from '@/lib/supabase/admin';
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Matricula al usuario de la sesión en un curso gratuito.
+ * El ID del usuario sale SIEMPRE de la sesión; cualquier `usuarioId` del body se ignora.
+ */
 export async function POST(request: Request) {
   try {
-    const { cursoId, usuarioId } = await request.json();
+    // 1. Usuario real de la sesión
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Debes iniciar sesión para inscribirte.' }, { status: 401 });
+    }
 
-    if (!cursoId || !usuarioId) {
+    // 2. Validar la entrada: solo el UUID del curso
+    const body = await request.json().catch(() => null);
+    const cursoId = body?.cursoId;
+    if (typeof cursoId !== 'string' || !UUID_REGEX.test(cursoId)) {
       return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
     }
 
-    // 🌟 Usamos el SERVICE ROLE KEY para saltar RLS
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY! 
-    );
-
-    // 1. Verificamos que el curso sea REALMENTE gratuito
-    const { data: curso, error: cursoError } = await supabaseAdmin
+    // 3. Verificar que el curso exista, no esté eliminado y sea REALMENTE gratuito
+    const admin = createAdminClient();
+    const { data: curso } = await admin
       .from('cursos')
-      .select('es_pago')
+      .select('es_pago, is_deleted')
       .eq('id', cursoId)
-      .single();
+      .maybeSingle();
 
-    if (cursoError || !curso) {
-      console.error("Error al buscar el curso:", cursoError);
+    if (!curso || curso.is_deleted) {
       return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
     }
-
     if (curso.es_pago) {
       return NextResponse.json({ error: 'Este curso es de pago.' }, { status: 403 });
     }
 
-    // 2. Inscribimos al usuario
-    const { error: insertError } = await supabaseAdmin
+    // 4. Matrícula idempotente (índice único usuario_id + curso_id)
+    const { error: insertError } = await admin
       .from('accesos_cursos')
-      .insert([{ curso_id: cursoId, usuario_id: usuarioId }]);
+      .upsert(
+        { curso_id: cursoId, usuario_id: user.id },
+        { onConflict: 'usuario_id,curso_id', ignoreDuplicates: true }
+      );
 
-    // 🌟 CORRECCIÓN: Manejo correcto del error 23505 (Ya inscrito)
     if (insertError) {
-      if (insertError.code === '23505') {
-        // Si ya está inscrito, no es un error, es un éxito.
-        return NextResponse.json({ success: true, message: 'Ya estabas inscrito' }, { status: 200 });
-      } else {
-        // Si es otro tipo de error, sí lo registramos y lanzamos
-        console.error("Error de Base de Datos al insertar:", insertError);
-        return NextResponse.json({ error: 'Error al registrar acceso' }, { status: 500 });
-      }
+      console.error('[INSCRIBIR GRATIS] Error al insertar:', insertError.code);
+      return NextResponse.json({ error: 'Error al registrar acceso' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, message: 'Inscripción exitosa' }, { status: 200 });
-
-  } catch (error: any) {
-    console.error('Error general en la API de inscripción:', error);
+  } catch (error) {
+    console.error('[INSCRIBIR GRATIS] Error general:', error instanceof Error ? error.message : error);
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }

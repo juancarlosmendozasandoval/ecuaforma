@@ -1,27 +1,15 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { requireAdmin } from '@/lib/auth/requireAdmin';
 // 🌟 Se agregó 'GraduationCap' a las importaciones de iconos
-import { ShieldAlert, Key, BarChart, Settings, Library, GraduationCap } from 'lucide-react';
-
-// ⚠️ AQUÍ DEFINIMOS AL JEFE: Debe coincidir con el del SQL
-const ADMIN_EMAIL = 'juanjuacmend@gmail.com';
+import { ShieldAlert, Key, BarChart, Settings, Library, GraduationCap, Database } from 'lucide-react';
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookieStore });
-
-  const { data: { user } } = await supabase.auth.getUser();
-
-  // Si no hay usuario, o el email no es el del jefe, lo mandamos al inicio
-  if (!user || user.email !== ADMIN_EMAIL) {
-    redirect('/');
-  }
+  // Si no hay usuario, o el email no es el del jefe, requireAdmin lo manda al inicio
+  const { user } = await requireAdmin();
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
@@ -41,6 +29,13 @@ export default async function AdminLayout({
             className="flex items-center gap-3 px-4 py-3 bg-indigo-900/50 text-indigo-100 rounded-lg hover:bg-indigo-800 transition-colors border border-indigo-700/50 font-semibold"
           >
             <GraduationCap size={20} /> Gestor de Cursos
+          </Link>
+
+          <Link 
+            href="/admin/banco-lecciones" 
+            className="flex items-center gap-3 px-4 py-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
+          >
+            <Database size={20} /> Banco de Lecciones
           </Link>
 
           {/* Botón para ir al Panel CRUD de Simuladores */}

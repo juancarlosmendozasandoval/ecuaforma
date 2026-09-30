@@ -1,5 +1,7 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
+
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     aria-hidden="true"
@@ -13,6 +15,10 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 export default function WhatsAppButton() {
+  const pathname = usePathname();
+  // Dentro del aula (/cursos/institucion/slug/leccion) el botón tapa el examen y "Siguiente"
+  if (/^\/cursos\/[^/]+\/[^/]+\/[^/]+/.test(pathname || '')) return null;
+
   // **IMPORTANTE**: Cambia este número por tu número de WhatsApp real.
   // Debe incluir el código de país, sin el signo '+' ni espacios.
   const phoneNumber = '593992893010';

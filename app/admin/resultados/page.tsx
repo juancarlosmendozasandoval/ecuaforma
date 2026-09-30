@@ -1,10 +1,8 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { requireAdmin } from '@/lib/auth/requireAdmin';
 
 export default async function ResultadosIndexPage() {
-  const cookieStore = cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const { supabase } = await requireAdmin();
 
   // Consultar todos los simuladores disponibles
   const { data: simuladores, error } = await supabase

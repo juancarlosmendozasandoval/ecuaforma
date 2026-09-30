@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
-export default function BotonInscripcionGratis({ cursoId, usuarioId }: { cursoId: string, usuarioId: string }) {
+export default function BotonInscripcionGratis({ cursoId }: { cursoId: string }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -15,7 +15,7 @@ export default function BotonInscripcionGratis({ cursoId, usuarioId }: { cursoId
       const res = await fetch('/api/inscribir-gratis', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cursoId, usuarioId }),
+        body: JSON.stringify({ cursoId }),
       });
 
       const data = await res.json();

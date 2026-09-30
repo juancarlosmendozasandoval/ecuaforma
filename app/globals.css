@@ -21,3 +21,11 @@ body {
 .fade-in {
   animation: fadeIn 0.5s ease-out forwards;
 }
+
+/* Ecuaciones anchas de KaTeX: se desplazan en horizontal en vez de recortarse */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+  -webkit-overflow-scrolling: touch;
+}

@@ -1,97 +1,26 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { confirmarPago } from '@/lib/pagos/confirmarPago';
 
+/**
+ * Notificación de PayPhone. No confía en el contenido recibido: solo toma el
+ * par (id, clientTransactionId) y lo re-verifica contra PayPhone y la tabla `pagos`.
+ * Nunca revoca accesos.
+ */
 export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const paymentId = body.id || body.transactionId;
-    const clientTxId = body.clientTransactionId || body.clientTxId || ""; 
+  const body = await request.json().catch(() => null);
+  const payphoneId = Number(body?.id ?? body?.transactionId);
+  const clientTxId = String(body?.clientTransactionId ?? body?.clientTxId ?? '').trim();
 
-    if (!paymentId) {
-      return NextResponse.json({ error: 'No ID provided' }, { status: 400 });
-    }
-
-    const token = process.env.PAYPHONE_TOKEN?.trim();
-
-    // VOLVEMOS AL ENDPOINT SEGURO V2/Confirm
-    const verifyResponse = await fetch('https://pay.payphonetodoesposible.com/api/button/V2/Confirm', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` 
-      },
-      body: JSON.stringify({
-        id: Number(paymentId),
-        clientTxId: clientTxId
-      }),
-      cache: 'no-store'
-    });
-
-    const responseText = await verifyResponse.text();
-    
-    if (responseText.includes('<html')) {
-       console.error("PayPhone Webhook devolvió HTML:", responseText);
-       return NextResponse.json({ error: 'Error del banco al verificar' }, { status: 500 });
-    }
-
-    const verifyData = JSON.parse(responseText);
-    const status = verifyData.transactionStatus; 
-    
-    const userId = verifyData.optionalParameter1;
-    const nombreCurso = verifyData.optionalParameter2;
-    const institucion = verifyData.optionalParameter3 === "N/A" ? "" : verifyData.optionalParameter3;
-
-    if (!userId || userId === 'anonimo' || !nombreCurso) {
-       console.log("Webhook ignorado: Faltan metadatos del usuario o curso.");
-       return NextResponse.json({ message: 'Ignorado' }, { status: 200 });
-    }
-
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-      process.env.SUPABASE_SERVICE_ROLE_KEY as string,
-      { auth: { persistSession: false } }
-    );
-
-    const { data: listaCursos } = await supabaseAdmin.from('cursos').select('id, nombre, institucion');
-    
-    const cursoNormalizado = nombreCurso.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-    const instNormalizada = institucion ? institucion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : "";
-    
-    const cursoEncontrado = listaCursos?.find(c => {
-      const matchNombre = c.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() === cursoNormalizado;
-      const matchInst = c.institucion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() === instNormalizada;
-      return instNormalizada ? (matchNombre && matchInst) : matchNombre;
-    });
-
-    if (!cursoEncontrado) {
-       console.error(`[WEBHOOK ERROR] Curso no encontrado: ${nombreCurso}`);
-       return NextResponse.json({ message: 'Curso no encontrado en BD' }, { status: 200 });
-    }
-
-    if (status === 'Approved') {
-       const { data: yaInscrito } = await supabaseAdmin
-         .from('accesos_cursos')
-         .select('id')
-         .eq('usuario_id', userId)
-         .eq('curso_id', cursoEncontrado.id)
-         .single();
-
-       if (!yaInscrito) {
-          console.log(`[WEBHOOK] Matriculando a ${userId} en ${nombreCurso}`);
-          await supabaseAdmin.from('accesos_cursos').insert({ usuario_id: userId, curso_id: cursoEncontrado.id });
-       }
-    } else {
-       console.log(`[WEBHOOK] Estado ${status}: Revocando acceso a ${userId} para ${nombreCurso}`);
-       await supabaseAdmin
-         .from('accesos_cursos')
-         .delete()
-         .eq('usuario_id', userId)
-         .eq('curso_id', cursoEncontrado.id);
-    }
-
-    return NextResponse.json({ received: true, status });
-  } catch (error) {
-    console.error("Error crítico en Webhook:", error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  if (!Number.isInteger(payphoneId) || payphoneId <= 0 || !clientTxId) {
+    return NextResponse.json({ error: 'Payload inválido' }, { status: 400 });
   }
+
+  const resultado = await confirmarPago(payphoneId, clientTxId);
+
+  // Errores transitorios → 500 para que PayPhone reintente; el resto se acusa como recibido
+  const reintentar = !resultado.ok && (resultado.motivo === 'payphone_error' || resultado.motivo === 'error_matricula');
+  return NextResponse.json(
+    { received: true, ok: resultado.ok },
+    { status: reintentar ? 500 : 200 }
+  );
 }

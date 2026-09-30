@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Fragment } from 'react';
-import { CheckCircle, XCircle, Youtube, Repeat, PlayCircle, Loader2, AlertTriangle } from 'lucide-react';
+import { CheckCircle, XCircle, Youtube, Repeat, PlayCircle, Loader2, AlertTriangle, ArrowLeft } from 'lucide-react';
 import type { SimulatorType, QuestionType, Option } from '../simulador/[slug]/page';
 import { useSupabase } from './AuthProvider';
 import { InlineMath, BlockMath } from 'react-katex';
@@ -9,6 +9,10 @@ import { InlineMath, BlockMath } from 'react-katex';
 interface SimulatorProps {
   initialSimulator: SimulatorType;
   initialQuestions: QuestionType[];
+  /** Se llama una vez, al mostrar los resultados, con el puntaje de 0 a 100. */
+  onFinish?: (score: number) => void;
+  /** Si existe, la pantalla de resultados ofrece volver sin repetir el examen. */
+  onExit?: () => void;
 }
 
 // --- FUNCIÓN DE FORMATO DE TEXTO ---
@@ -34,7 +38,7 @@ const getYoutubeId = (url: string | null) => {
   return (match && match[2].length === 11) ? match[2] : null;
 };
 
-export default function Simulator({ initialSimulator, initialQuestions }: SimulatorProps) {
+export default function Simulator({ initialSimulator, initialQuestions, onFinish, onExit }: SimulatorProps) {
   const { user, supabase } = useSupabase(); 
   
   const [questions, setQuestions] = useState<QuestionType[]>([]);
@@ -118,6 +122,7 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
       setSaveError('Nota: No se pudo guardar en tu historial (Error de conexión/permisos), pero aquí tienes tu resultado.');
     } finally {
       // 3. Pase lo que pase, MOSTRAR RESULTADOS
+      onFinish?.(finalScore);
       setIsSubmitting(false);
       setShowResults(true);
     }
@@ -159,13 +164,23 @@ export default function Simulator({ initialSimulator, initialQuestions }: Simula
           </div>
         )}
 
-        <button
-          onClick={restartSimulator}
-          className="bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-secondary transition-colors inline-flex items-center text-lg"
-        >
-          <Repeat className="w-5 h-5 mr-2" />
-          Volver a intentar
-        </button>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <button
+            onClick={restartSimulator}
+            className="bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-secondary transition-colors inline-flex items-center text-lg"
+          >
+            <Repeat className="w-5 h-5 mr-2" />
+            Volver a intentar
+          </button>
+          {onExit && (
+            <button
+              onClick={onExit}
+              className="inline-flex items-center gap-2 border border-gray-300 text-gray-700 font-bold py-3 px-6 rounded-lg hover:bg-gray-50 text-lg"
+            >
+              <ArrowLeft className="w-5 h-5" /> Volver a la lección
+            </button>
+          )}
+        </div>
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+import { confirmarPago } from '@/lib/pagos/confirmarPago';
 import Link from 'next/link';
 import Card from '../components/Card';
 import { Lock, GraduationCap, ArrowRight, Settings, Award, BookOpen } from 'lucide-react';
@@ -24,97 +24,36 @@ export default async function MisCursosPage(props: any) {
   }
 
   // =========================================================================
-  // 🌟 LÓGICA DE VALIDACIÓN Y MATRICULACIÓN (MODO DIOS CORREGIDO)
+  // 🌟 RETORNO DE PAYPHONE: solo se usan id + clientTransactionId.
+  // El curso y el usuario salen del registro en `pagos` (nunca de la URL).
   // =========================================================================
   const searchParams = await props.searchParams;
   const paymentId = searchParams?.id;
   const clientTxId = searchParams?.clientTransactionId;
-  const cursoComprado = searchParams?.curso;
-  const institucionComprada = searchParams?.institucion;
-  let mensajeAlerta = null;
+  let mensajeAlerta: { tipo: 'success' | 'error'; texto: string } | null = null;
 
-  if (paymentId && clientTxId && cursoComprado) {
-    try {
-      console.log(`[VERIFICANDO PAGO] ID: ${paymentId}`);
-      const token = process.env.PAYPHONE_TOKEN?.trim();
+  if (paymentId && clientTxId) {
+    const resultado = await confirmarPago(Number(paymentId), String(clientTxId));
+    const esMio = !!resultado.pago && resultado.pago.usuario_id === user.id;
 
-      // 1. VOLVEMOS AL ENDPOINT QUE SÍ FUNCIONA (POST a V2/Confirm)
-      const verifyResponse = await fetch('https://pay.payphonetodoesposible.com/api/button/V2/Confirm', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
-        },
-        body: JSON.stringify({
-          id: Number(paymentId),
-          clientTxId: clientTxId
-        }),
-        cache: 'no-store'
-      });
-      
-      // 2. Escudo anti-explosiones: Leemos como texto primero
-      const responseText = await verifyResponse.text();
-      
-      if (responseText.includes('<html')) {
-        console.error("PayPhone devolvió HTML (Transacción rechazada/fallida):", responseText);
-        mensajeAlerta = { tipo: 'error', texto: 'Tu tarjeta fue declinada o el pago no pudo procesarse. Por favor, intenta con otro método de pago o contáctanos por WhatsApp.' };
-      } else {
-        const verifyData = JSON.parse(responseText);
-        console.log(`[ESTADO PAYPHONE]: ${verifyData.transactionStatus}`);
-
-        if (verifyData.transactionStatus === 'Approved') {
-          // Inicializamos Supabase en Modo Dios
-          const supabaseAdmin = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-            process.env.SUPABASE_SERVICE_ROLE_KEY as string,
-            { auth: { persistSession: false } }
-          );
-
-          const { data: listaCursos } = await supabaseAdmin.from('cursos').select('id, nombre, institucion');
-          
-          const cursoNormalizado = cursoComprado.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-          const instNormalizada = institucionComprada ? institucionComprada.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : "";
-          
-          const cursoEncontrado = listaCursos?.find(c => {
-            const matchNombre = c.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() === cursoNormalizado;
-            const matchInst = c.institucion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() === instNormalizada;
-            return instNormalizada ? (matchNombre && matchInst) : matchNombre;
-          });
-
-          if (cursoEncontrado) {
-            const { data: yaInscrito } = await supabaseAdmin
-              .from('accesos_cursos')
-              .select('id')
-              .eq('usuario_id', user.id)
-              .eq('curso_id', cursoEncontrado.id)
-              .single();
-
-            if (!yaInscrito) {
-              const { error: errorInscripcion } = await supabaseAdmin
-                .from('accesos_cursos')
-                .insert({ usuario_id: user.id, curso_id: cursoEncontrado.id });
-
-              if (!errorInscripcion) {
-                mensajeAlerta = { tipo: 'success', texto: `¡Pago exitoso! Se ha habilitado tu acceso al curso de ${cursoComprado}.` };
-              } else {
-                console.error("[ERROR INSCRIPCIÓN ADMIN]", errorInscripcion);
-                mensajeAlerta = { tipo: 'error', texto: 'Tu pago fue aprobado, pero hubo un error al activar el curso. Por favor contáctanos por WhatsApp.' };
-              }
-            } else {
-              mensajeAlerta = { tipo: 'success', texto: `El pago se procesó correctamente, ya tenías acceso a ${cursoComprado}.` };
-            }
-          } else {
-             mensajeAlerta = { tipo: 'error', texto: `Pago aprobado, pero no logramos identificar el curso exacto (${cursoComprado}). Contáctanos para habilitarlo manualmente.` };
-          }
-        } else {
-          mensajeAlerta = { tipo: 'error', texto: `El pago no pudo procesarse correctamente (Estado: ${verifyData.transactionStatus}). No se han realizado cobros.` };
-        }
-      }
-    } catch (err) {
-       console.error("Error grave en la validación bancaria:", err);
-       mensajeAlerta = { tipo: 'error', texto: 'Tuvimos un problema comunicándonos con el banco para verificar tu pago. Contáctanos.' };
+    if (resultado.ok && esMio) {
+      const { data: cursoPagado } = await supabase
+        .from('cursos')
+        .select('nombre')
+        .eq('id', resultado.pago.curso_id)
+        .maybeSingle();
+      const nombreCurso = cursoPagado?.nombre || 'tu curso';
+      mensajeAlerta = resultado.yaProcesado
+        ? { tipo: 'success', texto: `El pago ya estaba verificado. Tienes acceso a ${nombreCurso}.` }
+        : { tipo: 'success', texto: `¡Pago exitoso! Se ha habilitado tu acceso a ${nombreCurso}.` };
+    } else if (!resultado.ok && esMio && resultado.motivo === 'no_aprobado') {
+      mensajeAlerta = { tipo: 'error', texto: 'Tu tarjeta fue declinada o el pago no se completó. No se realizó ningún cobro. Puedes intentarlo de nuevo o contactarnos por WhatsApp.' };
+    } else if (!resultado.ok && esMio && resultado.motivo === 'error_matricula') {
+      mensajeAlerta = { tipo: 'error', texto: 'Tu pago fue aprobado, pero hubo un error al activar el curso. Por favor contáctanos por WhatsApp.' };
+    } else {
+      mensajeAlerta = { tipo: 'error', texto: 'No pudimos verificar este pago en este momento. Si se realizó un cobro, contáctanos por WhatsApp con tu comprobante.' };
     }
-  } else if (searchParams?.id && !clientTxId) {
+  } else if (paymentId && !clientTxId) {
     mensajeAlerta = { tipo: 'error', texto: 'La transacción fue cancelada o no se completó correctamente.' };
   }
   // =========================================================================
@@ -151,20 +90,36 @@ export default async function MisCursosPage(props: any) {
     `)
     .eq('usuario_id', user.id);
 
-  const { data: todasLasLecciones } = await supabase.from('lecciones').select('id, curso_id');
+  // Lecciones de los cursos matriculados: contenido_modulos → modulos_curso.curso_id
+  const cursoIds = (accesosCursos || []).map((a: any) => a.curso_id).filter(Boolean);
+
+  let leccionesPorCurso: { id: string; curso_id: string }[] = [];
+  if (cursoIds.length > 0) {
+    const { data: contenidoData } = await supabase
+      .from('contenido_modulos')
+      .select('id, modulos_curso!inner ( curso_id )')
+      .in('modulos_curso.curso_id', cursoIds)
+      .not('leccion_id', 'is', null);
+
+    leccionesPorCurso = (contenidoData || []).map((c: any) => ({
+      id: c.id,
+      curso_id: c.modulos_curso?.curso_id || '',
+    }));
+  }
+
+  // progreso_lecciones.leccion_id guarda el ID de contenido_modulos
   const { data: progresoUsuario } = await supabase.from('progreso_lecciones').select('leccion_id').eq('usuario_id', user.id);
-  
-  const leccionesCompletadasIds = progresoUsuario ? progresoUsuario.map(p => p.leccion_id) : [];
+  const leccionesCompletadasIds = new Set((progresoUsuario || []).map(p => p.leccion_id));
 
   const cursosMultimedia = accesosCursos
     ? accesosCursos.map((acceso: any) => {
         const c = acceso.cursos;
         if (!c) return null;
 
-        const leccionesEsteCurso = todasLasLecciones ? todasLasLecciones.filter(l => l.curso_id === c.id) : [];
+        const leccionesEsteCurso = leccionesPorCurso.filter(l => l.curso_id === c.id);
         const totalLecciones = leccionesEsteCurso.length;
         
-        const completadasEsteCurso = leccionesEsteCurso.filter(l => leccionesCompletadasIds.includes(l.id)).length;
+        const completadasEsteCurso = leccionesEsteCurso.filter(l => leccionesCompletadasIds.has(l.id)).length;
         const porcentaje = totalLecciones > 0 ? Math.round((completadasEsteCurso / totalLecciones) * 100) : 0;
 
         return {
@@ -218,10 +173,10 @@ export default async function MisCursosPage(props: any) {
               <div key={curso.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col group hover:shadow-md transition-all">
                 <div className="p-6 flex-1 flex flex-col">
                   <span className="text-[10px] font-bold uppercase bg-blue-50 text-blue-600 px-2.5 py-1 rounded-md border border-blue-100 w-fit mb-3">
-                    {curso.institucion}
+                    {curso.institucion || ''}
                   </span>
-                  <h3 className="text-lg font-bold text-gray-800 mb-2">{curso.nombre}</h3>
-                  <p className="text-xs text-gray-400 line-clamp-2 mb-6 flex-1">{curso.descripcion}</p>
+                  <h3 className="text-lg font-bold text-gray-800 mb-2">{curso.nombre || ''}</h3>
+                  <p className="text-xs text-gray-400 line-clamp-2 mb-6 flex-1">{curso.descripcion || ''}</p>
 
                   <div className="space-y-2">
                     <div className="flex justify-between text-xs font-semibold text-gray-500">
@@ -256,7 +211,7 @@ export default async function MisCursosPage(props: any) {
                   </div>
                   
                   <Link 
-                    href={`/cursos/${curso.institucion.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}/${curso.slug}`}
+                    href={`/cursos/${(curso.institucion || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}/${curso.slug}`}
                     className="text-sm font-bold text-primary flex items-center gap-1 group-hover:text-blue-700 transition-colors"
                   >
                     Entrar al Aula <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
