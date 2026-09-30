@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { requireAdmin } from '@/lib/auth/requireAdmin';
 // 🌟 Se agregó 'GraduationCap' a las importaciones de iconos
-import { ShieldAlert, Key, BarChart, Settings, Library, GraduationCap, Database } from 'lucide-react';
+import { ShieldAlert, Key, BarChart, Settings, Library, GraduationCap, Database, FolderTree } from 'lucide-react';
 
 export default async function AdminLayout({
   children,
@@ -36,6 +36,13 @@ export default async function AdminLayout({
             className="flex items-center gap-3 px-4 py-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
           >
             <Database size={20} /> Banco de Lecciones
+          </Link>
+
+          <Link
+            href="/admin/categorias"
+            className="flex items-center gap-3 px-4 py-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
+          >
+            <FolderTree size={20} /> Categorías
           </Link>
 
           {/* Botón para ir al Panel CRUD de Simuladores */}

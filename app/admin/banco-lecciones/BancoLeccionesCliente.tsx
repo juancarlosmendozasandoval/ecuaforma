@@ -1,25 +1,32 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSupabase } from '../../components/AuthProvider';
 import {
-  AlertCircle, CheckCircle, CheckSquare, Database, Edit3, FileText, FunctionSquare,
-  Image as ImageIcon, Loader2, Paperclip, PlusCircle, Save, Search, Trash2, Type, Video, X,
+  AlertCircle, CheckCircle, CheckSquare, ChevronLeft, ChevronRight, Database, Edit3, FileText,
+  FunctionSquare, Image as ImageIcon, Loader2, Paperclip, PlusCircle, Save, Search, Trash2, Type, Video, X,
   type LucideIcon,
 } from 'lucide-react';
 import type { Tables } from '@/types/supabase';
+import type { FiltrosBiblioteca, LeccionBiblioteca, Materia, Tema, TipoLeccion } from '@/types/biblioteca';
 
-export type RecursoBanco = Tables<'banco_lecciones'> & {
+/** Fila del listado admin: la lección clasificada, más los campos que usa el formulario. */
+export type FilaBanco = LeccionBiblioteca & {
+  contenido_html: string | null;
+  adjuntos: string | null;
   /** Número de carpetas (`contenido_modulos`) que usan este recurso. */
   usos: number;
 };
 
 export type SimuladorOpcion = Pick<Tables<'simuladores'>, 'id' | 'nombre' | 'institucion' | 'materia'>;
 
-type TipoRecurso = 'video' | 'texto' | 'simulador';
-type Alerta = { type: 'success' | 'error'; text: string } | null;
+export type ConteoBanco = Record<'total' | TipoLeccion, number>;
 
-const TIPOS: Record<TipoRecurso, { label: string; descripcion: string; icon: LucideIcon; clases: string; activo: string }> = {
+type Alerta = { type: 'success' | 'error'; text: string } | null;
+type ClaveFiltro = 'materia' | 'tema' | 'q' | 'sin' | 'tipo' | 'pagina';
+
+const TIPOS: Record<TipoLeccion, { label: string; descripcion: string; icon: LucideIcon; clases: string; activo: string }> = {
   video: {
     label: 'Video',
     descripcion: 'Clase en YouTube u otra URL',
@@ -43,7 +50,7 @@ const TIPOS: Record<TipoRecurso, { label: string; descripcion: string; icon: Luc
   },
 };
 
-const esTipoConocido = (tipo: string | null): tipo is TipoRecurso => (tipo || '') in TIPOS;
+const esTipoConocido = (tipo: string | null): tipo is TipoLeccion => (tipo || '') in TIPOS;
 
 function BadgeTipo({ tipo }: { tipo: string | null }) {
   if (!esTipoConocido(tipo)) {
@@ -63,11 +70,12 @@ function BadgeTipo({ tipo }: { tipo: string | null }) {
 
 const FORM_VACIO = {
   titulo_interno: '',
-  tipo: 'video' as TipoRecurso,
+  tipo: 'video' as TipoLeccion,
   video_url: '',
   simulador_id: '',
   contenido_html: '',
   adjuntos: '',
+  tema_id: '',
 };
 
 /**
@@ -82,7 +90,7 @@ function validarAdjuntos(texto: string): { total: number; error?: string } {
     try {
       const lista = JSON.parse(valor);
       if (!Array.isArray(lista)) return { total: 0, error: 'El JSON de adjuntos debe ser un arreglo: [{ "titulo": "...", "url": "..." }]' };
-      const invalido = lista.find((a: any) => !/^https?:\/\//i.test(a?.url || ''));
+      const invalido = lista.find((a: { url?: string }) => !/^https?:\/\//i.test(a?.url || ''));
       if (invalido) return { total: 0, error: 'Cada adjunto del JSON necesita una "url" que empiece con http(s)://' };
       return { total: lista.length };
     } catch {
@@ -97,27 +105,60 @@ function validarAdjuntos(texto: string): { total: number; error?: string } {
   return { total: lineas.length };
 }
 
+function jerarquia(leccion: LeccionBiblioteca) {
+  const tema = leccion.temas;
+  const materia = tema?.materias;
+  if (!tema) return '';
+  return `${materia?.nombre || 'Materia'} > ${tema.nombre || 'Tema'}`;
+}
+
 export default function BancoLeccionesCliente({
-  recursosIniciales,
+  filas,
+  filtros,
+  total,
+  pagina,
+  totalPaginas,
+  porPagina,
+  errorLista,
+  materias,
+  temas,
   simuladores,
+  conteo,
 }: {
-  recursosIniciales: RecursoBanco[];
+  filas: FilaBanco[];
+  filtros: FiltrosBiblioteca;
+  total: number;
+  pagina: number;
+  totalPaginas: number;
+  porPagina: number;
+  errorLista: string;
+  materias: Materia[];
+  temas: Tema[];
   simuladores: SimuladorOpcion[];
+  conteo: ConteoBanco;
 }) {
   const { supabase } = useSupabase();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const [recursos, setRecursos] = useState<RecursoBanco[]>(recursosIniciales);
   const [alerta, setAlerta] = useState<Alerta>(null);
+  const [ocultos, setOcultos] = useState<string[]>([]);
+  const [busqueda, setBusqueda] = useState(filtros.q || '');
 
-  // Formulario (crear / editar)
   const [formAbierto, setFormAbierto] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(FORM_VACIO);
+  const [materiaSeleccionadaId, setMateriaSeleccionadaId] = useState('');
   const [guardando, setGuardando] = useState(false);
 
-  // Filtros de la tabla
-  const [busqueda, setBusqueda] = useState('');
-  const [filtroTipo, setFiltroTipo] = useState<'todos' | TipoRecurso>('todos');
+  const firmaListado = filas.map((fila) => fila.id).join(',');
+  useEffect(() => {
+    setOcultos([]);
+  }, [firmaListado]);
+
+  useEffect(() => {
+    setBusqueda(filtros.q || '');
+  }, [filtros.q]);
 
   const showAlert = (type: 'success' | 'error', text: string) => {
     setAlerta({ type, text });
@@ -132,32 +173,66 @@ export default function BancoLeccionesCliente({
     return `${sim.institucion ? `[${sim.institucion}] ` : ''}${sim.nombre || 'Sin nombre'}`;
   };
 
-  const recursosFiltrados = useMemo(() => {
-    const q = busqueda.trim().toLowerCase();
-    return recursos.filter((r) => {
-      const coincideTexto = !q || (r.titulo_interno || '').toLowerCase().includes(q);
-      const coincideTipo = filtroTipo === 'todos' || (r.tipo || '') === filtroTipo;
-      return coincideTexto && coincideTipo;
-    });
-  }, [recursos, busqueda, filtroTipo]);
+  const temasVisibles = useMemo(
+    () => (filtros.materiaId ? temas.filter((tema) => tema.materia_id === filtros.materiaId) : []),
+    [temas, filtros.materiaId]
+  );
 
-  const conteoPorTipo = (tipo: TipoRecurso) => recursos.filter((r) => r.tipo === tipo).length;
+  const temasDelFormulario = useMemo(
+    () => (materiaSeleccionadaId ? temas.filter((tema) => tema.materia_id === materiaSeleccionadaId) : []),
+    [temas, materiaSeleccionadaId]
+  );
 
+  const visibles = filas.filter((fila) => !ocultos.includes(fila.id));
+  const hayFiltros = !!(filtros.materiaId || filtros.temaId || filtros.q || filtros.sinClasificar || filtros.tipo);
+  const desde = total === 0 ? 0 : (pagina - 1) * porPagina + 1;
+  const hasta = Math.min((pagina - 1) * porPagina + filas.length, total);
   const estadoAdjuntos = validarAdjuntos(form.adjuntos);
 
-  // ─── Formulario ────────────────────────────────────────────────────────────
+  /**
+   * Escribe los filtros en la URL. Cualquier cambio que no sea de página
+   * vuelve a la página 1 para no quedarse en un rango vacío.
+   */
+  const navegar = (cambios: Partial<Record<ClaveFiltro, string | null>>) => {
+    const siguiente: Record<string, string> = {
+      materia: filtros.materiaId || '',
+      tema: filtros.temaId || '',
+      q: filtros.q || '',
+      sin: filtros.sinClasificar ? '1' : '',
+      tipo: filtros.tipo || '',
+    };
+    for (const [clave, valor] of Object.entries(cambios)) {
+      siguiente[clave] = valor || '';
+    }
+    if (!('pagina' in cambios) || siguiente.pagina === '1') siguiente.pagina = '';
+
+    const params = new URLSearchParams();
+    for (const [clave, valor] of Object.entries(siguiente)) {
+      if (valor) params.set(clave, valor);
+    }
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
 
   const actualizar = <K extends keyof typeof FORM_VACIO>(campo: K, valor: (typeof FORM_VACIO)[K]) =>
     setForm((prev) => ({ ...prev, [campo]: valor }));
 
   const resetForm = () => {
     setForm(FORM_VACIO);
+    setMateriaSeleccionadaId('');
     setEditingId(null);
     setFormAbierto(false);
   };
 
-  const iniciarEdicion = (recurso: RecursoBanco) => {
+  const cambiarMateriaFormulario = (materiaId: string) => {
+    setMateriaSeleccionadaId(materiaId);
+    actualizar('tema_id', '');
+  };
+
+  const iniciarEdicion = (recurso: FilaBanco) => {
+    const materiaId = temas.find((tema) => tema.id === recurso.tema_id)?.materia_id || '';
     setEditingId(recurso.id);
+    setMateriaSeleccionadaId(materiaId);
     setForm({
       titulo_interno: recurso.titulo_interno || '',
       tipo: esTipoConocido(recurso.tipo) ? recurso.tipo : 'texto',
@@ -165,6 +240,7 @@ export default function BancoLeccionesCliente({
       simulador_id: recurso.simulador_id || '',
       contenido_html: recurso.contenido_html || '',
       adjuntos: recurso.adjuntos || '',
+      tema_id: materiaId && recurso.tema_id ? recurso.tema_id : '',
     });
     setFormAbierto(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -186,6 +262,12 @@ export default function BancoLeccionesCliente({
     const { error: errorAdjuntos } = validarAdjuntos(adjuntos);
     if (errorAdjuntos) return { error: errorAdjuntos };
 
+    const temaId = form.tema_id || '';
+    if (materiaSeleccionadaId && !temaId) return { error: 'Selecciona el tema de esa materia.' };
+    if (temaId && !temas.some((tema) => tema.id === temaId && tema.materia_id === materiaSeleccionadaId)) {
+      return { error: 'El tema no pertenece a la materia seleccionada.' };
+    }
+
     return {
       payload: {
         titulo_interno: titulo,
@@ -194,6 +276,7 @@ export default function BancoLeccionesCliente({
         simulador_id: form.tipo === 'simulador' ? form.simulador_id : null,
         contenido_html: contenido || null,
         adjuntos: adjuntos || null,
+        tema_id: temaId || null,
       },
     };
   };
@@ -203,30 +286,20 @@ export default function BancoLeccionesCliente({
     if (!payload) return showAlert('error', errorValidacion || 'Revisa el formulario.');
 
     setGuardando(true);
-    const columnas = 'id, titulo_interno, tipo, video_url, simulador_id, contenido_html, adjuntos, created_at';
+    const operacion = editingId
+      ? supabase.from('banco_lecciones').update(payload).eq('id', editingId)
+      : supabase.from('banco_lecciones').insert([payload]);
 
-    if (editingId) {
-      const { data, error } = await supabase
-        .from('banco_lecciones')
-        .update(payload)
-        .eq('id', editingId)
-        .select(columnas)
-        .single();
-      setGuardando(false);
-      if (error || !data) return showAlert('error', 'No se pudo actualizar el recurso.');
-      setRecursos((prev) => prev.map((r) => (r.id === editingId ? { ...(data as Tables<'banco_lecciones'>), usos: r.usos } : r)));
-      showAlert('success', 'Recurso actualizado.');
-    } else {
-      const { data, error } = await supabase.from('banco_lecciones').insert([payload]).select(columnas).single();
-      setGuardando(false);
-      if (error || !data) return showAlert('error', 'No se pudo crear el recurso.');
-      setRecursos((prev) => [{ ...(data as Tables<'banco_lecciones'>), usos: 0 }, ...prev]);
-      showAlert('success', 'Recurso agregado al banco.');
-    }
+    const { error } = await operacion;
+    setGuardando(false);
+    if (error) return showAlert('error', editingId ? 'No se pudo actualizar el recurso.' : 'No se pudo crear el recurso.');
+
+    showAlert('success', editingId ? 'Recurso actualizado.' : 'Recurso agregado al banco.');
     resetForm();
+    router.refresh();
   };
 
-  const eliminarRecurso = async (recurso: RecursoBanco) => {
+  const eliminarRecurso = async (recurso: FilaBanco) => {
     const aviso =
       recurso.usos > 0
         ? `"${recurso.titulo_interno || ''}" está en ${recurso.usos} carpeta(s). Si lo eliminas, desaparecerá de esos cursos. ¿Continuar?`
@@ -235,7 +308,6 @@ export default function BancoLeccionesCliente({
 
     const { error } = await supabase.from('banco_lecciones').delete().eq('id', recurso.id);
     if (error) {
-      // 23503 = violación de llave foránea (la FK de contenido_modulos no hace cascada)
       return showAlert(
         'error',
         error.code === '23503'
@@ -243,12 +315,11 @@ export default function BancoLeccionesCliente({
           : 'No se pudo eliminar el recurso.'
       );
     }
-    setRecursos((prev) => prev.filter((r) => r.id !== recurso.id));
+    setOcultos((prev) => [...prev, recurso.id]);
     if (editingId === recurso.id) resetForm();
     showAlert('success', 'Recurso eliminado.');
+    router.refresh();
   };
-
-  // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
     <div className="max-w-6xl mx-auto py-6 space-y-6">
@@ -263,14 +334,13 @@ export default function BancoLeccionesCliente({
         </div>
       )}
 
-      {/* Cabecera */}
       <div className="bg-slate-900 p-6 rounded-2xl text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-3">
             <Database className="text-indigo-400 w-7 h-7" /> Banco de Lecciones
           </h1>
           <p className="text-slate-400 text-sm mt-1">
-            Almacén central de recursos reutilizables. Luego asígnalos a las carpetas de cada curso.
+            Biblioteca virtual: materias, temas y recursos reutilizables para las carpetas de cada curso.
           </p>
         </div>
         <button
@@ -283,13 +353,12 @@ export default function BancoLeccionesCliente({
         </button>
       </div>
 
-      {/* Resumen por tipo */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-wider text-gray-400">Total</p>
-          <p className="text-2xl font-bold text-gray-800">{recursos.length}</p>
+          <p className="text-2xl font-bold text-gray-800">{conteo.total}</p>
         </div>
-        {(Object.keys(TIPOS) as TipoRecurso[]).map((tipo) => {
+        {(Object.keys(TIPOS) as TipoLeccion[]).map((tipo) => {
           const { label, icon: Icon, clases } = TIPOS[tipo];
           return (
             <div key={tipo} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
@@ -298,14 +367,13 @@ export default function BancoLeccionesCliente({
               </div>
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-gray-400">{label}</p>
-                <p className="text-xl font-bold text-gray-800">{conteoPorTipo(tipo)}</p>
+                <p className="text-xl font-bold text-gray-800">{conteo[tipo]}</p>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Formulario crear / editar */}
       {formAbierto && (
         <div className="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 shadow-inner">
           <h2 className="text-lg font-bold text-indigo-900 mb-6 flex items-center gap-2 border-b border-indigo-100 pb-3">
@@ -328,10 +396,49 @@ export default function BancoLeccionesCliente({
               </p>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-indigo-700 uppercase mb-1">Materia</label>
+                <select
+                  value={materiaSeleccionadaId}
+                  onChange={(e) => cambiarMateriaFormulario(e.target.value)}
+                  className="w-full p-3 border border-indigo-200 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-gray-700"
+                >
+                  <option value="">Sin clasificar</option>
+                  {materias.map((materia) => (
+                    <option key={materia.id} value={materia.id}>
+                      {materia.nombre || 'Sin nombre'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-indigo-700 uppercase mb-1">Tema</label>
+                <select
+                  value={form.tema_id}
+                  disabled={!materiaSeleccionadaId}
+                  onChange={(e) => actualizar('tema_id', e.target.value)}
+                  className="w-full p-3 border border-indigo-200 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-gray-700 disabled:opacity-50"
+                >
+                  <option value="">
+                    {materiaSeleccionadaId ? 'Selecciona un tema' : 'Primero elige una materia'}
+                  </option>
+                  {temasDelFormulario.map((tema) => (
+                    <option key={tema.id} value={tema.id}>
+                      {tema.nombre || 'Sin nombre'}
+                    </option>
+                  ))}
+                </select>
+                {materiaSeleccionadaId && temasDelFormulario.length === 0 && (
+                  <p className="text-xs text-rose-500 mt-1">Esta materia todavía no tiene temas.</p>
+                )}
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-bold text-indigo-700 uppercase mb-2">Tipo de recurso *</label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {(Object.keys(TIPOS) as TipoRecurso[]).map((tipo) => {
+                {(Object.keys(TIPOS) as TipoLeccion[]).map((tipo) => {
                   const { label, descripcion, icon: Icon, clases, activo } = TIPOS[tipo];
                   const seleccionado = form.tipo === tipo;
                   return (
@@ -462,40 +569,124 @@ export default function BancoLeccionesCliente({
         </div>
       )}
 
-      {/* Tabla de recursos */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-100 flex flex-col md:flex-row md:items-center gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              placeholder="Buscar por título interno..."
-              className="w-full pl-9 p-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
-            />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {(['todos', ...Object.keys(TIPOS)] as ('todos' | TipoRecurso)[]).map((tipo) => (
-              <button
-                key={tipo}
-                onClick={() => setFiltroTipo(tipo)}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${
-                  filtroTipo === tipo
-                    ? 'bg-indigo-600 text-white border-indigo-600'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300'
-                }`}
+        <div className="p-4 border-b border-gray-100 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+            <label className="block">
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1">Materia</span>
+              <select
+                value={filtros.sinClasificar ? '' : filtros.materiaId || ''}
+                disabled={!!filtros.sinClasificar}
+                onChange={(e) => navegar({ materia: e.target.value || null, tema: null, sin: null })}
+                className="w-full p-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none disabled:opacity-50"
               >
-                {tipo === 'todos' ? 'Todos' : TIPOS[tipo].label}
+                <option value="">Todas las materias</option>
+                {materias.map((materia) => (
+                  <option key={materia.id} value={materia.id}>
+                    {materia.nombre || 'Sin nombre'}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1">Tema</span>
+              <select
+                value={filtros.sinClasificar ? '' : filtros.temaId || ''}
+                disabled={!!filtros.sinClasificar || !filtros.materiaId}
+                onChange={(e) => navegar({ tema: e.target.value || null, sin: null })}
+                className="w-full p-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none disabled:opacity-50"
+              >
+                <option value="">
+                  {filtros.materiaId ? 'Todos los temas' : 'Primero elige una materia'}
+                </option>
+                {temasVisibles.map((tema) => (
+                  <option key={tema.id} value={tema.id}>
+                    {tema.nombre || 'Sin nombre'}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <form
+              className="block"
+              onSubmit={(e) => {
+                e.preventDefault();
+                navegar({ q: busqueda.trim() || null });
+              }}
+            >
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1">Buscar título</span>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="search"
+                  value={busqueda}
+                  onChange={(e) => setBusqueda(e.target.value)}
+                  placeholder="Ej: ley de signos"
+                  className="w-full pl-9 pr-20 p-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100"
+                >
+                  Buscar
+                </button>
+              </div>
+            </form>
+
+            <label className={`flex items-center gap-2 mt-5 px-3 py-2.5 rounded-xl border text-sm font-semibold cursor-pointer ${
+              filtros.sinClasificar ? 'border-amber-300 bg-amber-50 text-amber-800' : 'border-gray-200 bg-white text-gray-600'
+            }`}>
+              <input
+                type="checkbox"
+                checked={!!filtros.sinClasificar}
+                onChange={(e) =>
+                  e.target.checked
+                    ? navegar({ sin: '1', materia: null, tema: null })
+                    : navegar({ sin: null })
+                }
+                className="accent-amber-600"
+              />
+              Sin clasificar
+            </label>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {(['todos', ...Object.keys(TIPOS)] as ('todos' | TipoLeccion)[]).map((tipo) => {
+              const activo = (filtros.tipo || 'todos') === tipo;
+              return (
+                <button
+                  key={tipo}
+                  type="button"
+                  onClick={() => navegar({ tipo: tipo === 'todos' ? null : tipo })}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${
+                    activo
+                      ? 'bg-indigo-600 text-white border-indigo-600'
+                      : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300'
+                  }`}
+                >
+                  {tipo === 'todos' ? 'Todos' : TIPOS[tipo].label}
+                </button>
+              );
+            })}
+            {hayFiltros && (
+              <button
+                type="button"
+                onClick={() => router.push(pathname, { scroll: false })}
+                className="px-3 py-1.5 rounded-full text-xs font-bold text-gray-500 hover:text-gray-800"
+              >
+                Limpiar filtros
               </button>
-            ))}
+            )}
           </div>
         </div>
 
-        {recursosFiltrados.length === 0 ? (
+        {errorLista ? (
+          <div className="p-8 text-center text-rose-600 text-sm font-semibold">{errorLista}</div>
+        ) : visibles.length === 0 ? (
           <div className="p-12 text-center text-gray-400 flex flex-col items-center">
             <Database className="w-12 h-12 mb-3 opacity-20" />
-            {recursos.length === 0 ? (
+            {conteo.total === 0 && !hayFiltros ? (
               <>
                 <p className="font-semibold text-gray-500">El banco está vacío.</p>
                 <p className="text-sm mt-1">Presiona &quot;Nuevo recurso&quot; para agregar el primero.</p>
@@ -510,6 +701,7 @@ export default function BancoLeccionesCliente({
               <thead className="bg-gray-50 text-left text-xs font-bold uppercase tracking-wider text-gray-500">
                 <tr>
                   <th className="p-4">Recurso</th>
+                  <th className="p-4">Clasificación</th>
                   <th className="p-4">Tipo</th>
                   <th className="p-4 text-center">En carpetas</th>
                   <th className="p-4">Creado</th>
@@ -517,28 +709,39 @@ export default function BancoLeccionesCliente({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {recursosFiltrados.map((recurso) => {
+                {visibles.map((recurso) => {
+                  const ruta = jerarquia(recurso);
                   const detalle =
                     recurso.tipo === 'video'
                       ? recurso.video_url || ''
                       : recurso.tipo === 'simulador'
                       ? nombreSimulador(recurso.simulador_id)
-                      : (recurso.contenido_html || '').slice(0, 90);
+                      : '';
+                  const totalAdjuntos = validarAdjuntos(recurso.adjuntos || '').total;
                   return (
                     <tr
                       key={recurso.id}
                       className={`hover:bg-gray-50 transition-colors ${editingId === recurso.id ? 'bg-indigo-50/60' : ''}`}
                     >
-                      <td className="p-4 max-w-md">
+                      <td className="p-4 max-w-xs">
                         <p className="font-bold text-gray-800 truncate">{recurso.titulo_interno || 'Sin título'}</p>
                         {detalle && <p className="text-xs text-gray-400 truncate mt-0.5 font-mono">{detalle}</p>}
                       </td>
                       <td className="p-4">
+                        {ruta ? (
+                          <span className="text-xs font-semibold text-slate-700">{ruta}</span>
+                        ) : (
+                          <span className="inline-flex px-2 py-0.5 rounded border text-[11px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 border-amber-200">
+                            Sin clasificar
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-4">
                         <div className="flex flex-wrap items-center gap-1.5">
                           <BadgeTipo tipo={recurso.tipo} />
-                          {validarAdjuntos(recurso.adjuntos || '').total > 0 && (
+                          {totalAdjuntos > 0 && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[11px] font-bold text-purple-600 bg-purple-50 border-purple-100">
-                              <Paperclip size={10} /> {validarAdjuntos(recurso.adjuntos || '').total}
+                              <Paperclip size={10} /> {totalAdjuntos}
                             </span>
                           )}
                         </div>
@@ -579,6 +782,33 @@ export default function BancoLeccionesCliente({
             </table>
           </div>
         )}
+
+        <div className="px-4 py-3 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <p className="text-xs font-semibold text-gray-500">
+            {total === 0 ? '0 recursos' : `Mostrando ${desde}–${hasta} de ${total}`}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={pagina <= 1}
+              onClick={() => navegar({ pagina: String(pagina - 1) })}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none"
+            >
+              <ChevronLeft className="w-4 h-4" /> Anterior
+            </button>
+            <span className="text-xs font-bold text-gray-500 min-w-[4.5rem] text-center">
+              {pagina} / {totalPaginas}
+            </span>
+            <button
+              type="button"
+              disabled={pagina >= totalPaginas}
+              onClick={() => navegar({ pagina: String(pagina + 1) })}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none"
+            >
+              Siguiente <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
