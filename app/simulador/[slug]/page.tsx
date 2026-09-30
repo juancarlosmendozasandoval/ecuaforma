@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import Simulator from '../../components/Simulator';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import Link from 'next/link';
+import BotonIniciarSesion from '../../components/BotonIniciarSesion';
 import { Lock, CreditCard, CheckCircle } from 'lucide-react';
 
 export interface SimulatorType {
@@ -98,9 +99,9 @@ export default async function SimuladorPage({ params }: { params: { slug: string
           </div>
 
           {!session ? (
-            <Link href="/auth" className="inline-block w-full sm:w-auto bg-slate-900 text-white px-10 py-4 rounded-xl font-bold shadow-md hover:bg-slate-800 transition-colors">
+            <BotonIniciarSesion className="inline-block w-full sm:w-auto bg-slate-900 text-white px-10 py-4 rounded-xl font-bold shadow-md hover:bg-slate-800 transition-colors">
               Inicia Sesión para Acceder
-            </Link>
+            </BotonIniciarSesion>
           ) : simulatorData.es_pago ? (
             <div className="max-w-md mx-auto">
               <Link 

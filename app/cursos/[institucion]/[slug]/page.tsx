@@ -4,6 +4,7 @@ import Breadcrumbs from '../../../components/Breadcrumbs';
 import Link from 'next/link';
 import { BookOpen, PlayCircle, FileText, Lock, CheckCircle, CreditCard, CheckSquare, Folder } from 'lucide-react';
 import BotonInscripcionGratis from '../../../components/BotonInscripcionGratis';
+import BotonIniciarSesion from '../../../components/BotonIniciarSesion';
 import type { Tables } from '@/types/supabase';
 
 type LeccionBanco = Pick<Tables<'banco_lecciones'>, 'id' | 'titulo_interno' | 'tipo' | 'video_url' | 'simulador_id'>;
@@ -128,9 +129,9 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
                 </div>
 
                 {!session ? (
-                  <Link href="/auth" className="block w-full bg-slate-900 text-white text-center py-3 rounded-xl font-bold shadow-md hover:bg-slate-800 transition-colors">
+                  <BotonIniciarSesion className="block w-full bg-slate-900 text-white text-center py-3 rounded-xl font-bold shadow-md hover:bg-slate-800 transition-colors">
                     Inicia Sesión para Acceder
-                  </Link>
+                  </BotonIniciarSesion>
                 ) : curso.es_pago ? (
                   <div className="space-y-3">
                     <Link 
