@@ -2,10 +2,11 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import Link from 'next/link';
-import { BookOpen, PlayCircle, FileText, Lock, CheckCircle, CreditCard, CheckSquare, Folder } from 'lucide-react';
+import { BookOpen, PlayCircle, FileText, Lock, CheckCircle, CheckSquare, Folder } from 'lucide-react';
 import BotonInscripcionGratis from '../../../components/BotonInscripcionGratis';
 import BotonIniciarSesion from '../../../components/BotonIniciarSesion';
-import { cargarTemarioCurso, tituloLeccionTemario, type LeccionBancoTemario } from '@/lib/cursos/temario';
+import BotonPayPhone from '../../../components/BotonPayPhone';
+import { aplanarLecciones, cargarTemarioCurso, tituloLeccionTemario, type LeccionBancoTemario } from '@/lib/cursos/temario';
 
 /** Etiqueta e icono de la tarjeta según `banco_lecciones.tipo`. */
 function detalleTipo(leccion: LeccionBancoTemario | null) {
@@ -29,23 +30,26 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
 
   if (!curso) return <div className="p-10 text-center">Curso no encontrado.</div>;
 
-  // 2. Verificar Sesión y Acceso
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
   let tieneAcceso = false;
 
-  if (session) {
+  if (user?.id) {
     const { data: acceso } = await supabase
       .from('accesos_cursos')
       .select('id')
-      .eq('usuario_id', session.user.id)
+      .eq('usuario_id', user.id)
       .eq('curso_id', curso.id)
-      .single();
-    
-    if (acceso) tieneAcceso = true;
+      .maybeSingle();
+    tieneAcceso = !!acceso;
   }
 
   const modulos = await cargarTemarioCurso(supabase, curso.id);
-  const totalLecciones = modulos.reduce((total, modulo) => total + modulo.lecciones.length, 0);
+  const lecciones = aplanarLecciones(modulos);
+  const totalLecciones = lecciones.length;
+  const primeraLeccion = lecciones[0];
+  const aulaHref = primeraLeccion
+    ? `/cursos/${params.institucion}/${params.slug}/${primeraLeccion.id}`
+    : '';
 
   const breadcrumbs = [
     { label: 'Inicio', href: '/' },
@@ -91,19 +95,12 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
                   )}
                 </div>
 
-                {!session ? (
+                {!user ? (
                   <BotonIniciarSesion className="block w-full bg-slate-900 text-white text-center py-3 rounded-xl font-bold shadow-md hover:bg-slate-800 transition-colors">
-                    Inicia Sesión para Acceder
+                    {curso.es_pago ? 'Inicia sesión para comprar' : 'Inicia sesión para inscribirte'}
                   </BotonIniciarSesion>
                 ) : curso.es_pago ? (
-                  <div className="space-y-3">
-                    <Link 
-                      href={`/checkout?curso=${curso.id}`}
-                      className="w-full bg-[#f37021] text-white py-3.5 rounded-xl font-bold shadow-md hover:bg-[#d9611b] transition-colors flex items-center justify-center gap-2 text-lg"
-                    >
-                      <CreditCard className="w-6 h-6"/> Inscribirse y Pagar
-                    </Link>
-                  </div>
+                  <BotonPayPhone cursoId={curso.id} precio={Number(curso.precio) || 0} />
                 ) : (
                   <BotonInscripcionGratis cursoId={curso.id} />
                 )}
@@ -111,11 +108,19 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
             )}
             
             {tieneAcceso && (
-              <div className="mt-6 pt-6 border-t border-gray-100">
-                <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded-xl flex items-center gap-3 text-sm font-bold">
-                  <CheckCircle className="w-6 h-6 text-green-600 shrink-0"/>
-                  ¡Ya tienes acceso a este curso! Selecciona una clase para comenzar.
+              <div className="mt-6 space-y-3 border-t border-gray-100 pt-6">
+                <div className="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-3 text-sm font-bold text-green-800">
+                  <CheckCircle className="h-6 w-6 shrink-0 text-green-600" />
+                  ¡Ya tienes acceso a este curso!
                 </div>
+                {aulaHref ? (
+                  <Link
+                    href={aulaHref}
+                    className="flex w-full items-center justify-center rounded-xl bg-blue-600 py-3.5 text-center text-lg font-bold text-white shadow-md transition-colors hover:bg-blue-700"
+                  >
+                    Ir al Aula / Continuar Aprendizaje
+                  </Link>
+                ) : null}
               </div>
             )}
           </div>

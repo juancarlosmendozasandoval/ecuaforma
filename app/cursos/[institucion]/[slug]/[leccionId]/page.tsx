@@ -134,18 +134,21 @@ export default async function AulaVirtualPage({
 
   if (!curso) return <div className="p-10 text-center">Curso no encontrado.</div>;
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const ventaHref = `/cursos/${params.institucion}/${params.slug}`;
+  const { data: { user } } = await supabase.auth.getUser();
   let tieneAcceso = false;
 
-  if (session?.user?.id) {
+  if (user?.id) {
     const { data: acceso } = await supabase
       .from('accesos_cursos')
       .select('id')
-      .eq('usuario_id', session.user.id)
+      .eq('usuario_id', user.id)
       .eq('curso_id', curso.id)
-      .single();
+      .maybeSingle();
     tieneAcceso = !!acceso;
   }
+
+  if (!tieneAcceso) redirect(ventaHref);
 
   const modulos = await cargarTemarioCurso(supabase, curso.id, CAMPOS_BANCO_AULA);
   const lecciones = aplanarLecciones(modulos);
@@ -154,9 +157,6 @@ export default async function AulaVirtualPage({
   if (indice < 0) return <div className="p-10 text-center">Contenido no encontrado.</div>;
 
   const actual = lecciones[indice];
-  if (!tieneAcceso && !actual.is_preview) {
-    redirect(`/cursos/${params.institucion}/${params.slug}`);
-  }
 
   const anterior = indice > 0 ? lecciones[indice - 1] : null;
   const siguiente = indice < lecciones.length - 1 ? lecciones[indice + 1] : null;
@@ -164,11 +164,11 @@ export default async function AulaVirtualPage({
     leccion ? { id: leccion.id, titulo: tituloLeccionTemario(leccion) } : null;
 
   const completadas = new Set<string>();
-  if (session?.user?.id && lecciones.length > 0) {
+  if (user?.id && lecciones.length > 0) {
     const { data: progreso } = await supabase
       .from('progreso_lecciones')
       .select('leccion_id')
-      .eq('usuario_id', session.user.id)
+      .eq('usuario_id', user.id)
       .in('leccion_id', lecciones.map((leccion) => leccion.id));
     for (const fila of progreso || []) completadas.add(fila.leccion_id);
   }
