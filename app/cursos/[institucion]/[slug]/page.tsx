@@ -7,6 +7,13 @@ import BotonInscripcionGratis from '../../../components/BotonInscripcionGratis';
 import BotonIniciarSesion from '../../../components/BotonIniciarSesion';
 import BotonPayPhone from '../../../components/BotonPayPhone';
 import { aplanarLecciones, cargarTemarioCurso, tituloLeccionTemario, type LeccionBancoTemario } from '@/lib/cursos/temario';
+import { esCursoDePago, tieneMatricula } from '@/lib/cursos/acceso';
+import { createAdminClient } from '@/lib/supabase/admin';
+
+export const dynamic = 'force-dynamic';
+
+/** La página de venta solo necesita títulos y tipo: nunca el contenido de la clase. */
+const CAMPOS_BANCO_VENTA = 'id, titulo_interno, tipo, simulador_id';
 
 /** Etiqueta e icono de la tarjeta según `banco_lecciones.tipo`. */
 function detalleTipo(leccion: LeccionBancoTemario | null) {
@@ -31,19 +38,10 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
   if (!curso) return <div className="p-10 text-center">Curso no encontrado.</div>;
 
   const { data: { user } } = await supabase.auth.getUser();
-  let tieneAcceso = false;
+  const tieneAcceso = await tieneMatricula(user?.id, curso.id);
+  const esPago = esCursoDePago(curso);
 
-  if (user?.id) {
-    const { data: acceso } = await supabase
-      .from('accesos_cursos')
-      .select('id')
-      .eq('usuario_id', user.id)
-      .eq('curso_id', curso.id)
-      .maybeSingle();
-    tieneAcceso = !!acceso;
-  }
-
-  const modulos = await cargarTemarioCurso(supabase, curso.id);
+  const modulos = await cargarTemarioCurso(createAdminClient(), curso.id, CAMPOS_BANCO_VENTA);
   const lecciones = aplanarLecciones(modulos);
   const totalLecciones = lecciones.length;
   const primeraLeccion = lecciones[0];
@@ -84,7 +82,7 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
               <div className="mt-6 pt-6 border-t border-dashed border-gray-200">
                 <div className="mb-4">
                   <span className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Inversión</span>
-                  {curso.es_pago ? (
+                  {esPago ? (
                     <div className="flex items-end gap-1 text-emerald-600">
                       <span className="text-xl font-bold">$</span>
                       <span className="text-4xl font-black">{curso.precio || 0}</span>
@@ -97,9 +95,9 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
 
                 {!user ? (
                   <BotonIniciarSesion className="block w-full bg-slate-900 text-white text-center py-3 rounded-xl font-bold shadow-md hover:bg-slate-800 transition-colors">
-                    {curso.es_pago ? 'Inicia sesión para comprar' : 'Inicia sesión para inscribirte'}
+                    {esPago ? 'Inicia sesión para comprar' : 'Inicia sesión para inscribirte'}
                   </BotonIniciarSesion>
-                ) : curso.es_pago ? (
+                ) : esPago ? (
                   <BotonPayPhone cursoId={curso.id} precio={Number(curso.precio) || 0} />
                 ) : (
                   <BotonInscripcionGratis cursoId={curso.id} />

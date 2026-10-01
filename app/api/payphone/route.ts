@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       .eq('id', cursoId)
       .single();
 
-    if (!curso || curso.is_deleted || !curso.es_pago || !(Number(curso.precio) > 0)) {
+    if (!curso || curso.is_deleted || !(Number(curso.precio) > 0)) {
       return NextResponse.json({ error: 'Este curso no está disponible para pago.' }, { status: 400 });
     }
 

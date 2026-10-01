@@ -11,6 +11,8 @@ import {
   tituloLeccionTemario,
   type LeccionPlana,
 } from '@/lib/cursos/temario';
+import { tieneMatricula } from '@/lib/cursos/acceso';
+import { createAdminClient } from '@/lib/supabase/admin';
 import AulaCliente, { type LeccionAula } from './AulaCliente';
 import ListaTemario, { type ItemTemarioVista } from './ListaTemario';
 import TemarioMovil from './TemarioMovil';
@@ -136,21 +138,9 @@ export default async function AulaVirtualPage({
 
   const ventaHref = `/cursos/${params.institucion}/${params.slug}`;
   const { data: { user } } = await supabase.auth.getUser();
-  let tieneAcceso = false;
+  if (!user || !(await tieneMatricula(user.id, curso.id))) redirect(ventaHref);
 
-  if (user?.id) {
-    const { data: acceso } = await supabase
-      .from('accesos_cursos')
-      .select('id')
-      .eq('usuario_id', user.id)
-      .eq('curso_id', curso.id)
-      .maybeSingle();
-    tieneAcceso = !!acceso;
-  }
-
-  if (!tieneAcceso) redirect(ventaHref);
-
-  const modulos = await cargarTemarioCurso(supabase, curso.id, CAMPOS_BANCO_AULA);
+  const modulos = await cargarTemarioCurso(createAdminClient(), curso.id, CAMPOS_BANCO_AULA);
   const lecciones = aplanarLecciones(modulos);
   const indice = lecciones.findIndex((leccion) => leccion.id === params.leccionId);
 
@@ -164,7 +154,7 @@ export default async function AulaVirtualPage({
     leccion ? { id: leccion.id, titulo: tituloLeccionTemario(leccion) } : null;
 
   const completadas = new Set<string>();
-  if (user?.id && lecciones.length > 0) {
+  if (lecciones.length > 0) {
     const { data: progreso } = await supabase
       .from('progreso_lecciones')
       .select('leccion_id')

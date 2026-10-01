@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { esCursoDePago } from '@/lib/cursos/acceso';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -30,14 +31,14 @@ export async function POST(request: Request) {
     const admin = createAdminClient();
     const { data: curso } = await admin
       .from('cursos')
-      .select('es_pago, is_deleted')
+      .select('es_pago, precio, is_deleted')
       .eq('id', cursoId)
       .maybeSingle();
 
     if (!curso || curso.is_deleted) {
       return NextResponse.json({ error: 'Curso no encontrado' }, { status: 404 });
     }
-    if (curso.es_pago) {
+    if (esCursoDePago(curso)) {
       return NextResponse.json({ error: 'Este curso es de pago.' }, { status: 403 });
     }
 

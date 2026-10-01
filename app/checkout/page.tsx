@@ -30,7 +30,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Sea
       .eq('id', cursoParam)
       .maybeSingle();
 
-    if (!curso || curso.is_deleted || !curso.es_pago || !(Number(curso.precio) > 0)) {
+    if (!curso || curso.is_deleted || !(Number(curso.precio) > 0)) {
       return <div className="p-10 text-center">Este curso no está disponible para compra.</div>;
     }
 
