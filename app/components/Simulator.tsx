@@ -5,6 +5,7 @@ import { CheckCircle, XCircle, Youtube, Repeat, PlayCircle, Loader2, AlertTriang
 import type { SimulatorType, QuestionType, Option } from '../simulador/[slug]/page';
 import { useSupabase } from './AuthProvider';
 import { InlineMath, BlockMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 
 interface SimulatorProps {
   initialSimulator: SimulatorType;
@@ -15,21 +16,47 @@ interface SimulatorProps {
   onExit?: () => void;
 }
 
-// --- FUNCIÓN DE FORMATO DE TEXTO ---
+/**
+ * Enunciado y opciones: negrita, subrayado, saltos de línea y matemáticas.
+ * Acepta $...$, $$...$$, \( \) y \[ \].
+ */
 const renderFormattedText = (text: string): (string | JSX.Element)[] => {
   if (!text) return [];
-  const regex = /(\\\[[\s\S]*?\\\]|\\\(.*?\\\)|<u>[\s\S]*?<\/u>|\*\*[\s\S]*?\*\*|\n)/g;
+  const regex = /(\$\$[\s\S]+?\$\$|\$(?!\$)(?:\\.|[^$\n])+?\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|<u>[\s\S]*?<\/u>|\*\*[\s\S]*?\*\*|\n)/g;
   const parts = text.split(regex);
 
   return parts.filter(Boolean).map((part, index) => {
-    if (part.startsWith('\\[') && part.endsWith('\\]')) return <BlockMath key={index} math={part.slice(2, -2)} />;
-    if (part.startsWith('\\(') && part.endsWith('\\)')) return <InlineMath key={index} math={part.slice(2, -2)} />;
+    if (part.startsWith('$$') && part.endsWith('$$')) {
+      return <Formula key={index} display math={part.slice(2, -2)} original={part} />;
+    }
+    if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
+      return <Formula key={index} math={part.slice(1, -1)} original={part} />;
+    }
+    if (part.startsWith('\\[') && part.endsWith('\\]')) {
+      return <Formula key={index} display math={part.slice(2, -2)} original={part} />;
+    }
+    if (part.startsWith('\\(') && part.endsWith('\\)')) {
+      return <Formula key={index} math={part.slice(2, -2)} original={part} />;
+    }
     if (part.startsWith('<u>') && part.endsWith('</u>')) return <u key={index}>{renderFormattedText(part.slice(3, -3))}</u>;
     if (part.startsWith('**') && part.endsWith('**')) return <strong key={index} className="font-bold">{renderFormattedText(part.slice(2, -2))}</strong>;
     if (part === '\n') return <br key={index} />;
     return part;
   });
 };
+
+/** Si la fórmula está mal escrita, se deja el texto original en lugar de romper el examen. */
+function Formula({ math, original, display = false }: { math: string; original: string; display?: boolean }) {
+  const props = {
+    math: math.trim(),
+    renderError: () => <span>{original}</span>,
+  };
+  return display ? <BlockMath {...props} /> : <InlineMath {...props} />;
+}
+
+function TextoExamen({ texto }: { texto: string }) {
+  return <>{renderFormattedText(texto)}</>;
+}
 
 const getYoutubeId = (url: string | null) => {
   if (!url) return null;
@@ -224,7 +251,7 @@ export default function Simulator({ initialSimulator, initialQuestions, onFinish
       {/* Enunciado */}
       <div className="mb-8">
         <div className="text-xl md:text-2xl font-semibold text-gray-800 leading-relaxed mb-4">
-          {renderFormattedText(currentQuestion.pregunta)}
+          <TextoExamen texto={currentQuestion.pregunta || ''} />
         </div>
         {currentQuestion.pregunta_img_url && (
           <div className="relative w-full h-64 md:h-80 max-w-2xl mx-auto rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center p-2">
@@ -256,7 +283,7 @@ export default function Simulator({ initialSimulator, initialQuestions, onFinish
               className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center min-h-[70px] ${buttonClass}`}
             >
               <span className="font-medium text-lg leading-snug w-full">
-                {option.type === 'text' ? renderFormattedText(option.value) : (
+                {option.type === 'text' ? <TextoExamen texto={option.value || ''} /> : (
                   <div className="w-full h-40 flex justify-center items-center bg-white rounded border border-gray-200 p-1">
                     <img src={option.value} alt={`Opción ${i+1}`} className="max-h-full max-w-full object-contain" />
                   </div>
@@ -275,7 +302,7 @@ export default function Simulator({ initialSimulator, initialQuestions, onFinish
             <h3 className={`font-bold text-lg mb-2 flex items-center ${answerStatus === 'correct' ? 'text-green-800' : 'text-red-800'}`}>
               {answerStatus === 'correct' ? <><CheckCircle className="mr-2 w-6 h-6"/> ¡Respuesta Correcta!</> : <><XCircle className="mr-2 w-6 h-6"/> Respuesta Incorrecta</>}
             </h3>
-            {currentQuestion.feedback && <p className="text-gray-700 mt-2 mb-4 leading-relaxed">{renderFormattedText(currentQuestion.feedback)}</p>}
+            {currentQuestion.feedback && <p className="text-gray-700 mt-2 mb-4 leading-relaxed"><TextoExamen texto={currentQuestion.feedback} /></p>}
             {youtubeId && (
               <div className="mt-4">
                 <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1"><Youtube className="w-4 h-4 text-red-600"/> Explicación en Video</p>
