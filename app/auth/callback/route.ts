@@ -1,6 +1,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse, type NextRequest } from 'next/server'
+import { COOKIE_DESTINO_LOGIN, destinoSeguro } from '@/lib/auth/destinoLogin'
 
 /** Pega en la redirección las cookies de sesión que escribió Supabase. */
 function conCookiesDeSesion(destino: NextResponse) {
@@ -33,5 +34,21 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/', origen))
   }
 
-  return conCookiesDeSesion(NextResponse.redirect(new URL('/mis-cursos', origen)))
+  const destino =
+    destinoSeguro(request.nextUrl.searchParams.get('next')) ||
+    destinoSeguro(decodificar(request.cookies.get(COOKIE_DESTINO_LOGIN)?.value)) ||
+    '/mis-cursos'
+
+  const respuesta = conCookiesDeSesion(NextResponse.redirect(new URL(destino, origen)))
+  respuesta.cookies.set({ name: COOKIE_DESTINO_LOGIN, value: '', path: '/', maxAge: 0 })
+  return respuesta
+}
+
+function decodificar(valor: string | undefined) {
+  if (!valor) return null
+  try {
+    return decodeURIComponent(valor)
+  } catch {
+    return null
+  }
 }
