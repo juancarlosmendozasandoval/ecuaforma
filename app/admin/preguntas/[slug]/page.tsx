@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSupabase } from '../../../components/AuthProvider';
 import { 
   Trash2, Plus, Save, ArrowLeft, CheckCircle, Youtube, 
-  ImageIcon, Type, ArrowUp, ArrowDown, Edit3, X 
+  ImageIcon, Type, ArrowUp, ArrowDown, Edit3, X, Library, Search, GripVertical, Upload, Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import { parsearCargaMasiva, separarBloques } from '@/lib/simuladores/parsearCargaMasiva';
+import type { Materia, Tema } from '@/types/biblioteca';
 
 // Estructura de una opción para la BD
 interface Option {
@@ -14,12 +16,62 @@ interface Option {
   type: 'text' | 'image';
 }
 
+/** Pregunta del examen: el contenido viene de `preguntas` y el orden del vínculo. */
+type PreguntaExamen = {
+  id: number;
+  vinculoId: string;
+  orden: number;
+  pregunta: string;
+  opciones: Option[] | null;
+  respuesta: Option | null;
+  feedback: string | null;
+  pregunta_img_url: string | null;
+  youtube_url: string | null;
+};
+
+type PreguntaBanco = {
+  id: number;
+  pregunta: string;
+};
+
+const escaparLike = (texto: string) => texto.replace(/[\\%_]/g, (caracter) => `\\${caracter}`);
+
+const EJEMPLO_CARGA_MASIVA = `Q: Si $f(x) = 2x + 1$, ¿cuál es $f(3)$?
+O: 5 | 6 | 7 | 8
+R: 7
+
+Q: ¿Cuál es la capital del Ecuador?
+O: Quito | Guayaquil | Cuenca
+R: Quito`;
+
+function normalizarVinculo(fila: { id?: string; orden?: number; preguntas?: unknown }): PreguntaExamen | null {
+  const cruda = Array.isArray(fila.preguntas) ? fila.preguntas[0] : fila.preguntas;
+  if (!cruda || typeof cruda !== 'object' || !fila.id) return null;
+  const pregunta = cruda as Omit<PreguntaExamen, 'vinculoId' | 'orden'>;
+  return { ...pregunta, orden: fila.orden || 0, vinculoId: fila.id };
+}
+
 export default function GestorPreguntasPage({ params }: { params: { slug: string } }) {
   const { supabase } = useSupabase();
   const [simulador, setSimulador] = useState<any>(null);
-  const [preguntas, setPreguntas] = useState<any[]>([]);
+  const [preguntas, setPreguntas] = useState<PreguntaExamen[]>([]);
   const [loading, setLoading] = useState(true);
   const [reordering, setReordering] = useState(false);
+  const dragIndexRef = useRef<number | null>(null);
+
+  const [bancoAbierto, setBancoAbierto] = useState(false);
+  const [busquedaBanco, setBusquedaBanco] = useState('');
+  const [resultadosBanco, setResultadosBanco] = useState<PreguntaBanco[]>([]);
+  const [buscandoBanco, setBuscandoBanco] = useState(false);
+  const [agregandoId, setAgregandoId] = useState<number | null>(null);
+
+  const [cargaAbierta, setCargaAbierta] = useState(false);
+  const [textoMasivo, setTextoMasivo] = useState('');
+  const [guardandoMasivo, setGuardandoMasivo] = useState(false);
+  const [materias, setMaterias] = useState<Pick<Materia, 'id' | 'nombre'>[]>([]);
+  const [temas, setTemas] = useState<Pick<Tema, 'id' | 'nombre' | 'materia_id'>[]>([]);
+  const [materiaMasivaId, setMateriaMasivaId] = useState('');
+  const [temaMasivoId, setTemaMasivoId] = useState('');
 
   // 🌟 ESTADO NUEVO: Para saber qué pregunta estamos editando
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -41,7 +93,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     youtubeUrl: ''
   });
 
-  const getYoutubeId = (url: string) => {
+  const getYoutubeId = (url: string | null) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
@@ -50,34 +102,42 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: simData, error: simError } = await supabase
-        .from('simuladores')
-        .select('*')
-        .eq('slug', params.slug)
-        .single();
+      const [{ data: simData, error: simError }, { data: materiasData }, { data: temasData }] = await Promise.all([
+        supabase.from('simuladores').select('*').eq('slug', params.slug).single(),
+        supabase.from('materias').select('id, nombre').order('orden').order('nombre'),
+        supabase.from('temas').select('id, materia_id, nombre').order('orden').order('nombre'),
+      ]);
 
       if (simError || !simData) {
         alert('Simulador no encontrado');
         return;
       }
       setSimulador(simData);
+      setMaterias((materiasData || []) as Pick<Materia, 'id' | 'nombre'>[]);
+      setTemas((temasData || []) as Pick<Tema, 'id' | 'nombre' | 'materia_id'>[]);
       cargarPreguntas(simData.id);
     };
     fetchData();
   }, [params.slug, supabase]);
 
   const cargarPreguntas = async (simuladorId: string) => {
-    const { data } = await supabase
-      .from('preguntas')
-      .select('*')
+    const { data, error } = await supabase
+      .from('simulador_preguntas')
+      .select('id, orden, preguntas(*)')
       .eq('simulador_id', simuladorId)
-      .order('orden', { ascending: true })
-      .order('id', { ascending: true });
+      .order('orden', { ascending: true });
 
-    if (data) setPreguntas(data);
+    if (error) {
+      alert('No se pudieron cargar las preguntas del examen.');
+      setPreguntas([]);
+    } else {
+      setPreguntas((data || []).map(normalizarVinculo).filter((fila): fila is PreguntaExamen => !!fila));
+    }
     setLoading(false);
     setReordering(false);
   };
+
+  const siguienteOrden = () => preguntas.reduce((max, fila) => Math.max(max, Number(fila.orden) || 0), 0) + 1;
 
   const handleInputChange = (e: any) => {
     setNewQuestion({ ...newQuestion, [e.target.name]: e.target.value });
@@ -102,7 +162,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
   };
 
   // 🌟 FUNCIÓN NUEVA: Para cargar los datos de una pregunta en el formulario
-  const iniciarEdicion = (p: any) => {
+  const iniciarEdicion = (p: PreguntaExamen) => {
     setEditingId(p.id);
 
     // Mapear opciones de la BD
@@ -142,16 +202,13 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     const [movedItem] = newPreguntas.splice(currentIndex, 1);
     newPreguntas.splice(targetIndex, 0, movedItem);
 
-    const updates = newPreguntas.map((p, index) => ({
-      ...p,
-      orden: index + 1
-    }));
-
     try {
-      const { error } = await supabase
-        .from('preguntas')
-        .upsert(updates, { onConflict: 'id' });
-
+      const resultados = await Promise.all(
+        newPreguntas.map((fila, index) =>
+          supabase.from('simulador_preguntas').update({ orden: index + 1 }).eq('id', fila.vinculoId)
+        )
+      );
+      const error = resultados.find((resultado) => resultado.error)?.error;
       if (error) throw error;
       cargarPreguntas(simulador.id);
       
@@ -203,20 +260,23 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
         alert('Pregunta actualizada correctamente');
 
       } else {
-        // MODO CREAR
-        const nextOrder = preguntas.length + 1;
-        const { error } = await supabase.from('preguntas').insert({
-          simulador_id: simulador.id,
+        const { data: creada, error } = await supabase.from('preguntas').insert({
           pregunta: newQuestion.pregunta,
           opciones: opciones,
           respuesta: respuestaCorrecta,
           feedback: newQuestion.feedback,
           pregunta_img_url: newQuestion.imgUrl || null,
           youtube_url: newQuestion.youtubeUrl || null,
-          orden: nextOrder
-        });
+        }).select('id').single();
 
-        if (error) throw error;
+        if (error || !creada) throw error || new Error('No se pudo crear la pregunta.');
+
+        const { error: errorVinculo } = await supabase.from('simulador_preguntas').insert({
+          simulador_id: simulador.id,
+          pregunta_id: creada.id,
+          orden: siguienteOrden(),
+        });
+        if (errorVinculo) throw errorVinculo;
       }
 
       resetForm();
@@ -227,10 +287,129 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('¿Estás seguro de borrar esta pregunta?')) return;
-    await supabase.from('preguntas').delete().eq('id', id);
+  const handleDelete = async (vinculoId: string) => {
+    if (!confirm('¿Quitar esta pregunta del examen? Seguirá disponible en el banco.')) return;
+    const { error } = await supabase.from('simulador_preguntas').delete().eq('id', vinculoId);
+    if (error) {
+      alert('No se pudo quitar la pregunta del examen.');
+      return;
+    }
     if (simulador) cargarPreguntas(simulador.id);
+  };
+
+  const buscarEnBanco = async (texto: string) => {
+    setBuscandoBanco(true);
+    const termino = texto.trim().slice(0, 100);
+    let consulta = supabase.from('preguntas').select('id, pregunta').order('id', { ascending: false }).limit(40);
+    if (termino) consulta = consulta.ilike('pregunta', `%${escaparLike(termino)}%`);
+    const { data, error } = await consulta;
+    setBuscandoBanco(false);
+    if (error) {
+      setResultadosBanco([]);
+      return;
+    }
+    const yaEstan = new Set(preguntas.map((fila) => fila.id));
+    setResultadosBanco(((data || []) as PreguntaBanco[]).filter((fila) => !yaEstan.has(fila.id)));
+  };
+
+  useEffect(() => {
+    if (!bancoAbierto) return;
+    const timer = setTimeout(() => { void buscarEnBanco(busquedaBanco); }, 250);
+    return () => clearTimeout(timer);
+  }, [bancoAbierto, busquedaBanco, preguntas]);
+
+  const agregarDesdeBanco = async (preguntaId: number) => {
+    if (!simulador) return;
+    if (preguntas.some((fila) => fila.id === preguntaId)) {
+      alert('Esta pregunta ya está en el examen.');
+      return;
+    }
+    setAgregandoId(preguntaId);
+    const { error } = await supabase.from('simulador_preguntas').insert({
+      simulador_id: simulador.id,
+      pregunta_id: preguntaId,
+      orden: siguienteOrden(),
+    });
+    setAgregandoId(null);
+    if (error) {
+      alert(error.code === '23505' ? 'Esta pregunta ya está en el examen.' : 'No se pudo agregar la pregunta.');
+      return;
+    }
+    await cargarPreguntas(simulador.id);
+  };
+
+  const temasMasivos = materiaMasivaId
+    ? temas.filter((tema) => tema.materia_id === materiaMasivaId)
+    : [];
+
+  const parseoMasivo = cargaAbierta ? parsearCargaMasiva(textoMasivo) : { preguntas: [], errores: [] };
+  const textoMasivoVacio = !textoMasivo.trim();
+
+  const cambiarMateriaMasiva = (materiaId: string) => {
+    setMateriaMasivaId(materiaId);
+    setTemaMasivoId('');
+  };
+
+  const guardarCargaMasiva = async () => {
+    if (!simulador || guardandoMasivo) return;
+
+    const { preguntas: lote, errores } = parsearCargaMasiva(textoMasivo);
+    if (textoMasivo.trim() && errores.length > 0) return;
+    if (lote.length === 0) return;
+    if (materiaMasivaId && !temaMasivoId) {
+      alert('Si eliges una materia, también elige el tema.');
+      return;
+    }
+    if (temaMasivoId && !temasMasivos.some((tema) => tema.id === temaMasivoId)) {
+      alert('Ese tema no pertenece a la materia elegida.');
+      return;
+    }
+
+    setGuardandoMasivo(true);
+    let orden = siguienteOrden();
+    let guardadas = 0;
+
+    try {
+      for (const item of lote) {
+        const { data: creada, error } = await supabase.from('preguntas').insert({
+          pregunta: item.pregunta,
+          opciones: item.opciones,
+          respuesta: item.respuesta,
+          feedback: null,
+          pregunta_img_url: null,
+          tema_id: temaMasivoId || null,
+        }).select('id').single();
+
+        if (error || !creada) throw error || new Error('No se pudo crear la pregunta.');
+
+        const { error: errorVinculo } = await supabase.from('simulador_preguntas').insert({
+          simulador_id: simulador.id,
+          pregunta_id: creada.id,
+          orden,
+        });
+        if (errorVinculo) throw errorVinculo;
+
+        orden += 1;
+        guardadas += 1;
+      }
+
+      setTextoMasivo('');
+      setCargaAbierta(false);
+      alert(`${guardadas} preguntas agregadas al examen.`);
+    } catch (err: any) {
+      const bloques = separarBloques(textoMasivo);
+      if (guardadas > 0 && guardadas < bloques.length) {
+        setTextoMasivo(bloques.slice(guardadas).join('\n\n'));
+      }
+      alert(
+        guardadas > 0
+          ? `Se guardaron ${guardadas} de ${lote.length}. El resto sigue en el cuadro. ${err?.message || ''}`.trim()
+          : 'Error en la carga masiva: ' + (err?.message || 'No se pudieron guardar las preguntas.')
+      );
+    } finally {
+      if (guardadas > 0) await cargarPreguntas(simulador.id);
+      setGuardandoMasivo(false);
+    }
   };
 
   if (loading) return <div className="p-10 text-center">Cargando editor...</div>;
@@ -260,9 +439,29 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
         
         {/* Columna Izquierda: FORMULARIO */}
         <div className={`lg:col-span-2 p-6 rounded-xl shadow-lg border ${editingId ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-blue-100'}`}>
-          <h2 className={`text-lg font-bold mb-4 flex items-center gap-2 border-b pb-2 ${editingId ? 'text-indigo-800' : 'text-blue-800'}`}>
-            {editingId ? <><Edit3 size={20}/> Editando Pregunta</> : <><Plus size={20}/> Agregar Nueva Pregunta</>}
-          </h2>
+          <div className={`mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-2 ${editingId ? 'border-indigo-200' : 'border-gray-100'}`}>
+            <h2 className={`text-lg font-bold flex items-center gap-2 ${editingId ? 'text-indigo-800' : 'text-blue-800'}`}>
+              {editingId ? <><Edit3 size={20}/> Editando Pregunta</> : <><Plus size={20}/> Agregar Nueva Pregunta</>}
+            </h2>
+            {!editingId && (
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setBusquedaBanco(''); setBancoAbierto(true); }}
+                  className="bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2"
+                >
+                  <Library size={16}/> Añadir desde el Banco
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCargaAbierta(true)}
+                  className="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2"
+                >
+                  <Upload size={16}/> Carga Masiva
+                </button>
+              </div>
+            )}
+          </div>
           
           <form onSubmit={handleSaveQuestion} className="space-y-4">
             <div>
@@ -420,10 +619,31 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
               const isEditing = editingId === p.id;
 
               return (
-                <div key={`${p.id}-${index}`} className={`bg-white p-3 rounded-lg shadow-sm border transition-all group relative ${isEditing ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-gray-200 hover:border-blue-400'}`}>
+                <div
+                  key={p.vinculoId}
+                  onDragOver={(e) => { if (!reordering && !isEditing) e.preventDefault(); }}
+                  onDrop={() => {
+                    const origen = dragIndexRef.current;
+                    dragIndexRef.current = null;
+                    if (origen === null || origen === index || reordering || isEditing) return;
+                    reorderQuestion(origen, index + 1);
+                  }}
+                  className={`bg-white p-3 rounded-lg shadow-sm border transition-all group relative ${isEditing ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-gray-200 hover:border-blue-400'}`}
+                >
                   
                   <div className="flex justify-between items-start mb-2 gap-2">
                     <div className="flex items-center gap-2 flex-1">
+                       <button
+                         type="button"
+                         draggable={!reordering && !isEditing}
+                         onDragStart={() => { dragIndexRef.current = index; }}
+                         onDragEnd={() => { dragIndexRef.current = null; }}
+                         disabled={reordering || isEditing}
+                         title="Arrastrar para reordenar"
+                         className="text-gray-300 hover:text-blue-600 cursor-grab active:cursor-grabbing disabled:cursor-not-allowed p-0.5"
+                       >
+                         <GripVertical size={16}/>
+                       </button>
                        {/* INPUT DE ORDEN MANUAL */}
                        <div className="flex flex-col items-center">
                          <input 
@@ -463,7 +683,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
                       <button onClick={() => iniciarEdicion(p)} disabled={reordering} className="text-gray-400 hover:text-indigo-600 transition-colors p-1.5 bg-gray-50 hover:bg-indigo-50 rounded-lg" title="Editar pregunta">
                         <Edit3 size={16}/>
                       </button>
-                      <button onClick={() => handleDelete(p.id)} disabled={reordering} className="text-gray-400 hover:text-red-500 transition-colors p-1.5 bg-gray-50 hover:bg-red-50 rounded-lg" title="Eliminar">
+                      <button onClick={() => handleDelete(p.vinculoId)} disabled={reordering} className="text-gray-400 hover:text-red-500 transition-colors p-1.5 bg-gray-50 hover:bg-red-50 rounded-lg" title="Quitar del examen">
                         <Trash2 size={16}/>
                       </button>
                     </div>
@@ -491,6 +711,175 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
         </div>
 
       </div>
+
+      {bancoAbierto && (
+        <div className="fixed inset-0 z-[80] bg-slate-900/50 flex items-end sm:items-center justify-center p-4" onClick={() => setBancoAbierto(false)}>
+          <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl border border-gray-100 max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-3">
+              <h2 className="font-bold text-gray-800 flex items-center gap-2">
+                <Library className="w-5 h-5 text-indigo-500"/> Banco de preguntas
+              </h2>
+              <button type="button" onClick={() => setBancoAbierto(false)} className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg">
+                <X className="w-5 h-5"/>
+              </button>
+            </div>
+            <div className="p-4 border-b border-gray-100">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"/>
+                <input
+                  type="search"
+                  value={busquedaBanco}
+                  onChange={(e) => setBusquedaBanco(e.target.value)}
+                  placeholder="Buscar por el enunciado..."
+                  className="w-full pl-9 p-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                  autoFocus
+                />
+              </div>
+            </div>
+            <div className="overflow-y-auto p-2">
+              {buscandoBanco ? (
+                <p className="p-6 text-center text-sm text-gray-400">Buscando...</p>
+              ) : resultadosBanco.length === 0 ? (
+                <p className="p-6 text-center text-sm text-gray-400">No hay preguntas para agregar.</p>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {resultadosBanco.map((fila) => (
+                    <li key={fila.id} className="p-3 flex items-start justify-between gap-3">
+                      <p className="text-sm text-gray-800 line-clamp-2">{fila.pregunta || 'Sin enunciado'}</p>
+                      <button
+                        type="button"
+                        disabled={agregandoId === fila.id}
+                        onClick={() => agregarDesdeBanco(fila.id)}
+                        className="shrink-0 px-3 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-100 disabled:opacity-50"
+                      >
+                        {agregandoId === fila.id ? 'Agregando...' : 'Agregar'}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {cargaAbierta && (
+        <div
+          className="fixed inset-0 z-[80] bg-slate-900/50 flex items-end sm:items-center justify-center p-4"
+          onClick={() => { if (!guardandoMasivo) setCargaAbierta(false); }}
+        >
+          <div
+            className="bg-white w-full max-w-3xl rounded-2xl shadow-xl border border-gray-100 max-h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-3">
+              <h2 className="font-bold text-gray-800 flex items-center gap-2">
+                <Upload className="w-5 h-5 text-slate-600"/> Carga masiva
+              </h2>
+              <button
+                type="button"
+                disabled={guardandoMasivo}
+                onClick={() => setCargaAbierta(false)}
+                className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg disabled:opacity-40"
+              >
+                <X className="w-5 h-5"/>
+              </button>
+            </div>
+
+            <div className="overflow-y-auto p-4 space-y-4">
+              <div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ejemplo</p>
+                <pre className="text-xs font-mono bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-700 whitespace-pre-wrap">{EJEMPLO_CARGA_MASIVA}</pre>
+                <p className="text-xs text-gray-500 mt-2">
+                  Separa cada pregunta con una línea en blanco. Las opciones van en una sola línea, divididas por |.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-indigo-700 uppercase mb-1">Materia</label>
+                  <select
+                    value={materiaMasivaId}
+                    disabled={guardandoMasivo}
+                    onChange={(e) => cambiarMateriaMasiva(e.target.value)}
+                    className="w-full p-3 border border-indigo-200 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-gray-700 disabled:opacity-50"
+                  >
+                    <option value="">Sin clasificar</option>
+                    {materias.map((materia) => (
+                      <option key={materia.id} value={materia.id}>{materia.nombre || 'Sin nombre'}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-indigo-700 uppercase mb-1">Tema</label>
+                  <select
+                    value={temaMasivoId}
+                    disabled={guardandoMasivo || !materiaMasivaId}
+                    onChange={(e) => setTemaMasivoId(e.target.value)}
+                    className="w-full p-3 border border-indigo-200 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-gray-700 disabled:opacity-50"
+                  >
+                    <option value="">
+                      {materiaMasivaId ? 'Selecciona un tema' : 'Primero elige una materia'}
+                    </option>
+                    {temasMasivos.map((tema) => (
+                      <option key={tema.id} value={tema.id}>{tema.nombre || 'Sin nombre'}</option>
+                    ))}
+                  </select>
+                  {materiaMasivaId && temasMasivos.length === 0 && (
+                    <p className="text-xs text-rose-500 mt-1">Esta materia todavía no tiene temas.</p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Preguntas</label>
+                <textarea
+                  value={textoMasivo}
+                  onChange={(e) => setTextoMasivo(e.target.value)}
+                  disabled={guardandoMasivo}
+                  rows={12}
+                  placeholder={'Q: Enunciado\nO: Opción 1 | Opción 2 | Opción 3\nR: Opción 2'}
+                  className="w-full p-3 border border-gray-300 rounded-xl font-mono text-sm focus:ring-2 focus:ring-indigo-500 outline-none disabled:opacity-60"
+                />
+              </div>
+
+              {!textoMasivoVacio && parseoMasivo.errores.length > 0 && (
+                <ul className="text-sm text-rose-700 bg-rose-50 border border-rose-100 rounded-xl p-3 space-y-1">
+                  {parseoMasivo.errores.map((error, indice) => (
+                    <li key={`${indice}-${error}`}>{error}</li>
+                  ))}
+                </ul>
+              )}
+
+              {!textoMasivoVacio && parseoMasivo.errores.length === 0 && (
+                <p className="text-sm font-medium text-emerald-700">
+                  {parseoMasivo.preguntas.length} {parseoMasivo.preguntas.length === 1 ? 'pregunta lista' : 'preguntas listas'} para guardar.
+                </p>
+              )}
+            </div>
+
+            <div className="p-4 border-t border-gray-100">
+              <button
+                type="button"
+                onClick={guardarCargaMasiva}
+                disabled={
+                  guardandoMasivo
+                  || textoMasivoVacio
+                  || parseoMasivo.errores.length > 0
+                  || (!!materiaMasivaId && !temaMasivoId)
+                }
+                className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-gray-200 disabled:text-gray-400 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+              >
+                {guardandoMasivo ? (
+                  <><Loader2 className="w-5 h-5 animate-spin"/> Guardando...</>
+                ) : (
+                  <><Save className="w-5 h-5"/> Guardar preguntas</>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

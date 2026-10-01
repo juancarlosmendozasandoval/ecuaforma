@@ -6,6 +6,7 @@ import Breadcrumbs from '../../../../components/Breadcrumbs';
 import Simulator from '../../../../components/Simulator';
 import { FileText, CheckSquare, ArrowLeft, ArrowRight, ListVideo, CheckCircle, X, Loader2, Circle, DownloadCloud, ExternalLink } from 'lucide-react';
 import type { SimulatorType, QuestionType } from '../../../../simulador/[slug]/page';
+import { mapearPreguntasExamen } from '@/lib/simuladores/preguntasDeExamen';
 import { useSupabase } from '../../../../components/AuthProvider';
 import type { Tables } from '@/types/supabase';
 
@@ -212,10 +213,14 @@ export default function AulaVirtualPage({ params }: { params: { institucion: str
       const { data: sim, error: simError } = await supabase.from('simuladores').select('*').eq('id', banco.simulador_id).single();
       if (simError || !sim) throw new Error('No se pudo cargar el simulador');
 
-      const { data: pregs, error: pregsError } = await supabase.from('preguntas').select('*').eq('simulador_id', sim.id).order('orden', { ascending: true });
+      const { data: vinculos, error: pregsError } = await supabase
+        .from('simulador_preguntas')
+        .select('orden, preguntas(*)')
+        .eq('simulador_id', sim.id)
+        .order('orden', { ascending: true });
       if (pregsError) throw new Error('No se pudieron cargar las preguntas');
 
-      setSimuladorData({ sim: sim as SimulatorType, pregs: (pregs || []) as QuestionType[] });
+      setSimuladorData({ sim: sim as SimulatorType, pregs: mapearPreguntasExamen<QuestionType>(vinculos) });
       setExamenTerminado(false);
       setMostrarSimulador(true);
       

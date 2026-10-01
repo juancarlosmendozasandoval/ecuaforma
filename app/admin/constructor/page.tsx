@@ -7,6 +7,7 @@ import {
   ArrowRight, AlertCircle, CheckCircle, GripVertical 
 } from 'lucide-react';
 import Link from 'next/link';
+import { mapearPreguntasExamen } from '@/lib/simuladores/preguntasDeExamen';
 
 export default function ConstructorMixtoPage() {
   const { supabase } = useSupabase();
@@ -54,12 +55,12 @@ export default function ConstructorMixtoPage() {
         setPreguntasDisponibles([]);
         return;
       }
-      const { data } = await supabase
-        .from('preguntas')
-        .select('*')
+      const { data, error } = await supabase
+        .from('simulador_preguntas')
+        .select('orden, preguntas(*)')
         .eq('simulador_id', simuladorSeleccionado)
         .order('orden', { ascending: true });
-      if (data) setPreguntasDisponibles(data);
+      setPreguntasDisponibles(error ? [] : mapearPreguntasExamen(data));
     };
     cargarPreguntas();
   }, [simuladorSeleccionado, supabase]);
@@ -111,20 +112,14 @@ export default function ConstructorMixtoPage() {
 
       if (errSim) throw errSim;
 
-      // 🌟 SOLUCIÓN 2: Clonación Inteligente (Evita errores de columnas inexistentes)
-      const preguntasNuevas = carrito.map((preg, index) => {
-        // Extraemos los datos que NO queremos copiar (id viejo, fechas, etc)
-        const { id, created_at, simulador_id, ...restoDeColumnas } = preg;
-        
-        return {
-          ...restoDeColumnas,       // Pega TODAS las columnas que sí existan en tu base de datos
-          simulador_id: nuevoSim.id, // Asignamos el ID del nuevo simulador
-          orden: index + 1          // Reordenamos
-        };
-      });
+      const vinculos = carrito.map((preg, index) => ({
+        simulador_id: nuevoSim.id,
+        pregunta_id: preg.id,
+        orden: index + 1,
+      }));
 
-      const { error: errPreg } = await supabase.from('preguntas').insert(preguntasNuevas);
-      if (errPreg) throw errPreg;
+      const { error: errVinculos } = await supabase.from('simulador_preguntas').insert(vinculos);
+      if (errVinculos) throw errVinculos;
 
       showAlert('success', '¡Simulador Mixto creado exitosamente!');
       setNombre(''); setCategoria(''); setMateria(''); setCarrito([]);
@@ -136,8 +131,8 @@ export default function ConstructorMixtoPage() {
     }
   };
 
-  const preguntasFiltradas = preguntasDisponibles.filter(p => 
-    p.pregunta.toLowerCase().includes(busquedaPregunta.toLowerCase())
+  const preguntasFiltradas = preguntasDisponibles.filter(p =>
+    (p.pregunta || '').toLowerCase().includes((busquedaPregunta || '').toLowerCase())
   );
 
   return (

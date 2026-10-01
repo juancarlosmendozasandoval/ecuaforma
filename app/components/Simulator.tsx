@@ -99,14 +99,27 @@ export default function Simulator({ initialSimulator, initialQuestions, onFinish
     });
     
     const finalScore = (correctAnswers / questions.length) * 100;
+    const puntajeFinal = Math.round(finalScore);
     setScore(finalScore); // Guardamos la nota en el estado YA MISMO
+
+    // Historial numérico: no se espera la respuesta para no retrasar los resultados.
+    if (user?.id) {
+      void supabase.from('historial_simuladores').insert({
+        user_id: user.id,
+        simulador_id: initialSimulator.id,
+        puntaje: puntajeFinal,
+        total_preguntas: questions.length,
+      }).then(({ error }) => {
+        if (error) console.error('No se pudo guardar el historial de puntajes:', error);
+      });
+    }
 
     // 2. Intentar guardar en Base de Datos (en segundo plano)
     try {
       if (user) {
         const { error } = await supabase.from('resultados').insert({
           simulador_id: initialSimulator.id,
-          puntaje: Math.round(finalScore),
+          puntaje: puntajeFinal,
           total_preguntas: questions.length,
           aciertos: correctAnswers,
           usuario_id: user.id,

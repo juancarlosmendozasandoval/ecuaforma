@@ -5,6 +5,7 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 import Link from 'next/link';
 import BotonIniciarSesion from '../../components/BotonIniciarSesion';
 import { Lock, CreditCard, CheckCircle } from 'lucide-react';
+import { mapearPreguntasExamen } from '@/lib/simuladores/preguntasDeExamen';
 
 export interface SimulatorType {
   id: string;
@@ -122,12 +123,13 @@ export default async function SimuladorPage({ params }: { params: { slug: string
   }
 
   // 4. SI TIENE ACCESO -> Cargar preguntas y renderizar el simulador
-  const { data: questionsData } = await supabase
-    .from('preguntas')
-    .select('*')
+  const { data: vinculos } = await supabase
+    .from('simulador_preguntas')
+    .select('orden, preguntas(*)')
     .eq('simulador_id', simulatorData.id)
-    .order('orden', { ascending: true })
-    .order('id', { ascending: true });
+    .order('orden', { ascending: true });
+
+  const questionsData = mapearPreguntasExamen<QuestionType>(vinculos);
 
   return (
     <div className="main-container py-10">
@@ -138,7 +140,7 @@ export default async function SimuladorPage({ params }: { params: { slug: string
           Institución: {simulatorData.institucion} | Categoría: {simulatorData.categoria} | Materia: {simulatorData.materia}
         </p>
       </div>
-      <Simulator initialSimulator={simulatorData} initialQuestions={questionsData || []} />
+      <Simulator initialSimulator={simulatorData} initialQuestions={questionsData} />
     </div>
   );
 }

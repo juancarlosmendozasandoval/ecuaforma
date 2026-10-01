@@ -207,6 +207,41 @@ export type Database = {
         }
         Relationships: []
       }
+      historial_simuladores: {
+        Row: {
+          created_at: string
+          id: string
+          puntaje: number
+          simulador_id: string
+          total_preguntas: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          puntaje: number
+          simulador_id: string
+          total_preguntas: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          puntaje?: number
+          simulador_id?: string
+          total_preguntas?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historial_simuladores_simulador_id_fkey"
+            columns: ["simulador_id"]
+            isOneToOne: false
+            referencedRelation: "simuladores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lecciones: {
         Row: {
           adjuntos: Json | null
@@ -367,6 +402,7 @@ export type Database = {
           pregunta_img_url: string | null
           respuesta: Json
           simulador_id: string
+          tema_id: string | null
           youtube_url: string | null
         }
         Insert: {
@@ -378,6 +414,7 @@ export type Database = {
           pregunta_img_url?: string | null
           respuesta: Json
           simulador_id?: string
+          tema_id?: string | null
           youtube_url?: string | null
         }
         Update: {
@@ -389,6 +426,7 @@ export type Database = {
           pregunta_img_url?: string | null
           respuesta?: Json
           simulador_id?: string
+          tema_id?: string | null
           youtube_url?: string | null
         }
         Relationships: [
@@ -397,6 +435,13 @@ export type Database = {
             columns: ["simulador_id"]
             isOneToOne: false
             referencedRelation: "simuladores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "preguntas_tema_id_fkey"
+            columns: ["tema_id"]
+            isOneToOne: false
+            referencedRelation: "temas"
             referencedColumns: ["id"]
           },
         ]
@@ -467,6 +512,45 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "resultados_simulador_id_fkey"
+            columns: ["simulador_id"]
+            isOneToOne: false
+            referencedRelation: "simuladores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      simulador_preguntas: {
+        Row: {
+          created_at: string
+          id: string
+          orden: number
+          pregunta_id: number
+          simulador_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          orden: number
+          pregunta_id: number
+          simulador_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          orden?: number
+          pregunta_id?: number
+          simulador_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "simulador_preguntas_pregunta_id_fkey"
+            columns: ["pregunta_id"]
+            isOneToOne: false
+            referencedRelation: "preguntas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "simulador_preguntas_simulador_id_fkey"
             columns: ["simulador_id"]
             isOneToOne: false
             referencedRelation: "simuladores"

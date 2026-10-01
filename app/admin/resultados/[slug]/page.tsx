@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSupabase } from '../../../components/AuthProvider';
 import { ArrowLeft, Users, TrendingUp, AlertTriangle, RefreshCw, Trophy, Trash2, Download } from 'lucide-react';
 import Link from 'next/link';
+import { mapearPreguntasExamen } from '@/lib/simuladores/preguntasDeExamen';
 
 export default function ResultadosPage({ params }: { params: { slug: string } }) {
   const { supabase } = useSupabase();
@@ -22,13 +23,13 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
       if (!sim) return;
       setSimulador(sim);
 
-      const { data: pregs } = await supabase
-        .from('preguntas')
-        .select('*')
+      const { data: vinculos } = await supabase
+        .from('simulador_preguntas')
+        .select('orden, preguntas(*)')
         .eq('simulador_id', sim.id)
-        .order('orden', { ascending: true })
-        .order('id', { ascending: true });
-      setPreguntas(pregs || []);
+        .order('orden', { ascending: true });
+      const pregs = mapearPreguntasExamen<any>(vinculos);
+      setPreguntas(pregs);
 
       const { data: res } = await supabase
         .from('resultados')
