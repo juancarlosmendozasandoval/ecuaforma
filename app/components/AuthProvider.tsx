@@ -34,7 +34,7 @@ export default function AuthProvider({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => { // <-- TIPOS AÑADIDOS
-      if (event === 'SIGNED_IN') {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         setUserSession(session)
       }
       if (event === 'SIGNED_OUT') {

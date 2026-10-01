@@ -3,23 +3,31 @@ import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { esAdmin } from '@/lib/auth/adminEmail';
 
 /**
- * Primera barrera de /admin: cualquier petición de alguien que no sea el
- * administrador se redirige a "/" antes de renderizar nada.
- * Requiere next >= 14.2.25 (CVE-2025-29927, bypass de middleware).
+ * Refresca la sesión y devuelve la MISMA respuesta que recibió el cliente
+ * de Supabase. Si se devuelve otro objeto, las cookies nuevas se pierden.
  */
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user || !esAdmin(user.email)) {
-    return NextResponse.redirect(new URL('/', req.url));
+  await supabase.auth.getSession();
+
+  if (req.nextUrl.pathname.startsWith('/admin')) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !esAdmin(user.email)) {
+      const destino = NextResponse.redirect(new URL('/', req.url));
+      res.headers.getSetCookie().forEach((cookie) => {
+        destino.headers.append('set-cookie', cookie);
+      });
+      return destino;
+    }
   }
 
-  // Devolver `res` conserva las cookies de sesión refrescadas por Supabase
   return res;
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|auth/callback|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+  ],
 };

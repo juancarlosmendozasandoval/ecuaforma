@@ -1,16 +1,37 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 
-export async function GET(request: Request) {
-  const requestUrl = new URL(request.url)
-  const code = requestUrl.searchParams.get('code')
+/** Pega en la redirección las cookies de sesión que escribió Supabase. */
+function conCookiesDeSesion(destino: NextResponse) {
+  cookies().getAll().forEach((cookie) => {
+    if (!cookie.name.startsWith('sb-')) return
+    destino.cookies.set({
+      name: cookie.name,
+      value: cookie.value,
+      path: '/',
+      sameSite: 'lax',
+    })
+  })
+  return destino
+}
 
-  if (code) {
-    const supabase = createRouteHandlerClient({ cookies })
-    await supabase.auth.exchangeCodeForSession(code)
+export async function GET(request: NextRequest) {
+  const code = request.nextUrl.searchParams.get('code')
+  const origen = request.nextUrl.origin
+
+  if (!code) {
+    console.error('🔥 Error en Callback de Auth:', 'La URL no trae el parámetro code')
+    return NextResponse.redirect(new URL('/', origen))
   }
 
-  // URL to redirect to after sign in process completes
-  return NextResponse.redirect(requestUrl.origin)
+  const supabase = createRouteHandlerClient({ cookies })
+  const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+  if (error) {
+    console.error('🔥 Error en Callback de Auth:', error)
+    return NextResponse.redirect(new URL('/', origen))
+  }
+
+  return conCookiesDeSesion(NextResponse.redirect(new URL('/mis-cursos', origen)))
 }

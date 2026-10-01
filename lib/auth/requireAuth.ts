@@ -8,9 +8,15 @@ import { redirect } from 'next/navigation';
  * getUser() valida el token contra Supabase Auth.
  */
 export async function requireAuth() {
+  // Next.js 14.2: cookies() es síncrono. auth-helpers lo llama sin await.
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/');
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    console.log('Error en requireAuth:', error);
+    redirect('/');
+  }
+
   return { supabase, user };
 }

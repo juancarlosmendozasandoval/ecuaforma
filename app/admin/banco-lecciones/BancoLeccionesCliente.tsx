@@ -5,9 +5,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useSupabase } from '../../components/AuthProvider';
 import {
   AlertCircle, CheckCircle, CheckSquare, ChevronLeft, ChevronRight, Database, Edit3, FileText,
-  FunctionSquare, Image as ImageIcon, Loader2, Paperclip, PlusCircle, Save, Search, Trash2, Type, Video, X,
+  FunctionSquare, Image as ImageIcon, Loader2, Paperclip, PenTool, PlusCircle, Save, Search, Trash2, Type, Video, X,
   type LucideIcon,
 } from 'lucide-react';
+import { conApuntesPizarra, extraerApuntesPizarra } from '@/lib/cursos/adjuntos';
 import type { Tables } from '@/types/supabase';
 import type { FiltrosBiblioteca, LeccionBiblioteca, Materia, Tema, TipoLeccion } from '@/types/biblioteca';
 
@@ -75,6 +76,7 @@ const FORM_VACIO = {
   simulador_id: '',
   contenido_html: '',
   adjuntos: '',
+  apuntes_url: '',
   tema_id: '',
 };
 
@@ -233,13 +235,15 @@ export default function BancoLeccionesCliente({
     const materiaId = temas.find((tema) => tema.id === recurso.tema_id)?.materia_id || '';
     setEditingId(recurso.id);
     setMateriaSeleccionadaId(materiaId);
+    const materiales = extraerApuntesPizarra(recurso.adjuntos || '');
     setForm({
       titulo_interno: recurso.titulo_interno || '',
       tipo: esTipoConocido(recurso.tipo) ? recurso.tipo : 'texto',
       video_url: recurso.video_url || '',
       simulador_id: recurso.simulador_id || '',
       contenido_html: recurso.contenido_html || '',
-      adjuntos: recurso.adjuntos || '',
+      adjuntos: materiales.adjuntos,
+      apuntes_url: materiales.apuntesUrl,
       tema_id: materiaId && recurso.tema_id ? recurso.tema_id : '',
     });
     setFormAbierto(true);
@@ -259,8 +263,12 @@ export default function BancoLeccionesCliente({
     if (form.tipo === 'simulador' && !form.simulador_id) return { error: 'Selecciona un simulador.' };
 
     const adjuntos = form.adjuntos.trim();
+    const apuntesUrl = form.apuntes_url.trim();
     const { error: errorAdjuntos } = validarAdjuntos(adjuntos);
     if (errorAdjuntos) return { error: errorAdjuntos };
+    if (apuntesUrl && !/^https?:\/\//i.test(apuntesUrl)) {
+      return { error: 'La URL de apuntes de pizarra debe empezar con http(s)://' };
+    }
 
     const temaId = form.tema_id || '';
     if (materiaSeleccionadaId && !temaId) return { error: 'Selecciona el tema de esa materia.' };
@@ -275,7 +283,7 @@ export default function BancoLeccionesCliente({
         video_url: form.tipo === 'video' ? videoUrl : null,
         simulador_id: form.tipo === 'simulador' ? form.simulador_id : null,
         contenido_html: contenido || null,
-        adjuntos: adjuntos || null,
+        adjuntos: conApuntesPizarra(adjuntos, apuntesUrl),
         tema_id: temaId || null,
       },
     };
@@ -525,6 +533,22 @@ export default function BancoLeccionesCliente({
             </div>
 
             <div>
+              <label className="mb-1 flex items-center gap-1 text-xs font-bold uppercase text-blue-700">
+                <PenTool size={14} /> URL de Apuntes de Pizarra (PDF/Imagen)
+              </label>
+              <input
+                type="url"
+                value={form.apuntes_url}
+                onChange={(e) => actualizar('apuntes_url', e.target.value)}
+                placeholder="https://... enlace al PDF o imagen de OneNote"
+                className="w-full rounded-xl border border-blue-200 bg-blue-50/40 p-3 outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Opcional. En el aula aparece debajo del video como Apuntes de Pizarra.
+              </p>
+            </div>
+
+            <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-xs font-bold text-indigo-700 uppercase flex items-center gap-1">
                   <Paperclip size={14} /> Material Adjunto (URLs o JSON)
@@ -717,7 +741,8 @@ export default function BancoLeccionesCliente({
                       : recurso.tipo === 'simulador'
                       ? nombreSimulador(recurso.simulador_id)
                       : '';
-                  const totalAdjuntos = validarAdjuntos(recurso.adjuntos || '').total;
+                  const materiales = extraerApuntesPizarra(recurso.adjuntos || '');
+                  const totalAdjuntos = validarAdjuntos(materiales.adjuntos).total;
                   return (
                     <tr
                       key={recurso.id}
@@ -739,6 +764,11 @@ export default function BancoLeccionesCliente({
                       <td className="p-4">
                         <div className="flex flex-wrap items-center gap-1.5">
                           <BadgeTipo tipo={recurso.tipo} />
+                          {materiales.apuntesUrl && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[11px] font-bold text-blue-700 bg-blue-50 border-blue-100">
+                              <PenTool size={10} /> Pizarra
+                            </span>
+                          )}
                           {totalAdjuntos > 0 && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[11px] font-bold text-purple-600 bg-purple-50 border-purple-100">
                               <Paperclip size={10} /> {totalAdjuntos}

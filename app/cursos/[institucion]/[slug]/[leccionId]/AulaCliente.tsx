@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Simulator from '../../../../components/Simulator';
-import { FileText, CheckSquare, CheckCircle, X, Loader2, Circle, DownloadCloud, ExternalLink } from 'lucide-react';
+import { FileText, CheckSquare, CheckCircle, X, Loader2, Circle, DownloadCloud, ExternalLink, PenTool } from 'lucide-react';
 import type { SimulatorType, QuestionType } from '../../../../simulador/[slug]/page';
 import { mapearPreguntasExamen } from '@/lib/simuladores/preguntasDeExamen';
+import { esApuntePizarra, parsearAdjuntos } from '@/lib/cursos/adjuntos';
 import { useSupabase } from '../../../../components/AuthProvider';
 
 import ReactMarkdown from 'react-markdown';
@@ -25,8 +26,6 @@ export type LeccionAula = {
   adjuntos: string | null;
 };
 
-type Adjunto = { titulo: string; url: string };
-
 function getYouTubeEmbedUrl(url: string | null) {
   if (!url) return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -39,30 +38,6 @@ const normalizarLatex = (texto: string) =>
   texto
     .replace(/\\\[([\s\S]*?)\\\]/g, (_, formula) => `\n\n$$\n${(formula || '').trim()}\n$$\n\n`)
     .replace(/\\\(([\s\S]*?)\\\)/g, (_, formula) => `$${(formula || '').trim()}$`);
-
-/**
- * `banco_lecciones.adjuntos` es texto: se acepta un JSON `[{ titulo, url }]`
- * o, como respaldo, una URL por línea.
- */
-function parsearAdjuntos(valor: unknown): Adjunto[] {
-  if (!valor) return [];
-  let lista: unknown = valor;
-  if (typeof valor === 'string') {
-    try {
-      lista = JSON.parse(valor);
-    } catch {
-      return valor
-        .split('\n')
-        .map((linea) => linea.trim())
-        .filter((linea) => /^https?:\/\//i.test(linea))
-        .map((url) => ({ titulo: '', url }));
-    }
-  }
-  if (!Array.isArray(lista)) return [];
-  return lista
-    .map((a: any) => ({ titulo: a?.titulo || '', url: a?.url || '' }))
-    .filter((a) => a.url);
-}
 
 export default function AulaCliente({
   leccion,
@@ -169,7 +144,9 @@ export default function AulaCliente({
   };
 
   const embedUrl = getYouTubeEmbedUrl(leccion.videoUrl);
-  const adjuntos = parsearAdjuntos(leccion.adjuntos);
+  const materiales = parsearAdjuntos(leccion.adjuntos);
+  const apuntesUrl = materiales.find((item) => esApuntePizarra(item))?.url || '';
+  const adjuntos = materiales.filter((item) => !esApuntePizarra(item));
   const contenidoTexto = leccion.contenidoHtml || '';
 
   return (
@@ -229,6 +206,31 @@ export default function AulaCliente({
               </a>
             </div>
           ) : null}
+
+          {apuntesUrl && (
+            <div className="border-b border-blue-100 bg-blue-50 p-6 md:px-8">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-xl bg-white p-3 text-blue-600 shadow-sm">
+                    <PenTool className="h-6 w-6" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <p className="text-lg font-extrabold text-blue-950">📝 Apuntes de Pizarra</p>
+                    <p className="text-sm text-blue-800">La pizarra digital de esta clase.</p>
+                  </div>
+                </div>
+                <a
+                  href={apuntesUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-blue-700"
+                >
+                  Abrir apuntes
+                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                </a>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col justify-between gap-4 border-b border-gray-100 p-6 sm:flex-row sm:items-center md:p-8">
             <div>

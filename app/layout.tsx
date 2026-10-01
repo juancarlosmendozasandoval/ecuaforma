@@ -13,8 +13,18 @@ import React from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Ecuaforma - Cursos y Simuladores para Fuerzas Armadas y Policía",
-  description: "Prepárate con nuestros cursos y simuladores para ingresar a la FAE, Armada, Ejército y Policía Nacional del Ecuador.",
+  title: 'Ecuaforma | Preparación Militar, FAE y Policía en Ecuador',
+  description:
+    'Plataforma e-learning líder en Ecuador con simuladores de exámenes, clases de física y matemáticas para el ingreso a la FAE, ESMA y Policía Nacional.',
+  keywords: [
+    'ESMA',
+    'FAE',
+    'Policía Nacional Ecuador',
+    'simuladores',
+    'física',
+    'matemáticas',
+    'ingreso militar',
+  ],
 };
 
 export default async function RootLayout({
