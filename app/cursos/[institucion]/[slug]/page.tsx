@@ -5,21 +5,10 @@ import Link from 'next/link';
 import { BookOpen, PlayCircle, FileText, Lock, CheckCircle, CreditCard, CheckSquare, Folder } from 'lucide-react';
 import BotonInscripcionGratis from '../../../components/BotonInscripcionGratis';
 import BotonIniciarSesion from '../../../components/BotonIniciarSesion';
-import type { Tables } from '@/types/supabase';
-
-type LeccionBanco = Pick<Tables<'banco_lecciones'>, 'id' | 'titulo_interno' | 'tipo' | 'video_url' | 'simulador_id'>;
-
-/** Fila de `contenido_modulos` con su lección del banco (relación N:1, llega como objeto). */
-type ContenidoConLeccion = Pick<Tables<'contenido_modulos'>, 'id' | 'modulo_id' | 'orden' | 'titulo_mostrar' | 'is_preview'> & {
-  banco_lecciones: LeccionBanco | null;
-};
-
-type ModuloConLecciones = Pick<Tables<'modulos_curso'>, 'id' | 'titulo' | 'orden'> & {
-  lecciones: ContenidoConLeccion[];
-};
+import { cargarTemarioCurso, tituloLeccionTemario, type LeccionBancoTemario } from '@/lib/cursos/temario';
 
 /** Etiqueta e icono de la tarjeta según `banco_lecciones.tipo`. */
-function detalleTipo(leccion: LeccionBanco | null) {
+function detalleTipo(leccion: LeccionBancoTemario | null) {
   const tipo = (leccion?.tipo || '').toLowerCase();
   if (tipo === 'video' || (!tipo && leccion?.video_url)) return { icon: PlayCircle, label: 'Video clase' };
   if (tipo === 'simulador') return { icon: CheckSquare, label: 'Simulador' };
@@ -55,34 +44,8 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
     if (acceso) tieneAcceso = true;
   }
 
-  // 3. Obtener las carpetas del curso
-  const { data: modulosData } = await supabase
-    .from('modulos_curso')
-    .select('id, titulo, orden')
-    .eq('curso_id', curso.id)
-    .order('orden', { ascending: true });
-
-  const modulosBase = (modulosData || []) as Pick<Tables<'modulos_curso'>, 'id' | 'titulo' | 'orden'>[];
-
-  // 4. Obtener el contenido de esas carpetas con su lección del banco
-  let contenido: ContenidoConLeccion[] = [];
-  if (modulosBase.length > 0) {
-    const { data: contenidoData } = await supabase
-      .from('contenido_modulos')
-      .select('id, modulo_id, orden, titulo_mostrar, is_preview, banco_lecciones ( id, titulo_interno, tipo, video_url, simulador_id )')
-      .in('modulo_id', modulosBase.map((m) => m.id))
-      .order('orden', { ascending: true });
-
-    // Se descartan filas cuya lección ya no existe en el banco
-    contenido = ((contenidoData || []) as unknown as ContenidoConLeccion[]).filter((c) => c.banco_lecciones);
-  }
-
-  const modulos: ModuloConLecciones[] = modulosBase.map((modulo) => ({
-    ...modulo,
-    lecciones: contenido.filter((c) => c.modulo_id === modulo.id),
-  }));
-
-  const totalLecciones = contenido.length;
+  const modulos = await cargarTemarioCurso(supabase, curso.id);
+  const totalLecciones = modulos.reduce((total, modulo) => total + modulo.lecciones.length, 0);
 
   const breadcrumbs = [
     { label: 'Inicio', href: '/' },
@@ -195,7 +158,7 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
                         modulo.lecciones.map((item) => {
                           numeroClase += 1;
                           const leccion = item.banco_lecciones;
-                          const titulo = item.titulo_mostrar || leccion?.titulo_interno || 'Clase sin título';
+                          const titulo = tituloLeccionTemario(item);
                           const { icon: IconoTipo, label: etiquetaTipo } = detalleTipo(leccion);
                           const esExamen = (leccion?.tipo || '').toLowerCase() === 'simulador' || !!leccion?.simulador_id;
 

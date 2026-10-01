@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { requireAdmin } from '@/lib/auth/requireAdmin';
 // 🌟 Se agregó 'GraduationCap' a las importaciones de iconos
-import { ShieldAlert, Key, BarChart, Settings, Library, GraduationCap, Database, FolderTree } from 'lucide-react';
+import { ShieldAlert, Key, BarChart, Settings, Library, GraduationCap, Database, FolderTree, Activity } from 'lucide-react';
 
 export default async function AdminLayout({
   children,
@@ -73,6 +73,13 @@ export default async function AdminLayout({
             className="flex items-center gap-3 px-4 py-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
           >
             <BarChart size={20} /> Ver Resultados
+          </Link>
+
+          <Link
+            href="/admin/rendimiento"
+            className="flex items-center gap-3 px-4 py-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
+          >
+            <Activity size={20} /> Radar de Rendimiento
           </Link>
         </nav>
       </aside>

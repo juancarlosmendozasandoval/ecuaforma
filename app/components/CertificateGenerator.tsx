@@ -1,24 +1,44 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Download, Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 interface CertificateProps {
-  nombrePorDefecto: string;
+  nombreAlumno: string;
   nombreCurso: string;
   institucion: string;
+  /** Fecha ya formateada: la del último progreso, o la de hoy si no hay registro. */
+  fechaCompletado: string;
 }
 
-export default function CertificateGenerator({ nombrePorDefecto, nombreCurso, institucion }: CertificateProps) {
+/** "Matemáticas" y "Juan Pérez" pasan a Matematicas y Juan_Perez. */
+function parteArchivo(valor: string) {
+  const limpio = (valor || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  return limpio || 'Estudiante';
+}
+
+export default function CertificateGenerator({ nombreAlumno, nombreCurso, institucion, fechaCompletado }: CertificateProps) {
   const certificateRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  
-  // Guardamos el nombre final que se va a imprimir en el certificado
-  const [nombreImpreso, setNombreImpreso] = useState(nombrePorDefecto);
+  const alumno = (nombreAlumno || '').trim() || 'Estudiante';
+  const [nombreImpreso, setNombreImpreso] = useState(alumno);
 
-  const fechaHoy = new Date().toLocaleDateString('es-EC', { year: 'numeric', month: 'long', day: 'numeric' });
+  useEffect(() => {
+    setNombreImpreso(alumno);
+  }, [alumno]);
+
+  const fechaDiploma = fechaCompletado || new Date().toLocaleDateString('es-EC', {
+    timeZone: 'America/Guayaquil',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   const handleDownloadPdf = async () => {
     // 1. Preguntamos al alumno cómo quiere que aparezca su nombre
@@ -59,7 +79,7 @@ export default function CertificateGenerator({ nombrePorDefecto, nombreCurso, in
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save(`Certificado_Ecuaforma_${institucion}.pdf`);
+        pdf.save(`Certificado_${parteArchivo(nombreCurso)}_${parteArchivo(nombreConfirmado)}.pdf`);
       } catch (error) {
         console.error("Error al generar el certificado:", error);
         alert("Hubo un problema al generar tu certificado. Inténtalo de nuevo.");
@@ -74,13 +94,14 @@ export default function CertificateGenerator({ nombrePorDefecto, nombreCurso, in
       <button
         onClick={handleDownloadPdf}
         disabled={isGenerating}
-        className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-all shadow-md transform hover:-translate-y-0.5 disabled:bg-emerald-400 disabled:transform-none"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-emerald-700 disabled:transform-none disabled:bg-emerald-400"
       >
-        {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+        {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
         {isGenerating ? 'Generando...' : 'Descargar Certificado'}
       </button>
 
-      <div className="absolute -left-[9999px] top-0">
+      {/* Fuera de la tarjeta: fixed no queda recortado por overflow y html2canvas puede leerlo. */}
+      <div className="pointer-events-none fixed left-[-12000px] top-0" aria-hidden="true">
         <div 
           ref={certificateRef} 
           className="w-[1123px] h-[794px] bg-white relative overflow-hidden flex flex-col items-center justify-center font-sans"
@@ -89,18 +110,14 @@ export default function CertificateGenerator({ nombrePorDefecto, nombreCurso, in
           <div className="absolute inset-4 border-[12px] border-slate-900 pointer-events-none"></div>
           <div className="absolute inset-8 border-[2px] border-slate-300 pointer-events-none"></div>
 
-          {/* LOGO */}
-          <div className="mb-4 mt-2">
-            <img 
-              src="/logo.png" 
-              alt="Ecuaforma Logo" 
-              className="h-20 object-contain"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                const parent = e.currentTarget.parentElement;
-                if(parent) parent.innerHTML = '<span class="text-4xl font-black tracking-widest text-slate-900">ECUAFORMA</span>';
-              }}
-            />
+          <div className="mb-4 mt-2 flex items-center gap-4">
+            <svg className="h-16 w-16" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M50 10 L 90 35 L 90 75 L 50 95 L 10 75 L 10 35 Z" fill="#2d3748" />
+              <path d="M30 40 L 50 28 L 70 40" stroke="#FFD700" strokeWidth="10" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M30 58 L 50 46 L 70 58" stroke="#3b82f6" strokeWidth="10" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M30 76 L 50 64 L 70 76" stroke="#ef4444" strokeWidth="10" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="text-3xl font-black tracking-[0.25em] text-slate-900">ECUAFORMA</span>
           </div>
 
           <h1 className="text-5xl font-black text-slate-900 tracking-widest uppercase mb-4">
@@ -135,7 +152,7 @@ export default function CertificateGenerator({ nombrePorDefecto, nombreCurso, in
             
             {/* FECHA */}
             <div className="flex flex-col items-center w-64">
-               <p className="text-2xl font-bold text-slate-800 mb-3">{fechaHoy}</p>
+               <p className="text-2xl font-bold text-slate-800 mb-3">{fechaDiploma}</p>
                <p className="text-sm text-slate-500 uppercase tracking-widest">Fecha de Emisión</p>
             </div>
 

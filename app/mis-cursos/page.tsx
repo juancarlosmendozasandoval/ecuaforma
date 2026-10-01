@@ -1,12 +1,33 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { confirmarPago } from '@/lib/pagos/confirmarPago';
+import { aplanarLecciones, cargarTemarioCurso, tituloLeccionTemario } from '@/lib/cursos/temario';
 import Link from 'next/link';
 import Card from '../components/Card';
 import { Lock, GraduationCap, ArrowRight, Settings, Award, BookOpen } from 'lucide-react';
 import CertificateGenerator from '../components/CertificateGenerator';
 
 export const dynamic = 'force-dynamic';
+
+const MENSAJE_CERTIFICADO = 'Completa el 100% del curso para desbloquear tu certificado';
+
+function formatearFechaCertificado(iso: string) {
+  const fecha = iso ? new Date(iso) : new Date();
+  const valida = Number.isNaN(fecha.getTime()) ? new Date() : fecha;
+  return valida.toLocaleDateString('es-EC', {
+    timeZone: 'America/Guayaquil',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+function nombreDesdeSesion(metadata: Record<string, unknown> | null | undefined) {
+  const meta = metadata || {};
+  const completo = typeof meta.full_name === 'string' ? meta.full_name.trim() : '';
+  const corto = typeof meta.name === 'string' ? meta.name.trim() : '';
+  return completo || corto || 'Estudiante';
+}
 
 export default async function MisCursosPage(props: any) {
   const cookieStore = cookies();
@@ -90,46 +111,56 @@ export default async function MisCursosPage(props: any) {
     `)
     .eq('usuario_id', user.id);
 
-  // Lecciones de los cursos matriculados: contenido_modulos → modulos_curso.curso_id
-  const cursoIds = (accesosCursos || []).map((a: any) => a.curso_id).filter(Boolean);
-
-  let leccionesPorCurso: { id: string; curso_id: string }[] = [];
-  if (cursoIds.length > 0) {
-    const { data: contenidoData } = await supabase
-      .from('contenido_modulos')
-      .select('id, modulos_curso!inner ( curso_id )')
-      .in('modulos_curso.curso_id', cursoIds)
-      .not('leccion_id', 'is', null);
-
-    leccionesPorCurso = (contenidoData || []).map((c: any) => ({
-      id: c.id,
-      curso_id: c.modulos_curso?.curso_id || '',
-    }));
-  }
+  const nombreAlumno = nombreDesdeSesion(user.user_metadata as Record<string, unknown> | null);
 
   // progreso_lecciones.leccion_id guarda el ID de contenido_modulos
-  const { data: progresoUsuario } = await supabase.from('progreso_lecciones').select('leccion_id').eq('usuario_id', user.id);
-  const leccionesCompletadasIds = new Set((progresoUsuario || []).map(p => p.leccion_id));
+  const { data: progresoUsuario } = await supabase
+    .from('progreso_lecciones')
+    .select('leccion_id, completado_en')
+    .eq('usuario_id', user.id);
+  const leccionesCompletadasIds = new Set((progresoUsuario || []).map((p) => p.leccion_id));
+  const fechaPorLeccion = new Map(
+    (progresoUsuario || []).map((p) => [p.leccion_id, p.completado_en || ''])
+  );
 
-  const cursosMultimedia = accesosCursos
-    ? accesosCursos.map((acceso: any) => {
-        const c = acceso.cursos;
-        if (!c) return null;
+  const cursosMultimedia = (
+    await Promise.all(
+      (accesosCursos || []).map(async (acceso: any) => {
+        const curso = Array.isArray(acceso.cursos) ? acceso.cursos[0] : acceso.cursos;
+        if (!curso?.id) return null;
 
-        const leccionesEsteCurso = leccionesPorCurso.filter(l => l.curso_id === c.id);
-        const totalLecciones = leccionesEsteCurso.length;
-        
-        const completadasEsteCurso = leccionesEsteCurso.filter(l => leccionesCompletadasIds.has(l.id)).length;
+        // Mismo orden que el aula: módulo y, dentro, orden de la lección.
+        const lecciones = aplanarLecciones(await cargarTemarioCurso(supabase, curso.id));
+        const totalLecciones = lecciones.length;
+        const completadasEsteCurso = lecciones.filter((leccion) => leccionesCompletadasIds.has(leccion.id)).length;
         const porcentaje = totalLecciones > 0 ? Math.round((completadasEsteCurso / totalLecciones) * 100) : 0;
+        const ultimaCompletada = lecciones
+          .map((leccion) => fechaPorLeccion.get(leccion.id) || '')
+          .filter(Boolean)
+          .sort()
+          .at(-1) || '';
+        const pendiente = lecciones.find((leccion) => !leccionesCompletadasIds.has(leccion.id)) || null;
+        const primera = lecciones[0] || null;
+        const destino = porcentaje === 100 ? primera : pendiente || primera;
+
+        const institucionRuta = (curso.institucion || '')
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+        const rutaCurso = `/cursos/${institucionRuta}/${curso.slug || ''}`;
 
         return {
-          ...c,
+          ...curso,
           totalLecciones,
           completadasEsteCurso,
-          porcentaje
+          porcentaje,
+          continuarHref: destino ? `${rutaCurso}/${destino.id}` : rutaCurso,
+          tituloDestino: destino ? tituloLeccionTemario(destino) : '',
+          fechaCompletado: porcentaje === 100 ? formatearFechaCertificado(ultimaCompletada) : '',
         };
-      }).filter(Boolean)
-    : [];
+      })
+    )
+  ).filter(Boolean);
 
   const estaVacio = simuladoresPrivados.length === 0 && cursosMultimedia.length === 0;
 
@@ -170,7 +201,7 @@ export default async function MisCursosPage(props: any) {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {cursosMultimedia.map((curso: any) => (
-              <div key={curso.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col group hover:shadow-md transition-all">
+              <div key={curso.id} className="flex flex-col overflow-visible rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:shadow-md">
                 <div className="p-6 flex-1 flex flex-col">
                   <span className="text-[10px] font-bold uppercase bg-blue-50 text-blue-600 px-2.5 py-1 rounded-md border border-blue-100 w-fit mb-3">
                     {curso.institucion || ''}
@@ -179,42 +210,65 @@ export default async function MisCursosPage(props: any) {
                   <p className="text-xs text-gray-400 line-clamp-2 mb-6 flex-1">{curso.descripcion || ''}</p>
 
                   <div className="space-y-2">
-                    <div className="flex justify-between text-xs font-semibold text-gray-500">
-                      <span>Progreso</span>
-                      <span className="text-primary font-bold">{curso.porcentaje}%</span>
+                    <div className="flex items-center justify-between gap-3 text-sm font-bold">
+                      <span className={curso.porcentaje === 100 ? 'text-emerald-600' : 'text-blue-700'}>
+                        {curso.porcentaje}% completado
+                      </span>
+                      <span className="text-xs font-semibold text-gray-400">
+                        {curso.completadasEsteCurso} de {curso.totalLecciones} clases
+                      </span>
                     </div>
-                    <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                      <div className="bg-primary h-2 rounded-full transition-all duration-500" style={{ width: `${curso.porcentaje}%` }}></div>
+                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${curso.porcentaje === 100 ? 'bg-emerald-500' : 'bg-blue-600'}`}
+                        style={{ width: `${curso.porcentaje}%` }}
+                      />
                     </div>
-                    <div className="flex justify-between text-[11px] text-gray-400 pt-0.5">
-                      <span>{curso.completadasEsteCurso} de {curso.totalLecciones} clases</span>
-                      {curso.porcentaje === 100 && (
-                        <span className="text-emerald-600 font-bold flex items-center gap-0.5"><Award size={12}/> Completado</span>
-                      )}
-                    </div>
+                    {curso.porcentaje === 100 ? (
+                      <span className="flex items-center gap-1 text-xs font-bold text-emerald-600">
+                        <Award size={12} /> Completado
+                      </span>
+                    ) : curso.tituloDestino ? (
+                      <p className="truncate text-xs text-gray-500">Siguiente: {curso.tituloDestino}</p>
+                    ) : null}
                   </div>
                 </div>
                 
-                <div className="p-4 bg-gray-50 border-t border-gray-50 flex items-center justify-between">
-                  <div>
-                    {curso.porcentaje === 100 && (
-                      <CertificateGenerator 
-                        nombrePorDefecto={
-                          user.user_metadata?.full_name || 
-                          user.user_metadata?.name || 
-                          (user.email ? user.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Estudiante')
-                        } 
-                        nombreCurso={curso.nombre} 
-                        institucion={curso.institucion} 
-                      />
-                    )}
-                  </div>
+                <div className="space-y-3 rounded-b-2xl border-t border-gray-100 bg-gray-50 p-4">
+                  {curso.porcentaje === 100 ? (
+                    <CertificateGenerator
+                      nombreAlumno={nombreAlumno}
+                      nombreCurso={curso.nombre || ''}
+                      institucion={curso.institucion || ''}
+                      fechaCompletado={curso.fechaCompletado}
+                    />
+                  ) : (
+                    <div className="group relative" title={MENSAJE_CERTIFICADO}>
+                      <button
+                        type="button"
+                        disabled
+                        aria-label={MENSAJE_CERTIFICADO}
+                        className="pointer-events-none flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-gray-200 px-4 py-2.5 text-sm font-bold text-gray-500"
+                      >
+                        <Lock size={16} /> Descargar Certificado
+                      </button>
+                      <span
+                        role="tooltip"
+                        className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 hidden w-64 -translate-x-1/2 rounded-lg bg-slate-900 px-3 py-2 text-center text-xs font-semibold leading-snug text-white shadow-lg group-hover:block"
+                      >
+                        {MENSAJE_CERTIFICADO}
+                      </span>
+                    </div>
+                  )}
                   
                   <Link 
-                    href={`/cursos/${(curso.institucion || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}/${curso.slug}`}
-                    className="text-sm font-bold text-primary flex items-center gap-1 group-hover:text-blue-700 transition-colors"
+                    href={curso.continuarHref}
+                    className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white shadow-sm transition-colors ${
+                      curso.porcentaje === 100 ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
                   >
-                    Entrar al Aula <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
+                    {curso.porcentaje === 100 ? 'Repasar curso' : 'Continuar aprendizaje'}
+                    <ArrowRight size={16} />
                   </Link>
                 </div>
               </div>
