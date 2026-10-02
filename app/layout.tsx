@@ -35,15 +35,16 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createServerComponentClient({ cookies });
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient({ cookies: () => cookieStore });
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <html lang="es">
       <body className={inter.className}>
-        <AuthProvider session={session}>
+        <AuthProvider initialUser={user}>
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <main className="flex-grow py-8 sm:py-12">

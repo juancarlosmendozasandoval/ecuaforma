@@ -2,11 +2,11 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-// Importamos los tipos necesarios
 import type { Session, SupabaseClient, User, AuthChangeEvent } from '@supabase/supabase-js'
 
 type SupabaseContext = {
   supabase: SupabaseClient
+  /** Sesión del navegador: solo para estado visual, nunca para autorizar. */
   session: Session | null
   user: User | null
   signOut: () => Promise<void>
@@ -14,32 +14,40 @@ type SupabaseContext = {
 
 const Context = createContext<SupabaseContext | undefined>(undefined)
 
+/**
+ * `initialUser` llega del layout, validado con `getUser()` en el servidor,
+ * para que el primer render no parpadee. Después, el estado sigue a
+ * `onAuthStateChange` (login, logout y refresco de token en el navegador).
+ * La autorización real vive en el servidor (páginas, acciones y RLS).
+ */
 export default function AuthProvider({
   children,
-  session,
+  initialUser,
 }: {
   children: React.ReactNode
-  session: Session | null
+  initialUser: User | null
 }) {
-  const supabase = createClient()
-  const [userSession, setUserSession] = useState<Session | null>(session)
-  const user = userSession?.user ?? null
+  const [supabase] = useState(() => createClient())
+  const [user, setUser] = useState<User | null>(initialUser)
+  const [session, setSession] = useState<Session | null>(null)
 
   const signOut = async () => {
     await supabase.auth.signOut()
-    setUserSession(null) // Forzamos el estado a null al cerrar sesión
+    setSession(null)
+    setUser(null)
   }
 
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => { // <-- TIPOS AÑADIDOS
-      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-        setUserSession(session)
-      }
+    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, nuevaSesion: Session | null) => {
       if (event === 'SIGNED_OUT') {
-        setUserSession(null)
+        setSession(null)
+        setUser(null)
+        return
       }
+      setSession(nuevaSesion)
+      setUser(nuevaSesion?.user ?? null)
     })
 
     return () => {
@@ -48,7 +56,7 @@ export default function AuthProvider({
   }, [supabase])
 
   return (
-    <Context.Provider value={{ supabase, session: userSession, user, signOut }}>
+    <Context.Provider value={{ supabase, session, user, signOut }}>
       <>{children}</>
     </Context.Provider>
   )
