@@ -1,5 +1,6 @@
 import 'server-only';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { avisarBienvenidaPago } from './avisoBienvenida';
 
 const PAYPHONE_CONFIRM_URL = 'https://pay.payphonetodoesposible.com/api/button/V2/Confirm';
 
@@ -39,6 +40,7 @@ export async function confirmarPago(payphoneId: number, clientTxId: string): Pro
   if (!pago) return { ok: false, motivo: 'pago_desconocido' };
 
   const yaProcesado = pago.estado === 'aprobado';
+  let aprobadoAhora = false;
 
   if (!yaProcesado) {
     // 1. Verificar con PayPhone (la única fuente de verdad sobre el cobro)
@@ -77,17 +79,65 @@ export async function confirmarPago(payphoneId: number, clientTxId: string): Pro
       return { ok: false, motivo: 'no_aprobado', pago };
     }
 
-    // 2. Transición atómica → aprobado. Si dos llamadas llegan a la vez, solo una actualiza;
-    //    la otra no encuentra fila en estado pendiente/rechazado y continúa sin efecto.
-    await admin
-      .from('pagos')
-      .update({ estado: 'aprobado', payphone_id: payphoneId, confirmado_en: new Date().toISOString() })
-      .eq('id', pago.id)
-      .in('estado', ['pendiente', 'rechazado']);
+    aprobadoAhora = await marcarAprobado(admin, pago.id, payphoneId);
   }
 
-  // 3. Matrícula idempotente (índice único usuario_id + curso_id). Se ejecuta también
-  //    en pagos ya aprobados para reparar una matrícula que hubiera fallado antes.
+  return matricular(admin, pago, yaProcesado, aprobadoAhora);
+}
+
+/**
+ * Notificación de PayPhone que no trae el id de transacción, así que no se puede
+ * re-verificar con su API. Solo la acepta el webhook autenticado con el secreto,
+ * y el monto, si viene, debe coincidir con el registrado en `pagos`.
+ */
+export async function aprobarPagoNotificado(
+  clientTxId: string,
+  montoCentavos: number | null
+): Promise<ResultadoConfirmacion> {
+  if (!clientTxId) return { ok: false, motivo: 'pago_desconocido' };
+
+  const admin = createAdminClient();
+  const { data: pagoData } = await admin.from('pagos').select('*').eq('client_tx_id', clientTxId).maybeSingle();
+  const pago = pagoData as Pago | null;
+  if (!pago) return { ok: false, motivo: 'pago_desconocido' };
+
+  const yaProcesado = pago.estado === 'aprobado';
+  if (!yaProcesado && montoCentavos !== null && montoCentavos !== pago.monto_centavos) {
+    console.warn('[PAGO] El monto notificado no coincide', pago.id);
+    return { ok: false, motivo: 'no_aprobado', pago };
+  }
+
+  const aprobadoAhora = yaProcesado ? false : await marcarAprobado(admin, pago.id, null);
+  return matricular(admin, pago, yaProcesado, aprobadoAhora);
+}
+
+/**
+ * Transición atómica → aprobado. Si dos llamadas llegan a la vez, solo una
+ * actualiza la fila; esa es la única que devuelve true.
+ */
+async function marcarAprobado(admin: ReturnType<typeof createAdminClient>, pagoId: string, payphoneId: number | null) {
+  const cambios: Record<string, unknown> = { estado: 'aprobado', confirmado_en: new Date().toISOString() };
+  if (payphoneId) cambios.payphone_id = payphoneId;
+
+  const { data } = await admin
+    .from('pagos')
+    .update(cambios)
+    .eq('id', pagoId)
+    .in('estado', ['pendiente', 'rechazado'])
+    .select('id');
+  return (data || []).length > 0;
+}
+
+/**
+ * Matrícula idempotente (índice único usuario_id + curso_id). Se ejecuta también
+ * en pagos ya aprobados para reparar una matrícula que hubiera fallado antes.
+ */
+async function matricular(
+  admin: ReturnType<typeof createAdminClient>,
+  pago: Pago,
+  yaProcesado: boolean,
+  aprobadoAhora: boolean
+): Promise<ResultadoConfirmacion> {
   const { error } = await admin
     .from('accesos_cursos')
     .upsert(
@@ -100,5 +150,6 @@ export async function confirmarPago(payphoneId: number, clientTxId: string): Pro
     return { ok: false, motivo: 'error_matricula', pago };
   }
 
+  if (aprobadoAhora) avisarBienvenidaPago(pago.usuario_id, pago.curso_id);
   return { ok: true, pago: { ...pago, estado: 'aprobado' }, yaProcesado };
 }

@@ -48,6 +48,50 @@ export function webhookAutorizado(secreto: string, token: string, firma: string,
   return igual(limpia, esperada);
 }
 
+export type NotificacionPayPhone = {
+  clientTxId: string;
+  payphoneId: number | null;
+  /** true aprobado, false rechazado/cancelado, null si no informa el estado. */
+  aprobada: boolean | null;
+  montoCentavos: number | null;
+};
+
+/** Lee una clave sin importar mayúsculas: PayPhone usa `ClientTransactionId` o `clientTransactionId`. */
+function campo(datos: Record<string, unknown>, ...nombres: string[]) {
+  const claves = Object.keys(datos);
+  for (const nombre of nombres) {
+    const clave = claves.find((k) => k.toLowerCase() === nombre.toLowerCase());
+    if (clave !== undefined && datos[clave] !== null && datos[clave] !== undefined && datos[clave] !== '') {
+      return datos[clave];
+    }
+  }
+  return undefined;
+}
+
+/** Datos de la notificación de PayPhone. Devuelve null si no trae `clientTransactionId`. */
+export function extraerNotificacionPayPhone(body: unknown): NotificacionPayPhone | null {
+  const raiz = objeto(body);
+  if (!raiz) return null;
+  const datos = objeto(campo(raiz, 'data', 'transaction')) || raiz;
+
+  const clientTxId = String(campo(datos, 'clientTransactionId', 'clientTxId') ?? '').trim();
+  if (!clientTxId) return null;
+
+  const id = Number(campo(datos, 'transactionId', 'id'));
+  const payphoneId = Number.isInteger(id) && id > 0 ? id : null;
+
+  const codigo = Number(campo(datos, 'statusCode'));
+  const estado = String(campo(datos, 'transactionStatus', 'status') ?? '').trim().toLowerCase();
+  let aprobada: boolean | null = null;
+  if (codigo === 3 || estado === 'approved' || estado === 'aprobado') aprobada = true;
+  else if (codigo === 2 || RECHAZADOS.has(estado)) aprobada = false;
+
+  const monto = Number(campo(datos, 'amount'));
+  const montoCentavos = Number.isInteger(monto) && monto > 0 ? monto : null;
+
+  return { clientTxId, payphoneId, aprobada, montoCentavos };
+}
+
 export function transaccionRechazada(body: unknown) {
   const datos = objeto(body);
   if (!datos) return false;
