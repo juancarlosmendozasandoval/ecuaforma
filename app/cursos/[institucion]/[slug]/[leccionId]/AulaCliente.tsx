@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import Simulator from '../../../../components/Simulator';
 import { FileText, CheckSquare, CheckCircle, X, Loader2, Circle, DownloadCloud, ExternalLink, PenTool } from 'lucide-react';
 import type { SimulatorType, QuestionType } from '../../../../simulador/[slug]/page';
-import { mapearPreguntasExamen } from '@/lib/simuladores/preguntasDeExamen';
 import { esApuntePizarra, parsearAdjuntos } from '@/lib/cursos/adjuntos';
+import { cargarExamenLeccion } from './acciones';
 import { useSupabase } from '../../../../components/AuthProvider';
 
 import ReactMarkdown from 'react-markdown';
@@ -88,17 +88,12 @@ export default function AulaCliente({
     setCargandoSimulador(true);
 
     try {
-      const { data: sim, error: simError } = await supabase.from('simuladores').select('*').eq('id', leccion.simuladorId).single();
-      if (simError || !sim) throw new Error('No se pudo cargar el simulador');
-
-      const { data: vinculos, error: pregsError } = await supabase
-        .from('simulador_preguntas')
-        .select('orden, preguntas(*)')
-        .eq('simulador_id', sim.id)
-        .order('orden', { ascending: true });
-      if (pregsError) throw new Error('No se pudieron cargar las preguntas');
-
-      setSimuladorData({ sim: sim as SimulatorType, pregs: mapearPreguntasExamen<QuestionType>(vinculos) });
+      const examen = await cargarExamenLeccion(leccion.id);
+      if (!examen.ok) {
+        alert(examen.mensaje);
+        return;
+      }
+      setSimuladorData({ sim: examen.sim, pregs: examen.pregs });
       setExamenTerminado(false);
       setMostrarSimulador(true);
     } catch (error) {

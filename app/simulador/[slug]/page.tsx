@@ -5,7 +5,9 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 import Link from 'next/link';
 import BotonIniciarSesion from '../../components/BotonIniciarSesion';
 import { Lock, CreditCard, CheckCircle } from 'lucide-react';
-import { mapearPreguntasExamen } from '@/lib/simuladores/preguntasDeExamen';
+import { cargarPreguntasSimulador, puedeRendirSimulador } from '@/lib/simuladores/acceso';
+
+export const dynamic = 'force-dynamic';
 
 export interface SimulatorType {
   id: string;
@@ -43,27 +45,16 @@ export default async function SimuladorPage({ params }: { params: { slug: string
     .from('simuladores')
     .select('*')
     .eq('slug', params.slug)
+    .eq('is_deleted', false)
     .single();
 
   if (simulatorError || !simulatorData) return <p className="text-center mt-10">No se encontró el simulador.</p>;
   
-  // 2. Comprobar sesión y acceso
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  // 🌟 CORRECCIÓN: El acceso gratuito depende de si "es_pago" es falso
-  let tieneAcceso = !simulatorData.es_pago; 
-
-  // Si el simulador CUESTA DINERO y hay un usuario logueado, verificamos si ya pagó
-  if (simulatorData.es_pago && session) {
-    const { data: accessData } = await supabase
-      .from('accesos_simuladores')
-      .select('id')
-      .eq('simulador_id', simulatorData.id)
-      .eq('usuario_id', session.user.id)
-      .single();
-
-    if (accessData) tieneAcceso = true; // Si encontramos su registro de pago, le damos acceso
-  }
+  // 2. Comprobar sesión y acceso en el servidor
+  const { data: { user } } = await supabase.auth.getUser();
+  const session = user ? { user } : null;
+  const esPago = !!simulatorData.es_pago || Number(simulatorData.precio) > 0;
+  const tieneAcceso = await puedeRendirSimulador(user, simulatorData);
 
   const breadcrumbs = [
     { label: 'Simuladores', href: '/simuladores' },
@@ -88,7 +79,7 @@ export default async function SimuladorPage({ params }: { params: { slug: string
           
           <div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-200">
             <span className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Precio del Simulador</span>
-            {simulatorData.es_pago ? (
+            {esPago ? (
               <div className="flex items-end justify-center gap-1 text-emerald-600">
                 <span className="text-2xl font-bold">$</span>
                 <span className="text-5xl font-black">{simulatorData.precio}</span>
@@ -103,7 +94,7 @@ export default async function SimuladorPage({ params }: { params: { slug: string
             <BotonIniciarSesion className="inline-block w-full sm:w-auto bg-slate-900 text-white px-10 py-4 rounded-xl font-bold shadow-md hover:bg-slate-800 transition-colors">
               Inicia Sesión para Acceder
             </BotonIniciarSesion>
-          ) : simulatorData.es_pago ? (
+          ) : esPago ? (
             <div className="max-w-md mx-auto">
               <Link 
                 href={`/checkout?nombre=${encodeURIComponent(simulatorData.nombre)}&precio=${simulatorData.precio}&institucion=${encodeURIComponent(simulatorData.institucion)}`}
@@ -113,9 +104,12 @@ export default async function SimuladorPage({ params }: { params: { slug: string
               </Link>
             </div>
           ) : (
-            <button className="inline-block w-full sm:w-auto bg-blue-600 text-white px-10 py-4 rounded-xl font-bold shadow-md hover:bg-blue-700 transition-colors">
-              Obtener Acceso Gratis
-            </button>
+            <Link
+              href="/contacto"
+              className="inline-block w-full sm:w-auto bg-blue-600 text-white px-10 py-4 rounded-xl font-bold shadow-md hover:bg-blue-700 transition-colors"
+            >
+              Solicitar acceso
+            </Link>
           )}
         </div>
       </div>
@@ -123,13 +117,7 @@ export default async function SimuladorPage({ params }: { params: { slug: string
   }
 
   // 4. SI TIENE ACCESO -> Cargar preguntas y renderizar el simulador
-  const { data: vinculos } = await supabase
-    .from('simulador_preguntas')
-    .select('orden, preguntas(*)')
-    .eq('simulador_id', simulatorData.id)
-    .order('orden', { ascending: true });
-
-  const questionsData = mapearPreguntasExamen<QuestionType>(vinculos);
+  const questionsData = await cargarPreguntasSimulador<QuestionType>(simulatorData.id);
 
   return (
     <div className="main-container py-10">
