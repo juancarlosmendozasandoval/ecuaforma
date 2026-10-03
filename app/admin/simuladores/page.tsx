@@ -1,13 +1,12 @@
 import { requireAdmin } from '@/lib/auth/requireAdmin';
 import type { Tables } from '@/types/supabase';
-import { cargarTemasSelector } from '@/lib/simuladores/temasSelector';
+import { cargarInstituciones, cargarMateriasSelector, cargarTemasSelector } from '@/lib/simuladores/temasSelector';
 import SimuladoresCliente from './SimuladoresCliente';
 
 /** Listado paginado en el servidor. `q` busca por nombre; `pagina` e `inst` vienen de la URL. */
 export const dynamic = 'force-dynamic';
 
 const POR_PAGINA = 20;
-const INSTITUCIONES_BASE = ['FAE', 'Armada', 'Ejército', 'Policía'];
 
 type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -42,13 +41,14 @@ export default async function GestionSimuladoresPage({ searchParams }: { searchP
   if (q) consulta = consulta.ilike('nombre', `%${escaparLike(q)}%`);
   if (institucion) consulta = consulta.eq('institucion', institucion);
 
-  const [{ data, count, error }, { data: catalogo }, temas] = await Promise.all([
+  const [{ data, count, error }, instituciones, temas, materias] = await Promise.all([
     consulta
       .order('created_at', { ascending: false, nullsFirst: false })
       .order('id', { ascending: false })
       .range(desde, hasta),
-    supabase.from('simuladores').select('institucion').eq('is_deleted', false),
+    cargarInstituciones(supabase),
     cargarTemasSelector(supabase),
+    cargarMateriasSelector(supabase),
   ]);
 
   const fueraDeRango = error?.code === 'PGRST103';
@@ -57,20 +57,12 @@ export default async function GestionSimuladoresPage({ searchParams }: { searchP
   const total = count || 0;
   const totalPaginas = Math.max(Math.ceil(total / POR_PAGINA), 1);
 
-  const instituciones = Array.from(
-    new Set([
-      ...INSTITUCIONES_BASE,
-      ...(catalogo || []).map((fila) => fila.institucion || ''),
-    ])
-  )
-    .filter(Boolean)
-    .sort((a, b) => a.localeCompare(b, 'es'));
-
   return (
     <SimuladoresCliente
       simuladores={simuladores}
       instituciones={instituciones}
       temas={temas}
+      materias={materias}
       q={q}
       institucion={institucion}
       pagina={pagina}

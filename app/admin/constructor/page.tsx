@@ -17,8 +17,8 @@ export default function ConstructorMixtoPage() {
   // 1. Estados para el NUEVO Simulador
   const [nombre, setNombre] = useState('');
   const [institucion, setInstitucion] = useState('FAE');
-  const [categoria, setCategoria] = useState('');
-  const [materia, setMateria] = useState('');
+  const [materiaId, setMateriaId] = useState('');
+  const [materias, setMaterias] = useState<{ id: string; nombre: string }[]>([]);
   const [publico, setPublico] = useState(false);
 
   // 2. Estados para el Banco de Preguntas
@@ -38,12 +38,16 @@ export default function ConstructorMixtoPage() {
   // Cargar lista de simuladores al iniciar
   useEffect(() => {
     const cargarSimuladores = async () => {
-      const { data } = await supabase
-        .from('simuladores')
-        .select('id, nombre, institucion')
-        .eq('is_deleted', false)
-        .order('created_at', { ascending: false });
+      const [{ data }, { data: materiasData }] = await Promise.all([
+        supabase
+          .from('simuladores')
+          .select('id, nombre, institucion')
+          .eq('is_deleted', false)
+          .order('created_at', { ascending: false }),
+        supabase.from('materias').select('id, nombre').order('orden').order('nombre'),
+      ]);
       if (data) setSimuladoresDb(data);
+      if (materiasData) setMaterias(materiasData);
     };
     cargarSimuladores();
   }, [supabase]);
@@ -88,7 +92,8 @@ export default function ConstructorMixtoPage() {
 
   // GUARDAR EL NUEVO SIMULADOR ENSAMBLADO
   const ensamblarSimulador = async () => {
-    if (!nombre || !categoria || !materia) return showAlert('error', 'Completa los datos básicos del simulador.');
+    const materia = materias.find((m) => m.id === materiaId);
+    if (!nombre || !materia) return showAlert('error', 'Completa el nombre y la materia del simulador.');
     if (carrito.length === 0) return showAlert('error', 'Debes agregar al menos 1 pregunta al carrito.');
 
     setLoading(true);
@@ -103,8 +108,8 @@ export default function ConstructorMixtoPage() {
           nombre,
           slug: slugFinal,
           institucion,
-          categoria,
-          materia,
+          materia_id: materia.id,
+          materia: materia.nombre,
           publico
         }])
         .select()
@@ -122,7 +127,7 @@ export default function ConstructorMixtoPage() {
       if (errVinculos) throw errVinculos;
 
       showAlert('success', '¡Simulador Mixto creado exitosamente!');
-      setNombre(''); setCategoria(''); setMateria(''); setCarrito([]);
+      setNombre(''); setMateriaId(''); setCarrito([]);
       
     } catch (error: any) {
       showAlert('error', 'Error al ensamblar: ' + error.message);
@@ -180,13 +185,18 @@ export default function ConstructorMixtoPage() {
               ))}
             </select>
           </div>
-          <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Categoría</label>
-            <input type="text" value={categoria} onChange={(e) => setCategoria(e.target.value)} placeholder="Ej: Psicológicas" className="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-primary focus:bg-white" />
-          </div>
-          <div className="md:col-span-2">
+          <div className="md:col-span-1">
             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Materia</label>
-            <input type="text" value={materia} onChange={(e) => setMateria(e.target.value)} placeholder="Ej: Razonamiento Abstracto" className="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-primary focus:bg-white" />
+            <select
+              value={materiaId}
+              onChange={(e) => setMateriaId(e.target.value)}
+              className="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-primary focus:bg-white font-semibold"
+            >
+              <option value="" disabled>Selecciona la materia</option>
+              {materias.map((m) => (
+                <option key={m.id} value={m.id}>{m.nombre}</option>
+              ))}
+            </select>
           </div>
           <div className="flex items-end pb-1 md:col-span-2">
             <label className="flex items-center gap-2 cursor-pointer bg-gray-50 p-2.5 rounded-lg border border-gray-200 w-full hover:bg-gray-100 transition">

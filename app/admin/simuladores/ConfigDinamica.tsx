@@ -13,23 +13,34 @@ type Props = {
   temas: TemaSelector[];
   valor: Config;
   onChange: (valor: Config) => void;
+  /** Materia del simulador: limita los temas visibles a esa materia. */
+  materiaId?: string | null;
   disabled?: boolean;
 };
 
 /** Interruptor de Mega-Simulador con cantidad y temas agrupados por materia. */
-export default function ConfigDinamica({ temas, valor, onChange, disabled }: Props) {
+export default function ConfigDinamica({ temas, valor, onChange, materiaId, disabled }: Props) {
   const [filtro, setFiltro] = useState('');
+  const [todasLasMaterias, setTodasLasMaterias] = useState(false);
   const seleccion = useMemo(() => new Set(valor.temas_dinamicos), [valor.temas_dinamicos]);
+
+  // Los temas ya elegidos de otra materia siguen visibles para poder quitarlos.
+  const filtrarPorMateria = !!materiaId && !todasLasMaterias;
+  const temasVisibles = useMemo(
+    () => (filtrarPorMateria ? temas.filter((tema) => tema.materia_id === materiaId || seleccion.has(tema.id)) : temas),
+    [temas, filtrarPorMateria, materiaId, seleccion]
+  );
+  const ocultos = temas.length - temasVisibles.length;
 
   const grupos = useMemo(() => {
     const termino = filtro.trim().toLowerCase();
     const mapa = new Map<string, TemaSelector[]>();
-    for (const tema of temas) {
+    for (const tema of temasVisibles) {
       if (termino && !`${tema.nombre} ${tema.materia}`.toLowerCase().includes(termino)) continue;
       mapa.set(tema.materia, [...(mapa.get(tema.materia) || []), tema]);
     }
     return Array.from(mapa.entries());
-  }, [temas, filtro]);
+  }, [temasVisibles, filtro]);
 
   const conConteo = temas.some((tema) => tema.preguntas !== null);
   const banco = temas.reduce((total, tema) => total + (seleccion.has(tema.id) ? tema.preguntas || 0 : 0), 0);
@@ -89,7 +100,7 @@ export default function ConfigDinamica({ temas, valor, onChange, disabled }: Pro
               <span className="text-xs font-bold uppercase text-violet-800">
                 Temas ({seleccion.size} seleccionados)
               </span>
-              {temas.length > 8 && (
+              {temasVisibles.length > 8 && (
                 <div className="relative">
                   <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
                   <input
@@ -103,9 +114,11 @@ export default function ConfigDinamica({ temas, valor, onChange, disabled }: Pro
               )}
             </div>
 
-            {temas.length === 0 ? (
+            {temasVisibles.length === 0 ? (
               <p className="rounded-lg bg-white p-3 text-xs text-gray-500">
-                No hay temas creados. Créalos en Categorías y asígnalos a las preguntas.
+                {temas.length === 0
+                  ? 'No hay temas creados. Créalos en Categorías y asígnalos a las preguntas.'
+                  : 'Esta materia no tiene temas todavía. Créalos en Categorías.'}
               </p>
             ) : (
               <div className="max-h-72 space-y-3 overflow-y-auto rounded-lg border border-violet-100 bg-white p-3">
@@ -152,6 +165,16 @@ export default function ConfigDinamica({ temas, valor, onChange, disabled }: Pro
                   );
                 })}
               </div>
+            )}
+
+            {materiaId && (ocultos > 0 || todasLasMaterias) && (
+              <button
+                type="button"
+                onClick={() => setTodasLasMaterias((actual) => !actual)}
+                className="mt-2 text-xs font-bold text-violet-700 hover:underline"
+              >
+                {todasLasMaterias ? 'Ver solo los temas de la materia del simulador' : `Ver temas de otras materias (${ocultos}) para un examen mixto`}
+              </button>
             )}
 
             {seleccion.size === 0 ? (

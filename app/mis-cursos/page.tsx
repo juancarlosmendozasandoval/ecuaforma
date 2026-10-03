@@ -288,7 +288,7 @@ export default async function MisCursosPage(props: any) {
                 key={sim.slug} 
                 title={sim.nombre} 
                 href={`/simulador/${sim.slug}`} 
-                description={`${sim.institucion} - ${sim.categoria}`}
+                description={[sim.institucion, sim.materia].filter(Boolean).join(' - ')}
               />
             ))}
           </div>

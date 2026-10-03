@@ -569,6 +569,7 @@ export type Database = {
           institucion: string | null
           is_deleted: boolean | null
           materia: string | null
+          materia_id: string | null
           nombre: string | null
           precio: number | null
           publico: boolean
@@ -585,6 +586,7 @@ export type Database = {
           institucion?: string | null
           is_deleted?: boolean | null
           materia?: string | null
+          materia_id?: string | null
           nombre?: string | null
           precio?: number | null
           publico?: boolean
@@ -601,13 +603,22 @@ export type Database = {
           institucion?: string | null
           is_deleted?: boolean | null
           materia?: string | null
+          materia_id?: string | null
           nombre?: string | null
           precio?: number | null
           publico?: boolean
           slug?: string | null
           temas_dinamicos?: string[]
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "simuladores_materia_id_fkey"
+            columns: ["materia_id"]
+            isOneToOne: false
+            referencedRelation: "materias"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       temas: {
         Row: {

@@ -14,6 +14,7 @@ import {
   configDesdeSimulador,
   validarConfigDinamica,
   type ConfigDinamica as Config,
+  type MateriaSelector,
   type TemaSelector,
 } from '@/lib/simuladores/configDinamica';
 import ConfigDinamica from './ConfigDinamica';
@@ -25,6 +26,7 @@ type Props = {
   simuladores: SimuladorAdmin[];
   instituciones: string[];
   temas: TemaSelector[];
+  materias: MateriaSelector[];
   q: string;
   institucion: string;
   pagina: number;
@@ -38,6 +40,7 @@ export default function SimuladoresCliente({
   simuladores,
   instituciones,
   temas,
+  materias,
   q,
   institucion,
   pagina,
@@ -57,8 +60,8 @@ export default function SimuladoresCliente({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editNombre, setEditNombre] = useState('');
   const [editSlug, setEditSlug] = useState('');
-  const [editCategoria, setEditCategoria] = useState('');
-  const [editMateria, setEditMateria] = useState('');
+  const [editMateriaId, setEditMateriaId] = useState('');
+  const nombreMateria = (materiaId: string | null) => materias.find((m) => m.id === materiaId)?.nombre || '';
   const [editEsPago, setEditEsPago] = useState(false);
   const [editPrecio, setEditPrecio] = useState('0.00');
   const [editConfig, setEditConfig] = useState<Config>(CONFIG_ESTATICA);
@@ -110,8 +113,7 @@ export default function SimuladoresCliente({
     setEditingId(sim.id);
     setEditNombre(sim.nombre || '');
     setEditSlug(sim.slug || '');
-    setEditCategoria(sim.categoria || '');
-    setEditMateria(sim.materia || '');
+    setEditMateriaId(sim.materia_id || '');
     setEditEsPago(!!sim.es_pago);
     setEditPrecio(sim.precio ? sim.precio.toString() : '0.00');
     setEditConfig(configDesdeSimulador(sim));
@@ -121,8 +123,7 @@ export default function SimuladoresCliente({
     setEditingId(null);
     setEditNombre('');
     setEditSlug('');
-    setEditCategoria('');
-    setEditMateria('');
+    setEditMateriaId('');
     setEditEsPago(false);
     setEditPrecio('0.00');
     setEditConfig(CONFIG_ESTATICA);
@@ -131,6 +132,10 @@ export default function SimuladoresCliente({
   const guardarEdicion = async (id: string) => {
     if (!editNombre.trim() || !editSlug.trim()) {
       showAlert('error', 'El nombre y la URL no pueden estar vacíos.');
+      return;
+    }
+    if (!editMateriaId) {
+      showAlert('error', 'Selecciona la materia del simulador.');
       return;
     }
     const config = validarConfigDinamica(editConfig);
@@ -145,8 +150,7 @@ export default function SimuladoresCliente({
       resultado = await actualizarSimulador(id, {
         nombre: editNombre,
         slug: editSlug,
-        categoria: editCategoria,
-        materia: editMateria,
+        materia_id: editMateriaId,
         es_pago: editEsPago,
         precio: editPrecio,
         ...config.datos,
@@ -201,7 +205,7 @@ export default function SimuladoresCliente({
           nombre: `${simulador.nombre || 'Sin nombre'} (Copia)`,
           slug: nuevoSlug,
           institucion: destinoInst,
-          categoria: simulador.categoria,
+          materia_id: simulador.materia_id,
           materia: simulador.materia,
           publico: simulador.publico,
           es_pago: simulador.es_pago,
@@ -388,27 +392,19 @@ export default function SimuladoresCliente({
                                   />
                                 </div>
                               </div>
-                              <div className="grid grid-cols-2 gap-2">
-                                <div>
-                                  <label className="text-[10px] font-bold text-indigo-700 uppercase mb-1 block">Categoría</label>
-                                  <input
-                                    type="text"
-                                    value={editCategoria}
-                                    onChange={(e) => setEditCategoria(e.target.value)}
-                                    className="p-2 text-xs border border-indigo-200 rounded-lg text-gray-700 bg-white focus:ring-2 focus:ring-indigo-500 outline-none w-full"
-                                    placeholder="Ej: Matemáticas"
-                                  />
-                                </div>
-                                <div>
-                                  <label className="text-[10px] font-bold text-indigo-700 uppercase mb-1 block">Materia</label>
-                                  <input
-                                    type="text"
-                                    value={editMateria}
-                                    onChange={(e) => setEditMateria(e.target.value)}
-                                    className="p-2 text-xs border border-indigo-200 rounded-lg text-gray-700 bg-white focus:ring-2 focus:ring-indigo-500 outline-none w-full"
-                                    placeholder="Ej: Álgebra"
-                                  />
-                                </div>
+                              <div>
+                                <label htmlFor={`materia-${sim.id}`} className="text-[10px] font-bold text-indigo-700 uppercase mb-1 block">Materia</label>
+                                <select
+                                  id={`materia-${sim.id}`}
+                                  value={editMateriaId}
+                                  onChange={(e) => setEditMateriaId(e.target.value)}
+                                  className="p-2 text-xs border border-indigo-200 rounded-lg text-gray-700 bg-white focus:ring-2 focus:ring-indigo-500 outline-none w-full"
+                                >
+                                  <option value="" disabled>Selecciona la materia</option>
+                                  {materias.map((materia) => (
+                                    <option key={materia.id} value={materia.id}>{materia.nombre}</option>
+                                  ))}
+                                </select>
                               </div>
                               <div className="mt-2 pt-3 border-t border-indigo-100">
                                 <label className="text-[10px] font-bold text-indigo-700 uppercase mb-2 block">Costo de Acceso</label>
@@ -449,6 +445,7 @@ export default function SimuladoresCliente({
                                   temas={temas}
                                   valor={editConfig}
                                   onChange={setEditConfig}
+                                  materiaId={editMateriaId || null}
                                   disabled={actionLoading !== null}
                                 />
                               </div>
@@ -460,8 +457,16 @@ export default function SimuladoresCliente({
                                 URL: /simulador/{sim.slug || 'sin-url'}
                               </div>
                               <div className="text-xs text-gray-500 mt-1.5 font-medium flex items-center gap-1.5">
-                                <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-600">{sim.categoria || 'Sin categoría'}</span>
-                                {sim.materia ? <span className="italic text-gray-400">• {sim.materia}</span> : null}
+                                {nombreMateria(sim.materia_id) ? (
+                                  <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-600">{nombreMateria(sim.materia_id)}</span>
+                                ) : (
+                                  <span
+                                    className="bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-amber-700 font-bold"
+                                    title="Sin materia no aparece en el catálogo público. Edítalo para asignarla."
+                                  >
+                                    Sin materia
+                                  </span>
+                                )}
                               </div>
                             </>
                           )}

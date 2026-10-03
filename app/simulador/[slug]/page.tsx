@@ -6,6 +6,7 @@ import Link from 'next/link';
 import BotonIniciarSesion from '../../components/BotonIniciarSesion';
 import { Lock, CreditCard, CheckCircle } from 'lucide-react';
 import { cargarPreguntasSimulador, puedeRendirSimulador } from '@/lib/simuladores/acceso';
+import { cargarMateriasCatalogo, hrefMateria } from '@/lib/simuladores/catalogo';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,12 +57,13 @@ export default async function SimuladorPage({ params }: { params: { slug: string
   const esPago = !!simulatorData.es_pago || Number(simulatorData.precio) > 0;
   const tieneAcceso = await puedeRendirSimulador(user, simulatorData);
 
+  const materia = (await cargarMateriasCatalogo()).find((m) => m.id === simulatorData.materia_id);
+  const nombreMateria = materia?.nombre || simulatorData.materia || '';
   const breadcrumbs = [
     { label: 'Simuladores', href: '/simuladores' },
-    { label: simulatorData.institucion, href: `/simuladores/${simulatorData.institucion}` },
-    { label: simulatorData.categoria, href: `/simuladores/${simulatorData.institucion}/${simulatorData.categoria}` },
-    { label: simulatorData.materia, href: `/simuladores/${simulatorData.institucion}/${simulatorData.categoria}/${simulatorData.materia}` },
-    { label: simulatorData.nombre, href: `/simulador/${params.slug}`, isActive: true },
+    { label: simulatorData.institucion || '', href: `/simuladores/${encodeURIComponent(simulatorData.institucion || '')}` },
+    ...(materia ? [{ label: materia.nombre, href: hrefMateria(simulatorData.institucion, materia) }] : []),
+    { label: simulatorData.nombre || '', href: `/simulador/${params.slug}`, isActive: true },
   ];
 
   // 3. SI NO TIENE ACCESO -> Mostrar la Vitrina de Venta
@@ -125,7 +127,7 @@ export default async function SimuladorPage({ params }: { params: { slug: string
       <div className="text-center mb-8">
         <h1 className="text-4xl font-extrabold text-primary">{simulatorData.nombre}</h1>
         <p className="text-text-secondary mt-2">
-          Institución: {simulatorData.institucion} | Categoría: {simulatorData.categoria} | Materia: {simulatorData.materia}
+          Institución: {simulatorData.institucion || ''}{nombreMateria ? ` | Materia: ${nombreMateria}` : ''}
         </p>
       </div>
       <Simulator initialSimulator={simulatorData} initialQuestions={questionsData} />

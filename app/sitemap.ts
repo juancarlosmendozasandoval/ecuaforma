@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { createClient } from '@supabase/supabase-js';
+import { cargarMateriasCatalogo, hrefMateria } from '@/lib/simuladores/catalogo';
 
 // Asegúrate de que tus variables de entorno estén configuradas en Vercel
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -24,40 +25,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // 2. Obtener rutas dinámicas desde Supabase
-  const { data: simuladores, error } = await supabase.from('simuladores').select('institucion, categoria, materia, slug');
+  const [{ data: simuladores, error }, materias] = await Promise.all([
+    supabase.from('simuladores').select('institucion, materia_id, slug').eq('is_deleted', false),
+    cargarMateriasCatalogo(),
+  ]);
 
   if (error || !simuladores) {
     console.error("Error al obtener simuladores para sitemap:", error);
     return staticRoutes;
   }
 
-  // Crear URLs únicas para cada nivel de la jerarquía (CORREGIDO)
-  const institutions = Array.from(new Set(simuladores.map(s => s.institucion)));
-  const categories = Array.from(new Set(simuladores.map(s => `${s.institucion}/${s.categoria}`)));
-  const materias = Array.from(new Set(simuladores.map(s => `${s.institucion}/${s.categoria}/${s.materia}`)));
+  // Catálogo en dos niveles: institución → materia (relacional)
+  const institutions = Array.from(new Set(simuladores.map((s) => s.institucion).filter(Boolean)));
+  const materiaPaths = new Set<string>();
+  for (const sim of simuladores) {
+    const materia = materias.find((m) => m.id === sim.materia_id);
+    if (sim.institucion && materia) materiaPaths.add(hrefMateria(sim.institucion, materia));
+  }
 
   const institutionUrls = institutions.map(inst => ({
-    url: `${baseUrl}/simuladores/${inst}`,
+    url: `${baseUrl}/simuladores/${encodeURIComponent(inst || '')}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as 'weekly',
     priority: 0.7,
   }));
 
-  const categoryUrls = categories.map(cat => ({
-    url: `${baseUrl}/simuladores/${cat}`,
+  const materiaUrls = Array.from(materiaPaths).map((path) => ({
+    url: `${baseUrl}${path}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as 'weekly',
     priority: 0.6,
   }));
 
-  const materiaUrls = materias.map(mat => ({
-    url: `${baseUrl}/simuladores/${mat}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as 'weekly',
-    priority: 0.5,
-  }));
-
-  const simulatorUrls = simuladores.map(({ slug }) => ({
+  const simulatorUrls = simuladores.filter(({ slug }) => slug).map(({ slug }) => ({
     url: `${baseUrl}/simulador/${slug}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as 'daily',
@@ -67,7 +67,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...staticRoutes,
     ...institutionUrls,
-    ...categoryUrls,
     ...materiaUrls,
     ...simulatorUrls,
   ];

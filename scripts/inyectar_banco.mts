@@ -8,7 +8,7 @@
  *   --materia <slug>        Materia donde buscar (y crear) los temas.
  *   --crear-temas           Crea los temas que no existan (requiere --materia).
  *   --simulador "<nombre>"  Crea un micro-simulador con exactamente estas preguntas.
- *   --institucion, --categoria, --materia-sim   Datos de navegación del simulador.
+ *   --institucion "<nombre>" Institución del simulador (ej. FAE). Requiere --materia.
  *   --publico               El simulador nace público (por defecto queda privado).
  *   --dry-run               Valida y muestra el resumen sin escribir nada.
  *
@@ -130,8 +130,6 @@ async function main() {
       'crear-temas': { type: 'boolean', default: false },
       simulador: { type: 'string' },
       institucion: { type: 'string' },
-      categoria: { type: 'string' },
-      'materia-sim': { type: 'string' },
       publico: { type: 'boolean', default: false },
       'dry-run': { type: 'boolean', default: false },
     },
@@ -155,6 +153,9 @@ async function main() {
 
   const materiaSlug = values.materia || textoOpcional(envoltura.materia);
   if (values['crear-temas'] && !materiaSlug) salir('--crear-temas necesita --materia <slug>.');
+  if (values.simulador && (!materiaSlug || !values.institucion)) {
+    salir('--simulador necesita --materia <slug> y --institucion "<nombre>" para aparecer en el catálogo.');
+  }
 
   // 1. Validar todo el archivo antes de tocar la base de datos.
   const lote: PreguntaLista[] = [];
@@ -253,8 +254,8 @@ async function main() {
       nombre: values.simulador,
       slug,
       institucion: values.institucion || null,
-      categoria: values.categoria || null,
-      materia: values['materia-sim'] || materia?.nombre || null,
+      materia_id: materia!.id,
+      materia: materia!.nombre,
       publico: values.publico,
       es_pago: false,
       is_deleted: false,

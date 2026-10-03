@@ -10,19 +10,19 @@ type Resultado<T = object> = ({ ok: true } & T) | { ok: false; mensaje: string }
 export type DatosCrearSimulador = ConfigDinamica & {
   nombre: string;
   institucion: string;
-  categoria: string;
-  materia: string;
+  materia_id: string;
   publico: boolean;
 };
 
 export type DatosEditarSimulador = ConfigDinamica & {
   nombre: string;
   slug: string;
-  categoria: string;
-  materia: string;
+  materia_id: string;
   es_pago: boolean;
   precio: number | string;
 };
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function limpiarSlug(texto: string) {
   return texto
@@ -38,7 +38,23 @@ function limpiarSlug(texto: string) {
 function mensajeError(codigo: string | undefined, porDefecto: string) {
   if (codigo === '23505') return 'Esa URL (Slug) ya existe en otro simulador.';
   if (codigo === '23514') return 'La configuración dinámica no es válida (revisa temas y cantidad).';
+  if (codigo === '23503') return 'La materia seleccionada ya no existe.';
   return porDefecto;
+}
+
+/**
+ * La materia es el eje del simulador: se guarda la referencia (`materia_id`)
+ * y su nombre en `materia`, que usan los listados y "Mis cursos".
+ */
+async function materiaValidada(
+  supabase: SupabaseClient,
+  materiaId: string | undefined
+): Promise<{ ok: true; datos: { materia_id: string; materia: string } } | { ok: false; mensaje: string }> {
+  if (!UUID.test(materiaId || '')) return { ok: false, mensaje: 'Selecciona la materia del simulador.' };
+  const { data, error } = await supabase.from('materias').select('id, nombre').eq('id', materiaId).maybeSingle();
+  if (error) return { ok: false, mensaje: 'No se pudo verificar la materia.' };
+  if (!data) return { ok: false, mensaje: 'La materia seleccionada ya no existe.' };
+  return { ok: true, datos: { materia_id: data.id, materia: data.nombre || '' } };
 }
 
 /** Valida la configuración y confirma que todos los temas existen. */
@@ -69,6 +85,8 @@ export async function crearSimulador(datos: DatosCrearSimulador): Promise<Result
   const slug = limpiarSlug(nombre);
   if (!slug) return { ok: false, mensaje: 'El nombre debe tener letras o números.' };
 
+  const materia = await materiaValidada(supabase, datos.materia_id);
+  if (!materia.ok) return materia;
   const config = await configValidada(supabase, datos);
   if (!config.ok) return config;
 
@@ -78,9 +96,8 @@ export async function crearSimulador(datos: DatosCrearSimulador): Promise<Result
       nombre,
       slug,
       institucion,
-      categoria: (datos.categoria || '').trim(),
-      materia: (datos.materia || '').trim(),
       publico: !!datos.publico,
+      ...materia.datos,
       ...config.datos,
     })
     .select('slug, es_dinamico')
@@ -97,11 +114,13 @@ export async function actualizarSimulador(id: string, datos: DatosEditarSimulado
 
   const nombre = (datos?.nombre || '').trim();
   const slug = limpiarSlug(datos?.slug || '');
-  if (!id || !nombre || !slug) return { ok: false, mensaje: 'El nombre y la URL no pueden estar vacíos.' };
+  if (!UUID.test(id || '') || !nombre || !slug) return { ok: false, mensaje: 'El nombre y la URL no pueden estar vacíos.' };
 
   const precio = datos.es_pago ? Number(datos.precio) : 0;
   if (!Number.isFinite(precio) || precio < 0) return { ok: false, mensaje: 'El precio no es válido.' };
 
+  const materia = await materiaValidada(supabase, datos.materia_id);
+  if (!materia.ok) return materia;
   const config = await configValidada(supabase, datos);
   if (!config.ok) return config;
 
@@ -110,10 +129,9 @@ export async function actualizarSimulador(id: string, datos: DatosEditarSimulado
     .update({
       nombre,
       slug,
-      categoria: (datos.categoria || '').trim(),
-      materia: (datos.materia || '').trim(),
       es_pago: !!datos.es_pago,
       precio,
+      ...materia.datos,
       ...config.datos,
     })
     .eq('id', id);

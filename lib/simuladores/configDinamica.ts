@@ -17,9 +17,13 @@ export type ConfigDinamica = {
 export type TemaSelector = {
   id: string;
   nombre: string;
+  materia_id: string;
   materia: string;
   preguntas: number | null;
 };
+
+/** Materia para el selector relacional del simulador. */
+export type MateriaSelector = { id: string; nombre: string };
 
 export const CONFIG_ESTATICA: ConfigDinamica = {
   es_dinamico: false,

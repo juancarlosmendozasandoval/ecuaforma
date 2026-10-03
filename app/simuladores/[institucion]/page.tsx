@@ -2,75 +2,69 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import Card from '../../components/Card';
 import Breadcrumbs from '../../components/Breadcrumbs';
+import {
+  cargarMateriasCatalogo,
+  filtroVisibilidad,
+  nombreInstitucion,
+  simuladoresAccesibles,
+} from '@/lib/simuladores/catalogo';
 
-// Muestra las categorías visibles para una institución específica.
+export const dynamic = 'force-dynamic';
+
+/** Materias (relacionales) con simuladores visibles en una institución. */
 export default async function InstitucionPage({ params }: { params: { institucion: string } }) {
   const cookieStore = cookies();
   const supabase = createServerComponentClient({ cookies: () => cookieStore });
   const { data: { user } } = await supabase.auth.getUser();
+  const institucion = nombreInstitucion(params.institucion);
 
-  // 1. Decodificar por si acaso alguien escribe la URL con %C3%AD
-  const decodedInstitucion = decodeURIComponent(params.institucion);
+  const [{ data, error }, materias] = await Promise.all([
+    supabase
+      .from('simuladores')
+      .select('materia_id')
+      .eq('institucion', institucion)
+      .eq('is_deleted', false)
+      .not('materia_id', 'is', null)
+      .or(filtroVisibilidad(await simuladoresAccesibles(supabase, user?.id))),
+    cargarMateriasCatalogo(),
+  ]);
 
-  // 2. Diccionario traductor: convierte la URL limpia al nombre exacto de tu Base de Datos
-  const mapping: { [key: string]: string } = {
-    'fae': 'FAE',
-    'armada': 'Armada',
-    'ejercito': 'Ejército',
-    'ejército': 'Ejército',
-    'policia': 'Policía',
-    'policía': 'Policía'
-  };
-
-  // 3. Obtenemos el nombre real (con tilde) para buscar en Supabase
-  const nombreReal = mapping[decodedInstitucion.toLowerCase()] || decodedInstitucion;
-
-  // 4. Usamos el 'nombreReal' en la consulta y filtramos los eliminados lógicamente
-  let query = supabase
-    .from('simuladores')
-    .select('categoria')
-    .eq('institucion', nombreReal)
-    .eq('is_deleted', false); // 🌟 Filtro integrado
-
-  // --- Lógica original de permisos ---
-  if (!user) {
-    query = query.eq('publico', true);
-  } else {
-    const { data: accessData } = await supabase
-      .from('accesos_simuladores')
-      .select('simulador_id')
-      .eq('usuario_id', user.id);
-    
-    const accessibleIds = accessData ? accessData.map(a => a.simulador_id) : [];
-
-    if (accessibleIds.length > 0) {
-      query = query.or(`publico.eq.true,id.in.(${accessibleIds.join(',')})`);
-    } else {
-      query = query.eq('publico', true);
-    }
-  }
-
-  const { data, error } = await query;
-    
   if (error || !data) {
-    return <p>No se encontraron categorías para esta institución.</p>;
+    return <p className="main-container py-10">No se encontraron materias para esta institución.</p>;
   }
-  
-  const categories = Array.from(new Set(data.map(item => item.categoria)));
+
+  const conteo = new Map<string, number>();
+  for (const fila of data as { materia_id: string }[]) {
+    conteo.set(fila.materia_id, (conteo.get(fila.materia_id) || 0) + 1);
+  }
+  const visibles = materias.filter((materia) => conteo.has(materia.id));
+
   const breadcrumbs = [
     { label: 'Simuladores', href: '/simuladores' },
-    { label: nombreReal, href: `/simuladores/${params.institucion}`, isActive: true }
+    { label: institucion, href: `/simuladores/${params.institucion}`, isActive: true },
   ];
 
   return (
     <div className="main-container py-10">
       <Breadcrumbs items={breadcrumbs} />
-      <h1 className="text-3xl font-bold mb-6">Categorías en {nombreReal}</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {categories.map(cat => (
-          <Card key={cat} title={cat} href={`/simuladores/${params.institucion}/${cat}`} />
-        ))}
-      </div>
+      <h1 className="text-3xl font-bold mb-6">Materias en {institucion}</h1>
+      {visibles.length === 0 ? (
+        <p className="text-text-secondary">Todavía no hay simuladores disponibles en esta institución.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {visibles.map((materia) => {
+            const total = conteo.get(materia.id) || 0;
+            return (
+              <Card
+                key={materia.id}
+                title={materia.nombre}
+                href={`/simuladores/${params.institucion}/${materia.slug}`}
+                description={`${total} ${total === 1 ? 'simulador' : 'simuladores'}`}
+              />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
