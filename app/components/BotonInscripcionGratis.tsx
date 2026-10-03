@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
-export default function BotonInscripcionGratis({ cursoId }: { cursoId: string }) {
+export default function BotonInscripcionGratis({ cursoId, disabled = false }: { cursoId: string; disabled?: boolean }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const inscribirse = async () => {
+    if (disabled) return;
     setLoading(true);
     
     try {
@@ -39,8 +40,8 @@ export default function BotonInscripcionGratis({ cursoId }: { cursoId: string })
   return (
     <button 
       onClick={inscribirse}
-      disabled={loading}
-      className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-md hover:bg-blue-700 transition-colors flex justify-center items-center gap-2 disabled:opacity-70"
+      disabled={loading || disabled}
+      className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-md hover:bg-blue-700 transition-colors flex justify-center items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-blue-600"
     >
       {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Procesando...</> : 'Inscribirme Ahora (Gratis)'}
     </button>

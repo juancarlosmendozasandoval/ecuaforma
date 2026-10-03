@@ -368,7 +368,7 @@ export type Database = {
           id: string
           monto_centavos: number
           payphone_id: number | null
-          usuario_id: string
+          usuario_id: string | null
         }
         Insert: {
           client_tx_id: string
@@ -390,7 +390,7 @@ export type Database = {
           id?: string
           monto_centavos?: number
           payphone_id?: number | null
-          usuario_id?: string
+          usuario_id?: string | null
         }
         Relationships: [
           {

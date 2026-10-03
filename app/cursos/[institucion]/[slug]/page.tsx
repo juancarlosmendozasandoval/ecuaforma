@@ -3,9 +3,8 @@ import { cookies } from 'next/headers';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import Link from 'next/link';
 import { BookOpen, PlayCircle, FileText, Lock, CheckCircle, CheckSquare, Folder, FolderOpen } from 'lucide-react';
-import BotonInscripcionGratis from '../../../components/BotonInscripcionGratis';
 import BotonIniciarSesion from '../../../components/BotonIniciarSesion';
-import BotonPayPhone from '../../../components/BotonPayPhone';
+import CajaCompraCurso from '../../../components/CajaCompraCurso';
 import {
   aplanarLecciones,
   cargarTemarioCurso,
@@ -145,10 +144,8 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
                   <BotonIniciarSesion className="block w-full bg-slate-900 text-white text-center py-3 rounded-xl font-bold shadow-md hover:bg-slate-800 transition-colors">
                     {esPago ? 'Inicia sesión para comprar' : 'Inicia sesión para inscribirte'}
                   </BotonIniciarSesion>
-                ) : esPago ? (
-                  <BotonPayPhone cursoId={curso.id} precio={Number(curso.precio) || 0} />
                 ) : (
-                  <BotonInscripcionGratis cursoId={curso.id} />
+                  <CajaCompraCurso cursoId={curso.id} precio={Number(curso.precio) || 0} esPago={esPago} />
                 )}
               </div>
             )}

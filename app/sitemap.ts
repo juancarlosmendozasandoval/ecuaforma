@@ -17,11 +17,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/cursos',
     '/simuladores',
     '/contacto',
+    '/legales/terminos',
+    '/legales/privacidad',
+    '/legales/reembolsos',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as 'monthly',
-    priority: route === '' ? 1.0 : 0.8,
+    priority: route === '' ? 1.0 : route.startsWith('/legales') ? 0.3 : 0.8,
   }));
 
   // 2. Obtener rutas dinámicas desde Supabase

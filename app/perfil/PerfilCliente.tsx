@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, Loader2, User } from 'lucide-react';
 import { useSupabase } from '../components/AuthProvider';
+import EliminarCuenta from './EliminarCuenta';
 
 export default function PerfilCliente({
   user,
 }: {
-  user: { email: string; full_name: string };
+  user: { email: string; full_name: string; esAdmin: boolean };
 }) {
   const router = useRouter();
   const { supabase } = useSupabase();
@@ -105,6 +106,8 @@ export default function PerfilCliente({
           {guardando ? 'Guardando...' : 'Guardar cambios'}
         </button>
       </form>
+
+      <EliminarCuenta email={user.email || ''} bloqueado={user.esAdmin} />
     </div>
   );
 }

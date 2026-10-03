@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import { Facebook, Instagram, Youtube } from 'lucide-react';
+import { DOCUMENTOS_LEGALES } from '@/lib/legales/documentos';
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -48,8 +50,15 @@ export default function Footer() {
             ))}
           </div>
         </div>
-        <div className="text-center text-sm text-gray-400 mt-8 pt-6 border-t border-white/10">
-          &copy; {new Date().getFullYear()} Ecuaforma. Todos los derechos reservados.
+        <div className="mt-8 pt-6 border-t border-white/10 flex flex-col-reverse md:flex-row md:justify-between items-center gap-4 text-sm text-gray-400">
+          <p>&copy; {new Date().getFullYear()} Ecuaforma. Todos los derechos reservados.</p>
+          <nav aria-label="Legal" className="flex flex-wrap justify-center gap-x-5 gap-y-2">
+            {DOCUMENTOS_LEGALES.map((doc) => (
+              <Link key={doc.href} href={doc.href} className="text-gray-300 hover:text-white hover:underline transition-colors">
+                {doc.titulo}
+              </Link>
+            ))}
+          </nav>
         </div>
       </div>
     </footer>

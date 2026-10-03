@@ -7,7 +7,8 @@ const PAYPHONE_CONFIRM_URL = 'https://pay.payphonetodoesposible.com/api/button/V
 /** Fila de la tabla `pagos` (aún no está en types/supabase.ts hasta regenerar los tipos). */
 export type Pago = {
   id: string;
-  usuario_id: string;
+  /** null si el usuario eliminó su cuenta: el pago se conserva solo como registro contable. */
+  usuario_id: string | null;
   curso_id: string;
   client_tx_id: string;
   monto_centavos: number;
@@ -138,6 +139,11 @@ async function matricular(
   yaProcesado: boolean,
   aprobadoAhora: boolean
 ): Promise<ResultadoConfirmacion> {
+  if (!pago.usuario_id) {
+    console.warn('[PAGO DE CUENTA ELIMINADA]', pago.id);
+    return { ok: false, motivo: 'error_matricula', pago };
+  }
+
   const { error } = await admin
     .from('accesos_cursos')
     .upsert(
