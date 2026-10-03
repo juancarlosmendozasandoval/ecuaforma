@@ -8,7 +8,7 @@ import {
   ChevronDown, ChevronRight, Eye, FileText, Folder, FolderOpen, FolderPlus, FolderTree, Layers, Library,
   Loader2, Pencil, Plus, Search, Trash2, Video, X, type LucideIcon,
 } from 'lucide-react';
-import { crearCarpeta, editarCarpeta, eliminarCarpeta, moverCarpeta } from './acciones';
+import { crearCarpeta, editarCarpeta, eliminarCarpeta, moverCarpeta, moverLeccion } from './acciones';
 import {
   SELECT_LECCION_BANCO,
   armarArbolModulos,
@@ -102,13 +102,21 @@ function BadgeTipo({ tipo }: { tipo: string | null }) {
 function ListaLecciones({
   contenido,
   onQuitar,
+  onMover,
+  moviendoId,
 }: {
   contenido: ContenidoModulo[];
   onQuitar: (contenido: ContenidoModulo) => void;
+  onMover: (contenido: ContenidoModulo, direccion: 'arriba' | 'abajo') => void;
+  /** Lección que se está moviendo; mientras exista, ninguna flecha responde. */
+  moviendoId: string | null;
 }) {
+  const flecha =
+    'p-1.5 rounded-lg text-gray-300 hover:text-indigo-600 hover:bg-indigo-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-300';
+
   return (
     <ol className="divide-y divide-gray-100">
-      {contenido.map((item, i) => (
+      {contenido.map((item, i, lista) => (
         <li key={item.id} className="flex items-center gap-4 px-5 py-3 hover:bg-gray-50 transition-colors group">
           <span className="w-7 h-7 rounded-full bg-gray-100 text-gray-500 text-xs font-bold flex items-center justify-center shrink-0">
             {i + 1}
@@ -129,13 +137,46 @@ function ListaLecciones({
               )}
             </div>
           </div>
-          <button
-            onClick={() => onQuitar(item)}
-            title="Quitar de la carpeta"
-            className="p-2 text-gray-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+          <div
+            className={`flex items-center shrink-0 transition-opacity ${
+              moviendoId === item.id ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100'
+            }`}
           >
-            <Trash2 className="w-4 h-4" />
-          </button>
+            {moviendoId === item.id ? (
+              <span className="p-1.5">
+                <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
+              </span>
+            ) : (
+              <>
+                <button
+                  onClick={() => onMover(item, 'arriba')}
+                  disabled={i === 0 || !!moviendoId}
+                  title="Subir lección"
+                  aria-label="Subir lección"
+                  className={flecha}
+                >
+                  <ArrowUp className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => onMover(item, 'abajo')}
+                  disabled={i === lista.length - 1 || !!moviendoId}
+                  title="Bajar lección"
+                  aria-label="Bajar lección"
+                  className={flecha}
+                >
+                  <ArrowDown className="w-4 h-4" />
+                </button>
+              </>
+            )}
+            <button
+              onClick={() => onQuitar(item)}
+              title="Quitar de la carpeta"
+              aria-label="Quitar de la carpeta"
+              className="p-2 text-gray-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
         </li>
       ))}
     </ol>
@@ -162,6 +203,7 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
   const [tituloEdicion, setTituloEdicion] = useState('');
   const [procesando, setProcesando] = useState(false);
   const [moviendoId, setMoviendoId] = useState<string | null>(null);
+  const [leccionMoviendoId, setLeccionMoviendoId] = useState<string | null>(null);
 
   // Panel lateral del banco ("pinza")
   const [panelAbierto, setPanelAbierto] = useState(false);
@@ -304,6 +346,32 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
 
     const nuevos = new Map(resultado.ordenes.map((o) => [o.id, o.orden]));
     setModulos((prev) => prev.map((m) => (nuevos.has(m.id) ? { ...m, orden: nuevos.get(m.id)! } : m)));
+  };
+
+  const moverContenido = async (
+    modulo: ModuloConContenido,
+    contenido: ContenidoModulo,
+    direccion: 'arriba' | 'abajo'
+  ) => {
+    if (leccionMoviendoId) return;
+    setLeccionMoviendoId(contenido.id);
+    const resultado = await moverLeccion(contenido.id, direccion);
+    setLeccionMoviendoId(null);
+    if (!resultado.ok) return showAlert('error', resultado.mensaje);
+
+    const nuevos = new Map(resultado.ordenes.map((o) => [o.id, o.orden]));
+    setModulos((prev) =>
+      prev.map((m) =>
+        m.id === modulo.id
+          ? {
+              ...m,
+              contenido_modulos: m.contenido_modulos
+                .map((c) => (nuevos.has(c.id) ? { ...c, orden: nuevos.get(c.id)! } : c))
+                .sort((a, b) => a.orden - b.orden || a.id.localeCompare(b.id)),
+            }
+          : m
+      )
+    );
   };
 
   /** Motivo por el que una carpeta no se puede borrar todavía (el servidor vuelve a comprobarlo). */
@@ -543,7 +611,12 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
                           Estas lecciones están directamente en el módulo principal. Agrégalas a un submódulo y quítalas de aquí.
                         </p>
                         <div className="bg-white">
-                          <ListaLecciones contenido={raiz.contenido_modulos} onQuitar={(c) => quitarContenido(raiz, c)} />
+                          <ListaLecciones
+                            contenido={raiz.contenido_modulos}
+                            onQuitar={(c) => quitarContenido(raiz, c)}
+                            onMover={(c, direccion) => moverContenido(raiz, c, direccion)}
+                            moviendoId={leccionMoviendoId}
+                          />
                         </div>
                       </div>
                     )}
@@ -609,7 +682,12 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
                                   </button>
                                 </div>
                               ) : (
-                                <ListaLecciones contenido={sub.contenido_modulos} onQuitar={(c) => quitarContenido(sub, c)} />
+                                <ListaLecciones
+                                  contenido={sub.contenido_modulos}
+                                  onQuitar={(c) => quitarContenido(sub, c)}
+                                  onMover={(c, direccion) => moverContenido(sub, c, direccion)}
+                                  moviendoId={leccionMoviendoId}
+                                />
                               ))}
                           </div>
                         );

@@ -54,7 +54,9 @@ export default async function ConstructorCursoPage({ params }: { params: { slug:
   // El cliente no tipado infiere `banco_lecciones` como arreglo; PostgREST devuelve un objeto (relación N:1).
   const modulos = ((modulosData || []) as unknown as ModuloConContenido[]).map((modulo) => ({
     ...modulo,
-    contenido_modulos: [...(modulo.contenido_modulos || [])].sort((a, b) => a.orden - b.orden),
+    contenido_modulos: [...(modulo.contenido_modulos || [])].sort(
+      (a, b) => a.orden - b.orden || a.id.localeCompare(b.id)
+    ),
   }));
 
   return (

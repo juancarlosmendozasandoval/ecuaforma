@@ -191,3 +191,60 @@ export async function moverCarpeta(
   revalidatePath('/admin/cursos', 'layout');
   return { ok: true, ordenes };
 }
+
+/**
+ * Sube o baja una lección un puesto dentro de su carpeta (mismo `modulo_id`).
+ * `contenido_modulos` no tiene `created_at`: los órdenes repetidos se desempatan por `id`,
+ * igual que en la página del constructor, y se renumeran 1..n.
+ */
+export async function moverLeccion(
+  contenidoId: string,
+  direccion: 'arriba' | 'abajo'
+): Promise<Resultado<{ ordenes: { id: string; orden: number }[] }>> {
+  const { supabase } = await requireAdmin();
+
+  if (!UUID.test(contenidoId || '')) return { ok: false, mensaje: 'Lección no válida.' };
+
+  const { data: actual } = await supabase
+    .from('contenido_modulos')
+    .select('id, modulo_id')
+    .eq('id', contenidoId)
+    .maybeSingle();
+  if (!actual?.modulo_id) return { ok: false, mensaje: 'La lección ya no está en esta carpeta.' };
+
+  const { data: hermanosData, error: errorHermanos } = await supabase
+    .from('contenido_modulos')
+    .select('id, orden')
+    .eq('modulo_id', actual.modulo_id)
+    .order('orden', { ascending: true })
+    .order('id', { ascending: true });
+
+  if (errorHermanos || !hermanosData) {
+    console.error('Error al leer las lecciones de la carpeta:', errorHermanos);
+    return { ok: false, mensaje: 'No se pudo reordenar la lección.' };
+  }
+
+  const hermanos = hermanosData as { id: string; orden: number }[];
+  const indice = hermanos.findIndex((h) => h.id === contenidoId);
+  const destino = direccion === 'arriba' ? indice - 1 : indice + 1;
+  if (indice < 0 || destino < 0 || destino >= hermanos.length) {
+    return { ok: false, mensaje: direccion === 'arriba' ? 'Ya es la primera lección.' : 'Ya es la última lección.' };
+  }
+
+  const reordenados = [...hermanos];
+  [reordenados[indice], reordenados[destino]] = [reordenados[destino], reordenados[indice]];
+  const ordenes = reordenados.map((h, i) => ({ id: h.id, orden: i + 1 }));
+
+  const cambios = ordenes.filter((o) => hermanos.find((h) => h.id === o.id)?.orden !== o.orden);
+  const resultados = await Promise.all(
+    cambios.map((o) => supabase.from('contenido_modulos').update({ orden: o.orden }).eq('id', o.id))
+  );
+  const fallo = resultados.find((r) => r.error);
+  if (fallo) {
+    console.error('Error al reordenar la lección:', fallo.error);
+    return { ok: false, mensaje: 'No se pudo reordenar la lección.' };
+  }
+
+  revalidatePath('/admin/cursos', 'layout');
+  return { ok: true, ordenes };
+}

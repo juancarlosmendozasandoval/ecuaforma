@@ -109,7 +109,8 @@ export async function cargarTemarioCurso(
     .from('contenido_modulos')
     .select(`id, modulo_id, orden, titulo_mostrar, is_preview, banco_lecciones ( ${camposBanco} )`)
     .in('modulo_id', filas.map((modulo) => modulo.id))
-    .order('orden', { ascending: true });
+    .order('orden', { ascending: true })
+    .order('id', { ascending: true });
 
   if (errorContenido) console.error('Error al cargar las lecciones del curso:', errorContenido);
 
