@@ -30,7 +30,9 @@ export type ModuloPrincipal = ModuloConContenido & {
 export function armarArbolModulos(modulos: ModuloConContenido[]): ModuloPrincipal[] {
   const ids = new Set(modulos.map((m) => m.id));
   const esRaiz = (m: ModuloConContenido) => !m.parent_id || !ids.has(m.parent_id);
-  const porOrden = (a: ModuloConContenido, b: ModuloConContenido) => a.orden - b.orden;
+  // Mismo desempate que `moverCarpeta` en el servidor, para que las flechas muevan la carpeta que se ve.
+  const porOrden = (a: ModuloConContenido, b: ModuloConContenido) =>
+    a.orden - b.orden || (a.created_at || '').localeCompare(b.created_at || '');
 
   return modulos
     .filter(esRaiz)

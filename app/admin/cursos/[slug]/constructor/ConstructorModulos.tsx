@@ -4,11 +4,11 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useSupabase } from '../../../../components/AuthProvider';
 import {
-  AlertCircle, AlertTriangle, ArrowLeft, BookOpen, Check, CheckCircle, CheckSquare, ChevronDown,
-  ChevronRight, Eye, FileText, Folder, FolderOpen, FolderPlus, FolderTree, Layers, Library,
-  Loader2, Plus, Search, Trash2, Video, X, type LucideIcon,
+  AlertCircle, AlertTriangle, ArrowDown, ArrowLeft, ArrowUp, BookOpen, Check, CheckCircle, CheckSquare,
+  ChevronDown, ChevronRight, Eye, FileText, Folder, FolderOpen, FolderPlus, FolderTree, Layers, Library,
+  Loader2, Pencil, Plus, Search, Trash2, Video, X, type LucideIcon,
 } from 'lucide-react';
-import { crearCarpeta } from './acciones';
+import { crearCarpeta, editarCarpeta, eliminarCarpeta, moverCarpeta } from './acciones';
 import {
   SELECT_LECCION_BANCO,
   armarArbolModulos,
@@ -26,6 +26,54 @@ interface Props {
 
 type Alerta = { type: 'success' | 'error'; text: string } | null;
 type TipoCarpeta = 'principal' | 'submodulo';
+type Dialogo = { tipo: 'editar' | 'eliminar'; modulo: ModuloConContenido } | null;
+
+/** Subir, bajar, renombrar y eliminar una carpeta; las flechas se limitan a sus hermanos. */
+function AccionesCarpeta({
+  esPrimero,
+  esUltimo,
+  ocupado,
+  onMover,
+  onEditar,
+  onEliminar,
+}: {
+  esPrimero: boolean;
+  esUltimo: boolean;
+  ocupado: boolean;
+  onMover: (direccion: 'arriba' | 'abajo') => void;
+  onEditar: () => void;
+  onEliminar: () => void;
+}) {
+  const base = 'p-1.5 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed';
+  return (
+    <div className="flex items-center shrink-0">
+      {ocupado ? (
+        <span className="p-1.5">
+          <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+        </span>
+      ) : (
+        <>
+          <button onClick={() => onMover('arriba')} disabled={esPrimero} title="Subir" aria-label="Subir"
+            className={`${base} text-gray-400 hover:text-indigo-600 hover:bg-indigo-50`}>
+            <ArrowUp className="w-4 h-4" />
+          </button>
+          <button onClick={() => onMover('abajo')} disabled={esUltimo} title="Bajar" aria-label="Bajar"
+            className={`${base} text-gray-400 hover:text-indigo-600 hover:bg-indigo-50`}>
+            <ArrowDown className="w-4 h-4" />
+          </button>
+        </>
+      )}
+      <button onClick={onEditar} title="Renombrar" aria-label="Renombrar"
+        className={`${base} text-gray-400 hover:text-indigo-600 hover:bg-indigo-50`}>
+        <Pencil className="w-4 h-4" />
+      </button>
+      <button onClick={onEliminar} title="Eliminar" aria-label="Eliminar"
+        className={`${base} text-gray-400 hover:text-rose-600 hover:bg-rose-50`}>
+        <Trash2 className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
 
 /** Estilo visual según `banco_lecciones.tipo`; los tipos desconocidos usan el genérico. */
 const TIPOS_LECCION: Record<string, { label: string; icon: LucideIcon; clases: string }> = {
@@ -109,6 +157,12 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
   const [padreNuevaId, setPadreNuevaId] = useState('');
   const [creando, setCreando] = useState(false);
 
+  // Edición, eliminación y reordenamiento de carpetas
+  const [dialogo, setDialogo] = useState<Dialogo>(null);
+  const [tituloEdicion, setTituloEdicion] = useState('');
+  const [procesando, setProcesando] = useState(false);
+  const [moviendoId, setMoviendoId] = useState<string | null>(null);
+
   // Panel lateral del banco ("pinza")
   const [panelAbierto, setPanelAbierto] = useState(false);
   const [moduloDestinoId, setModuloDestinoId] = useState<string>('');
@@ -124,15 +178,16 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
 
   // Cerrar el panel o el modal con Escape
   useEffect(() => {
-    if (!panelAbierto && !modalAbierto) return;
+    if (!panelAbierto && !modalAbierto && !dialogo) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      if (modalAbierto) setModalAbierto(false);
+      if (dialogo) setDialogo(null);
+      else if (modalAbierto) setModalAbierto(false);
       else cerrarPanel();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [panelAbierto, modalAbierto]);
+  }, [panelAbierto, modalAbierto, dialogo]);
 
   const arbol = useMemo(() => armarArbolModulos(modulos), [modulos]);
   const totalSubmodulos = arbol.reduce((acc, raiz) => acc + raiz.submodulos.length, 0);
@@ -202,6 +257,62 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
     }
     setModalAbierto(false);
     showAlert('success', `${parentId ? 'Submódulo' : 'Módulo'} "${titulo}" creado.`);
+  };
+
+  const abrirEdicion = (modulo: ModuloConContenido) => {
+    setTituloEdicion(modulo.titulo || '');
+    setDialogo({ tipo: 'editar', modulo });
+  };
+
+  const guardarEdicion = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!dialogo) return;
+    const titulo = tituloEdicion.trim();
+    if (!titulo) return showAlert('error', 'Escribe un nombre para la carpeta.');
+
+    setProcesando(true);
+    const resultado = await editarCarpeta(dialogo.modulo.id, titulo);
+    setProcesando(false);
+    if (!resultado.ok) return showAlert('error', resultado.mensaje);
+
+    setModulos((prev) => prev.map((m) => (m.id === dialogo.modulo.id ? { ...m, titulo: resultado.titulo } : m)));
+    setDialogo(null);
+    showAlert('success', 'Carpeta renombrada.');
+  };
+
+  const confirmarEliminacion = async () => {
+    if (!dialogo) return;
+    const { modulo } = dialogo;
+
+    setProcesando(true);
+    const resultado = await eliminarCarpeta(modulo.id);
+    setProcesando(false);
+    if (!resultado.ok) return showAlert('error', resultado.mensaje);
+
+    setModulos((prev) => prev.filter((m) => m.id !== modulo.id));
+    if (moduloDestinoId === modulo.id) setModuloDestinoId('');
+    setDialogo(null);
+    showAlert('success', `"${modulo.titulo || ''}" eliminada.`);
+  };
+
+  const mover = async (modulo: ModuloConContenido, direccion: 'arriba' | 'abajo') => {
+    if (moviendoId) return;
+    setMoviendoId(modulo.id);
+    const resultado = await moverCarpeta(modulo.id, direccion);
+    setMoviendoId(null);
+    if (!resultado.ok) return showAlert('error', resultado.mensaje);
+
+    const nuevos = new Map(resultado.ordenes.map((o) => [o.id, o.orden]));
+    setModulos((prev) => prev.map((m) => (nuevos.has(m.id) ? { ...m, orden: nuevos.get(m.id)! } : m)));
+  };
+
+  /** Motivo por el que una carpeta no se puede borrar todavía (el servidor vuelve a comprobarlo). */
+  const bloqueoEliminacion = (modulo: ModuloConContenido) => {
+    const subs = modulos.filter((m) => m.parent_id === modulo.id).length;
+    if (subs > 0) return `Tiene ${subs} submódulo(s). Elimínalos antes de borrar este módulo.`;
+    const lecciones = modulo.contenido_modulos.length;
+    if (lecciones > 0) return `Tiene ${lecciones} lección(es). Quítalas antes de borrar esta carpeta.`;
+    return '';
   };
 
   const toggleColapso = (id: string) =>
@@ -407,6 +518,14 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
                   <span className="hidden sm:inline text-xs font-bold bg-white border border-gray-200 text-gray-500 px-2.5 py-1 rounded-full">
                     {raiz.submodulos.length} submódulos · {leccionesRaiz} lecciones
                   </span>
+                  <AccionesCarpeta
+                    esPrimero={idx === 0}
+                    esUltimo={idx === arbol.length - 1}
+                    ocupado={moviendoId === raiz.id}
+                    onMover={(direccion) => mover(raiz, direccion)}
+                    onEditar={() => abrirEdicion(raiz)}
+                    onEliminar={() => setDialogo({ tipo: 'eliminar', modulo: raiz })}
+                  />
                   <button
                     onClick={() => abrirModal(raiz.id)}
                     className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-600 bg-white hover:bg-slate-800 hover:text-white rounded-lg transition-colors border border-gray-200"
@@ -465,6 +584,14 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
                               <span className="hidden sm:inline text-[11px] font-bold text-gray-400">
                                 {sub.contenido_modulos.length} lecciones
                               </span>
+                              <AccionesCarpeta
+                                esPrimero={idxSub === 0}
+                                esUltimo={idxSub === raiz.submodulos.length - 1}
+                                ocupado={moviendoId === sub.id}
+                                onMover={(direccion) => mover(sub, direccion)}
+                                onEditar={() => abrirEdicion(sub)}
+                                onEliminar={() => setDialogo({ tipo: 'eliminar', modulo: sub })}
+                              />
                               <button
                                 onClick={() => abrirPanel(sub.id)}
                                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-600 hover:text-white rounded-lg transition-colors border border-indigo-100"
@@ -623,6 +750,111 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Diálogo: renombrar o eliminar carpeta */}
+      {dialogo && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-[1px]" onClick={() => !procesando && setDialogo(null)} />
+
+          {dialogo.tipo === 'editar' ? (
+            <form
+              onSubmit={guardarEdicion}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="titulo-dialogo-carpeta"
+              className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl"
+            >
+              <div className="p-5 border-b border-gray-100">
+                <h2 id="titulo-dialogo-carpeta" className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                  <Pencil className="w-5 h-5 text-indigo-500" />
+                  Renombrar {dialogo.modulo.parent_id ? 'submódulo' : 'módulo'}
+                </h2>
+              </div>
+              <div className="p-5">
+                <label htmlFor="titulo-edicion" className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  Nombre
+                </label>
+                <input
+                  id="titulo-edicion"
+                  type="text"
+                  autoFocus
+                  maxLength={150}
+                  value={tituloEdicion}
+                  onChange={(e) => setTituloEdicion(e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                />
+              </div>
+              <div className="p-4 border-t border-gray-100 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setDialogo(null)}
+                  className="px-4 py-2.5 rounded-xl font-bold text-gray-600 hover:bg-gray-100 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={procesando || !tituloEdicion.trim() || tituloEdicion.trim() === (dialogo.modulo.titulo || '')}
+                  className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-md transition-all"
+                >
+                  {procesando ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                  Guardar
+                </button>
+              </div>
+            </form>
+          ) : (
+            (() => {
+              const bloqueo = bloqueoEliminacion(dialogo.modulo);
+              return (
+                <div
+                  role="alertdialog"
+                  aria-modal="true"
+                  aria-labelledby="titulo-dialogo-carpeta"
+                  className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl"
+                >
+                  <div className="p-5 flex gap-4">
+                    <span
+                      className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+                        bloqueo ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-600'
+                      }`}
+                    >
+                      {bloqueo ? <AlertTriangle className="w-5 h-5" /> : <Trash2 className="w-5 h-5" />}
+                    </span>
+                    <div className="min-w-0">
+                      <h2 id="titulo-dialogo-carpeta" className="text-lg font-bold text-gray-800">
+                        Eliminar {dialogo.modulo.parent_id ? 'submódulo' : 'módulo'}
+                      </h2>
+                      <p className="text-sm text-gray-600 mt-1 break-words">
+                        <span className="font-semibold">&quot;{dialogo.modulo.titulo || 'Sin título'}&quot;</span>
+                        {bloqueo ? ' no se puede eliminar todavía.' : ' se eliminará de forma permanente.'}
+                      </p>
+                      {bloqueo && <p className="text-sm text-amber-700 mt-2">{bloqueo}</p>}
+                    </div>
+                  </div>
+                  <div className="p-4 border-t border-gray-100 flex justify-end gap-3">
+                    <button
+                      onClick={() => setDialogo(null)}
+                      className="px-4 py-2.5 rounded-xl font-bold text-gray-600 hover:bg-gray-100 transition-colors"
+                    >
+                      {bloqueo ? 'Entendido' : 'Cancelar'}
+                    </button>
+                    {!bloqueo && (
+                      <button
+                        onClick={confirmarEliminacion}
+                        disabled={procesando}
+                        className="bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-md transition-all"
+                      >
+                        {procesando ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                        Eliminar
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })()
+          )}
         </div>
       )}
 
