@@ -117,7 +117,7 @@ export default async function SimuladorPage({ params }: { params: { slug: string
   }
 
   // 4. SI TIENE ACCESO -> Cargar preguntas y renderizar el simulador
-  const questionsData = await cargarPreguntasSimulador<QuestionType>(simulatorData.id);
+  const questionsData = await cargarPreguntasSimulador<QuestionType>(simulatorData);
 
   return (
     <div className="main-container py-10">

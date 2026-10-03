@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSupabase } from '../../../components/AuthProvider';
 import { 
   Trash2, Plus, Save, ArrowLeft, CheckCircle, Youtube, 
-  ImageIcon, Type, ArrowUp, ArrowDown, Edit3, X, Library, Search, GripVertical, Upload, Loader2
+  ImageIcon, Type, ArrowUp, ArrowDown, Edit3, X, Library, Search, GripVertical, Upload, Loader2, Shuffle
 } from 'lucide-react';
 import Link from 'next/link';
 import { parsearCargaMasiva, separarBloques } from '@/lib/simuladores/parsearCargaMasiva';
@@ -427,7 +427,9 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
             Editando: {simulador.nombre}
           </h1>
           <p className="text-gray-500 text-sm">
-            {simulador.institucion} • {preguntas.length} preguntas cargadas
+            {simulador.institucion} • {simulador.es_dinamico
+              ? `Dinámico: ${simulador.cantidad_preguntas || 0} preguntas al azar por intento`
+              : `${preguntas.length} preguntas cargadas`}
           </p>
         </div>
         <Link href={`/simulador/${simulador.slug}`} target="_blank" className="bg-green-100 text-green-700 px-4 py-2 rounded-lg font-bold hover:bg-green-200 transition text-sm flex items-center gap-2">
@@ -435,6 +437,32 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
         </Link>
       </div>
 
+      {simulador.es_dinamico ? (
+        <div className="bg-violet-50 border border-violet-200 rounded-xl p-6 space-y-4">
+          <h2 className="text-lg font-bold text-violet-900 flex items-center gap-2">
+            <Shuffle size={20}/> Mega-Simulador Dinámico
+          </h2>
+          <p className="text-sm text-violet-800">
+            Este simulador no usa una lista fija: en cada intento toma <strong>{simulador.cantidad_preguntas || 0}</strong> preguntas
+            al azar del banco, entre los temas de abajo. Para cambiar el banco, asigna temas a las preguntas
+            (carga masiva o script de inyección); para cambiar la configuración, edítalo en el gestor.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {((simulador.temas_dinamicos || []) as string[]).map((temaId) => {
+              const tema = temas.find((t) => t.id === temaId);
+              const materia = materias.find((m) => m.id === tema?.materia_id);
+              return (
+                <span key={temaId} className="bg-white border border-violet-200 text-violet-800 text-xs font-bold px-3 py-1.5 rounded-full">
+                  {tema ? `${materia?.nombre || 'Sin materia'} · ${tema.nombre || 'Sin nombre'}` : 'Tema eliminado'}
+                </span>
+              );
+            })}
+          </div>
+          <Link href="/admin/simuladores" className="inline-flex items-center gap-1.5 text-sm font-bold text-violet-700 hover:underline">
+            <Edit3 size={14}/> Editar configuración en el gestor
+          </Link>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Columna Izquierda: FORMULARIO */}
@@ -711,6 +739,7 @@ export default function GestorPreguntasPage({ params }: { params: { slug: string
         </div>
 
       </div>
+      )}
 
       {bancoAbierto && (
         <div className="fixed inset-0 z-[80] bg-slate-900/50 flex items-end sm:items-center justify-center p-4" onClick={() => setBancoAbierto(false)}>

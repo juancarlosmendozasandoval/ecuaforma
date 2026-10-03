@@ -1,5 +1,6 @@
 import { requireAdmin } from '@/lib/auth/requireAdmin';
 import type { Tables } from '@/types/supabase';
+import { cargarTemasSelector } from '@/lib/simuladores/temasSelector';
 import SimuladoresCliente from './SimuladoresCliente';
 
 /** Listado paginado en el servidor. `q` busca por nombre; `pagina` e `inst` vienen de la URL. */
@@ -41,12 +42,13 @@ export default async function GestionSimuladoresPage({ searchParams }: { searchP
   if (q) consulta = consulta.ilike('nombre', `%${escaparLike(q)}%`);
   if (institucion) consulta = consulta.eq('institucion', institucion);
 
-  const [{ data, count, error }, { data: catalogo }] = await Promise.all([
+  const [{ data, count, error }, { data: catalogo }, temas] = await Promise.all([
     consulta
       .order('created_at', { ascending: false, nullsFirst: false })
       .order('id', { ascending: false })
       .range(desde, hasta),
     supabase.from('simuladores').select('institucion').eq('is_deleted', false),
+    cargarTemasSelector(supabase),
   ]);
 
   const fueraDeRango = error?.code === 'PGRST103';
@@ -68,6 +70,7 @@ export default async function GestionSimuladoresPage({ searchParams }: { searchP
     <SimuladoresCliente
       simuladores={simuladores}
       instituciones={instituciones}
+      temas={temas}
       q={q}
       institucion={institucion}
       pagina={pagina}

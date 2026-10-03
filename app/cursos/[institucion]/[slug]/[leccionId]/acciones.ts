@@ -50,6 +50,6 @@ export async function cargarExamenLeccion(contenidoId: string): Promise<ExamenLe
     .maybeSingle();
   if (!sim) return { ok: false, mensaje: 'El examen ya no está disponible.' };
 
-  const pregs = await cargarPreguntasSimulador<QuestionType>(simuladorId);
+  const pregs = await cargarPreguntasSimulador<QuestionType>(sim);
   return { ok: true, sim: sim as SimulatorType, pregs };
 }

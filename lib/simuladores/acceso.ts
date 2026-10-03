@@ -49,13 +49,48 @@ export async function puedeRendirSimulador(usuario: UsuarioAcceso, simulador: Si
   return (usos || []).length > 0;
 }
 
-/** Preguntas con respuestas. Solo llamar después de verificar el acceso. */
-export async function cargarPreguntasSimulador<T extends { orden?: number | null }>(simuladorId: string) {
+type SimuladorPreguntas = {
+  id: string;
+  es_dinamico?: boolean | null;
+  temas_dinamicos?: string[] | null;
+  cantidad_preguntas?: number | null;
+};
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const PREGUNTAS_DINAMICAS_POR_DEFECTO = 20;
+const PREGUNTAS_DINAMICAS_MAXIMO = 200;
+
+/**
+ * Preguntas con respuestas. Solo llamar después de verificar el acceso.
+ * Estático: las vinculadas en `simulador_preguntas`, en su orden.
+ * Dinámico: una muestra al azar del banco filtrada por `temas_dinamicos`,
+ * distinta en cada intento.
+ */
+export async function cargarPreguntasSimulador<T extends { orden?: number | null }>(simulador: SimuladorPreguntas) {
+  if (simulador.es_dinamico) return cargarPreguntasDinamicas<T>(simulador);
+
   const { data, error } = await createAdminClient()
     .from('simulador_preguntas')
     .select('orden, preguntas(*)')
-    .eq('simulador_id', simuladorId)
+    .eq('simulador_id', simulador.id)
     .order('orden', { ascending: true });
   if (error) throw new Error('No se pudieron cargar las preguntas');
   return mapearPreguntasExamen<T>(data);
+}
+
+/** `order by random()` no existe en PostgREST: se usa la función SQL `preguntas_aleatorias`. */
+async function cargarPreguntasDinamicas<T extends { orden?: number | null }>(simulador: SimuladorPreguntas) {
+  const temas = (simulador.temas_dinamicos || []).filter((tema) => UUID.test(tema || ''));
+  if (temas.length === 0) return [] as T[];
+
+  const pedido = Math.trunc(Number(simulador.cantidad_preguntas) || PREGUNTAS_DINAMICAS_POR_DEFECTO);
+  const limite = Math.min(Math.max(pedido, 1), PREGUNTAS_DINAMICAS_MAXIMO);
+
+  const { data, error } = await createAdminClient().rpc('preguntas_aleatorias', {
+    p_temas: temas,
+    p_limite: limite,
+  });
+  if (error) throw new Error('No se pudieron cargar las preguntas');
+
+  return ((data || []) as T[]).map((pregunta, indice) => ({ ...pregunta, orden: indice + 1 }));
 }

@@ -5,16 +5,26 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useSupabase } from '../../components/AuthProvider';
 import {
   Eye, EyeOff, Copy, Move, Trash2, Search, Plus, CheckCircle, AlertCircle,
-  Sparkles, Pencil, Save, ListChecks, DollarSign, X, ChevronLeft, ChevronRight, BarChart3,
+  Sparkles, Pencil, Save, ListChecks, DollarSign, X, ChevronLeft, ChevronRight, BarChart3, Shuffle,
 } from 'lucide-react';
 import Link from 'next/link';
 import type { Tables } from '@/types/supabase';
+import {
+  CONFIG_ESTATICA,
+  configDesdeSimulador,
+  validarConfigDinamica,
+  type ConfigDinamica as Config,
+  type TemaSelector,
+} from '@/lib/simuladores/configDinamica';
+import ConfigDinamica from './ConfigDinamica';
+import { actualizarSimulador } from './acciones';
 
 type SimuladorAdmin = Tables<'simuladores'>;
 
 type Props = {
   simuladores: SimuladorAdmin[];
   instituciones: string[];
+  temas: TemaSelector[];
   q: string;
   institucion: string;
   pagina: number;
@@ -27,6 +37,7 @@ type Props = {
 export default function SimuladoresCliente({
   simuladores,
   instituciones,
+  temas,
   q,
   institucion,
   pagina,
@@ -50,6 +61,7 @@ export default function SimuladoresCliente({
   const [editMateria, setEditMateria] = useState('');
   const [editEsPago, setEditEsPago] = useState(false);
   const [editPrecio, setEditPrecio] = useState('0.00');
+  const [editConfig, setEditConfig] = useState<Config>(CONFIG_ESTATICA);
 
   useEffect(() => {
     setBusqueda(q);
@@ -102,6 +114,7 @@ export default function SimuladoresCliente({
     setEditMateria(sim.materia || '');
     setEditEsPago(!!sim.es_pago);
     setEditPrecio(sim.precio ? sim.precio.toString() : '0.00');
+    setEditConfig(configDesdeSimulador(sim));
   };
 
   const cancelarEdicion = () => {
@@ -112,6 +125,7 @@ export default function SimuladoresCliente({
     setEditMateria('');
     setEditEsPago(false);
     setEditPrecio('0.00');
+    setEditConfig(CONFIG_ESTATICA);
   };
 
   const guardarEdicion = async (id: string) => {
@@ -119,32 +133,31 @@ export default function SimuladoresCliente({
       showAlert('error', 'El nombre y la URL no pueden estar vacíos.');
       return;
     }
-
-    const slugLimpio = editSlug
-      .trim()
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9-_]/g, '-')
-      .replace(/-+/g, '-');
+    const config = validarConfigDinamica(editConfig);
+    if (!config.ok) {
+      showAlert('error', config.mensaje);
+      return;
+    }
 
     setActionLoading(`edit-${id}`);
-
-    const { error } = await supabase
-      .from('simuladores')
-      .update({
-        nombre: editNombre.trim(),
-        slug: slugLimpio,
-        categoria: editCategoria.trim(),
-        materia: editMateria.trim(),
+    let resultado: Awaited<ReturnType<typeof actualizarSimulador>>;
+    try {
+      resultado = await actualizarSimulador(id, {
+        nombre: editNombre,
+        slug: editSlug,
+        categoria: editCategoria,
+        materia: editMateria,
         es_pago: editEsPago,
-        precio: editEsPago ? parseFloat(editPrecio) : 0,
-      })
-      .eq('id', id);
-
+        precio: editPrecio,
+        ...config.datos,
+      });
+    } catch {
+      resultado = { ok: false, mensaje: 'Error al actualizar el simulador.' };
+    }
     setActionLoading(null);
-    if (error) {
-      showAlert('error', error.code === '23505' ? 'Esa URL (Slug) ya existe en otro simulador.' : 'Error al actualizar el simulador.');
+
+    if (!resultado.ok) {
+      showAlert('error', resultado.mensaje);
       return;
     }
     showAlert('success', 'Simulador actualizado con éxito.');
@@ -193,6 +206,7 @@ export default function SimuladoresCliente({
           publico: simulador.publico,
           es_pago: simulador.es_pago,
           precio: simulador.precio,
+          ...configDesdeSimulador(simulador),
         }])
         .select()
         .single();
@@ -338,6 +352,14 @@ export default function SimuladoresCliente({
                             <span className={`px-2 py-0.5 text-[10px] font-bold rounded-md border ${sim.es_pago ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-100 text-gray-600 border-gray-200'}`}>
                               {sim.es_pago ? `$${sim.precio ?? 0}` : 'GRATIS'}
                             </span>
+                            {sim.es_dinamico && (
+                              <span
+                                className="px-2 py-0.5 text-[10px] font-bold rounded-md border bg-violet-50 text-violet-700 border-violet-200 inline-flex items-center gap-1"
+                                title={`${(sim.temas_dinamicos || []).length} temas`}
+                              >
+                                <Shuffle className="w-3 h-3" /> DINÁMICO · {sim.cantidad_preguntas || 0} preg.
+                              </span>
+                            )}
                           </div>
 
                           {isEditing ? (
@@ -421,6 +443,14 @@ export default function SimuladoresCliente({
                                     </div>
                                   )}
                                 </div>
+                              </div>
+                              <div className="mt-2 pt-3 border-t border-indigo-100">
+                                <ConfigDinamica
+                                  temas={temas}
+                                  valor={editConfig}
+                                  onChange={setEditConfig}
+                                  disabled={actionLoading !== null}
+                                />
                               </div>
                             </div>
                           ) : (

@@ -560,8 +560,10 @@ export type Database = {
       }
       simuladores: {
         Row: {
+          cantidad_preguntas: number
           categoria: string | null
           created_at: string | null
+          es_dinamico: boolean
           es_pago: boolean | null
           id: string
           institucion: string | null
@@ -571,10 +573,13 @@ export type Database = {
           precio: number | null
           publico: boolean
           slug: string | null
+          temas_dinamicos: string[]
         }
         Insert: {
+          cantidad_preguntas?: number
           categoria?: string | null
           created_at?: string | null
+          es_dinamico?: boolean
           es_pago?: boolean | null
           id?: string
           institucion?: string | null
@@ -584,10 +589,13 @@ export type Database = {
           precio?: number | null
           publico?: boolean
           slug?: string | null
+          temas_dinamicos?: string[]
         }
         Update: {
+          cantidad_preguntas?: number
           categoria?: string | null
           created_at?: string | null
+          es_dinamico?: boolean
           es_pago?: boolean | null
           id?: string
           institucion?: string | null
@@ -597,6 +605,7 @@ export type Database = {
           precio?: number | null
           publico?: boolean
           slug?: string | null
+          temas_dinamicos?: string[]
         }
         Relationships: []
       }
@@ -657,6 +666,10 @@ export type Database = {
         }[]
       }
       is_admin: { Args: never; Returns: boolean }
+      preguntas_aleatorias: {
+        Args: { p_limite: number; p_temas: string[] }
+        Returns: Database["public"]["Tables"]["preguntas"]["Row"][]
+      }
     }
     Enums: {
       [_ in never]: never

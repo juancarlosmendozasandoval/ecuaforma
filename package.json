@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "inyectar": "node scripts/inyectar_banco.mts"
   },
   "dependencies": {
     "@paypal/react-paypal-js": "^10.0.0",
