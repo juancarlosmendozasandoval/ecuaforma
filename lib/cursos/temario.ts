@@ -1,6 +1,7 @@
 /**
- * Temario de un curso: las mismas carpetas y lecciones que muestra
- * la página del curso, en el mismo orden (módulo y luego `orden`).
+ * Temario de un curso en dos niveles: módulo principal → submódulo → lecciones.
+ * Las mismas carpetas y lecciones que muestra la página del curso, en el mismo
+ * orden (módulo, submódulo y luego `orden`).
  */
 
 export const CAMPOS_BANCO_TEMARIO = 'id, titulo_interno, tipo, video_url, simulador_id';
@@ -29,19 +30,32 @@ export type ContenidoTemario = {
   banco_lecciones: LeccionBancoTemario | null;
 };
 
-export type ModuloTemario = {
+export type SubmoduloTemario = {
   id: string;
   titulo: string | null;
   orden: number;
   lecciones: ContenidoTemario[];
 };
 
+export type ModuloTemario = {
+  id: string;
+  titulo: string | null;
+  orden: number;
+  /** Lecciones colgadas directamente del módulo principal (solo datos anteriores a la jerarquía). */
+  lecciones: ContenidoTemario[];
+  submodulos: SubmoduloTemario[];
+};
+
 export type LeccionPlana = ContenidoTemario & {
+  /** Carpeta que contiene la lección (normalmente el submódulo). */
   modulo: { id: string; titulo: string | null; orden: number };
+  /** Módulo principal cuando la lección está en un submódulo. */
+  moduloPadre: { id: string; titulo: string | null } | null;
   numero: number;
 };
 
 type ClienteTemario = { from: (tabla: string) => any };
+type FilaModulo = { id: string; titulo: string | null; orden: number; parent_id?: string | null };
 
 function leerBanco(valor: unknown): LeccionBancoTemario | null {
   const fila = Array.isArray(valor) ? valor[0] : valor;
@@ -55,8 +69,32 @@ export function tituloLeccionTemario(item: Pick<ContenidoTemario, 'titulo_mostra
   return item?.titulo_mostrar || item?.banco_lecciones?.titulo_interno || 'Clase sin título';
 }
 
+/** "Física › Cinemática" para una lección dentro de un submódulo. */
+export function rutaModuloLeccion(leccion: Pick<LeccionPlana, 'modulo' | 'moduloPadre'>) {
+  const hijo = leccion.modulo.titulo || 'Módulo';
+  return leccion.moduloPadre ? `${leccion.moduloPadre.titulo || 'Módulo'} › ${hijo}` : hijo;
+}
+
+export function contarLeccionesModulo(modulo: ModuloTemario) {
+  return modulo.lecciones.length + modulo.submodulos.reduce((total, sub) => total + sub.lecciones.length, 0);
+}
+
+/** Si la columna `parent_id` aún no existe, todas las carpetas se tratan como principales. */
+async function leerModulos(supabase: ClienteTemario, cursoId: string): Promise<FilaModulo[] | null> {
+  const consulta = (campos: string) =>
+    supabase.from('modulos_curso').select(campos).eq('curso_id', cursoId).order('orden', { ascending: true });
+
+  let { data, error } = await consulta('id, titulo, orden, parent_id');
+  if (error?.code === '42703') ({ data, error } = await consulta('id, titulo, orden'));
+  if (error) {
+    console.error('Error al cargar los módulos del curso:', error);
+    return null;
+  }
+  return (data || []) as FilaModulo[];
+}
+
 /**
- * Carpetas del curso y su contenido, con la lección del banco.
+ * Árbol de carpetas del curso con su contenido y la lección del banco.
  * Se descartan filas cuya lección ya no existe.
  */
 export async function cargarTemarioCurso(
@@ -64,32 +102,18 @@ export async function cargarTemarioCurso(
   cursoId: string,
   camposBanco = CAMPOS_BANCO_TEMARIO
 ): Promise<ModuloTemario[]> {
-  const { data: modulosData, error: errorModulos } = await supabase
-    .from('modulos_curso')
-    .select('id, titulo, orden')
-    .eq('curso_id', cursoId)
-    .order('orden', { ascending: true });
-
-  if (errorModulos) {
-    console.error('Error al cargar los módulos del curso:', errorModulos);
-    return [];
-  }
-
-  const modulosBase = (modulosData || []) as Pick<ModuloTemario, 'id' | 'titulo' | 'orden'>[];
-  if (modulosBase.length === 0) return [];
+  const filas = await leerModulos(supabase, cursoId);
+  if (!filas || filas.length === 0) return [];
 
   const { data: contenidoData, error: errorContenido } = await supabase
     .from('contenido_modulos')
     .select(`id, modulo_id, orden, titulo_mostrar, is_preview, banco_lecciones ( ${camposBanco} )`)
-    .in('modulo_id', modulosBase.map((modulo) => modulo.id))
+    .in('modulo_id', filas.map((modulo) => modulo.id))
     .order('orden', { ascending: true });
 
-  if (errorContenido) {
-    console.error('Error al cargar las lecciones del curso:', errorContenido);
-    return modulosBase.map((modulo) => ({ ...modulo, lecciones: [] }));
-  }
+  if (errorContenido) console.error('Error al cargar las lecciones del curso:', errorContenido);
 
-  const contenido: ContenidoTemario[] = ((contenidoData || []) as any[])
+  const contenido: ContenidoTemario[] = ((errorContenido ? [] : contenidoData || []) as any[])
     .map((fila) => ({
       id: fila.id,
       modulo_id: fila.modulo_id ?? null,
@@ -100,20 +124,36 @@ export async function cargarTemarioCurso(
     }))
     .filter((fila) => fila.banco_lecciones);
 
-  return modulosBase.map((modulo) => ({
-    ...modulo,
-    lecciones: contenido.filter((fila) => fila.modulo_id === modulo.id),
+  const leccionesDe = (moduloId: string) => contenido.filter((fila) => fila.modulo_id === moduloId);
+  const base = (fila: FilaModulo) => ({ id: fila.id, titulo: fila.titulo, orden: Number(fila.orden) || 0 });
+  const ids = new Set(filas.map((fila) => fila.id));
+
+  // Un submódulo cuyo padre no está en el curso se muestra como principal para no perderlo.
+  const esRaiz = (fila: FilaModulo) => !fila.parent_id || !ids.has(fila.parent_id);
+
+  return filas.filter(esRaiz).map((raiz) => ({
+    ...base(raiz),
+    lecciones: leccionesDe(raiz.id),
+    submodulos: filas
+      .filter((fila) => !esRaiz(fila) && fila.parent_id === raiz.id)
+      .map((sub) => ({ ...base(sub), lecciones: leccionesDe(sub.id) })),
   }));
 }
 
-/** Lista única: primero el módulo (por `orden`) y, dentro, cada lección. */
+/** Lista única en orden de estudio: módulo, sus lecciones sueltas y luego cada submódulo. */
 export function aplanarLecciones(modulos: ModuloTemario[]): LeccionPlana[] {
   let numero = 0;
-  return modulos.flatMap((modulo) =>
-    modulo.lecciones.map((leccion) => ({
-      ...leccion,
-      modulo: { id: modulo.id, titulo: modulo.titulo, orden: modulo.orden },
-      numero: ++numero,
-    }))
-  );
+  return modulos.flatMap((modulo) => {
+    const raiz = { id: modulo.id, titulo: modulo.titulo, orden: modulo.orden };
+    const sueltas = modulo.lecciones.map((leccion) => ({ ...leccion, modulo: raiz, moduloPadre: null, numero: ++numero }));
+    const anidadas = modulo.submodulos.flatMap((sub) =>
+      sub.lecciones.map((leccion) => ({
+        ...leccion,
+        modulo: { id: sub.id, titulo: sub.titulo, orden: sub.orden },
+        moduloPadre: { id: modulo.id, titulo: modulo.titulo },
+        numero: ++numero,
+      }))
+    );
+    return [...sueltas, ...anidadas];
+  });
 }

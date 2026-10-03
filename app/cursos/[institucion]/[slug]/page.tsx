@@ -2,11 +2,18 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 import Link from 'next/link';
-import { BookOpen, PlayCircle, FileText, Lock, CheckCircle, CheckSquare, Folder } from 'lucide-react';
+import { BookOpen, PlayCircle, FileText, Lock, CheckCircle, CheckSquare, Folder, FolderOpen } from 'lucide-react';
 import BotonInscripcionGratis from '../../../components/BotonInscripcionGratis';
 import BotonIniciarSesion from '../../../components/BotonIniciarSesion';
 import BotonPayPhone from '../../../components/BotonPayPhone';
-import { aplanarLecciones, cargarTemarioCurso, tituloLeccionTemario, type LeccionBancoTemario } from '@/lib/cursos/temario';
+import {
+  aplanarLecciones,
+  cargarTemarioCurso,
+  contarLeccionesModulo,
+  tituloLeccionTemario,
+  type ContenidoTemario,
+  type LeccionBancoTemario,
+} from '@/lib/cursos/temario';
 import { esCursoDePago, tieneMatricula } from '@/lib/cursos/acceso';
 import { createAdminClient } from '@/lib/supabase/admin';
 
@@ -57,6 +64,47 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
 
   // Numeración continua de las clases a lo largo de todas las carpetas
   let numeroClase = 0;
+
+  const renderLeccion = (item: ContenidoTemario) => {
+    numeroClase += 1;
+    const leccion = item.banco_lecciones;
+    const titulo = tituloLeccionTemario(item);
+    const { icon: IconoTipo, label: etiquetaTipo } = detalleTipo(leccion);
+    const esExamen = (leccion?.tipo || '').toLowerCase() === 'simulador' || !!leccion?.simulador_id;
+
+    return tieneAcceso ? (
+      <Link
+        key={item.id}
+        href={`/cursos/${params.institucion}/${params.slug}/${item.id}`}
+        className="flex items-center justify-between p-4 bg-gray-50 hover:bg-blue-50/50 rounded-xl transition-all duration-200 group border border-transparent hover:border-blue-200 hover:shadow-sm"
+      >
+        <div className="flex items-center gap-4">
+          <span className="w-8 h-8 bg-white rounded-lg flex items-center justify-center font-bold text-sm text-gray-400 shadow-sm border border-gray-200 group-hover:bg-primary group-hover:text-white transition-colors">
+            {numeroClase}
+          </span>
+          <div>
+            <h4 className="text-sm font-bold text-gray-700 group-hover:text-primary transition-colors">{titulo}</h4>
+            <span className="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5">
+              <IconoTipo size={12}/> {etiquetaTipo}
+            </span>
+          </div>
+        </div>
+        {esExamen && <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-1 rounded font-bold uppercase">Examen</span>}
+      </Link>
+    ) : (
+      <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-xl border border-gray-100 opacity-80 cursor-not-allowed">
+        <div className="flex items-center gap-4">
+          <span className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center font-bold text-sm text-gray-500">
+            <Lock size={14}/>
+          </span>
+          <div>
+            <h4 className="text-sm font-bold text-gray-600">{titulo}</h4>
+            <span className="text-[11px] text-gray-400 mt-0.5 block">Contenido bloqueado</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="main-container py-10 min-h-screen bg-gray-50/50">
@@ -149,55 +197,39 @@ export default async function DetalleCursoPage({ params }: { params: { instituci
                         </div>
                       </div>
                       <span className="text-[11px] font-bold text-indigo-600 bg-white border border-indigo-100 px-2 py-1 rounded-md shrink-0">
-                        {modulo.lecciones.length} {modulo.lecciones.length === 1 ? 'clase' : 'clases'}
+                        {contarLeccionesModulo(modulo)} {contarLeccionesModulo(modulo) === 1 ? 'clase' : 'clases'}
                       </span>
                     </div>
 
-                    {/* Lecciones de la carpeta */}
                     <div className="p-3 space-y-3">
-                      {modulo.lecciones.length === 0 ? (
+                      {contarLeccionesModulo(modulo) === 0 ? (
                         <p className="text-xs text-gray-400 italic text-center py-4">Contenido en preparación.</p>
                       ) : (
-                        modulo.lecciones.map((item) => {
-                          numeroClase += 1;
-                          const leccion = item.banco_lecciones;
-                          const titulo = tituloLeccionTemario(item);
-                          const { icon: IconoTipo, label: etiquetaTipo } = detalleTipo(leccion);
-                          const esExamen = (leccion?.tipo || '').toLowerCase() === 'simulador' || !!leccion?.simulador_id;
+                        <>
+                          {modulo.lecciones.map(renderLeccion)}
 
-                          return tieneAcceso ? (
-                            <Link 
-                              key={item.id}
-                              href={`/cursos/${params.institucion}/${params.slug}/${item.id}`}
-                              className="flex items-center justify-between p-4 bg-gray-50 hover:bg-blue-50/50 rounded-xl transition-all duration-200 group border border-transparent hover:border-blue-200 hover:shadow-sm"
-                            >
-                              <div className="flex items-center gap-4">
-                                <span className="w-8 h-8 bg-white rounded-lg flex items-center justify-center font-bold text-sm text-gray-400 shadow-sm border border-gray-200 group-hover:bg-primary group-hover:text-white transition-colors">
-                                  {numeroClase}
-                                </span>
-                                <div>
-                                  <h4 className="text-sm font-bold text-gray-700 group-hover:text-primary transition-colors">{titulo}</h4>
-                                  <span className="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5">
-                                    <IconoTipo size={12}/> {etiquetaTipo}
-                                  </span>
+                          {modulo.submodulos.map((sub, idxSub) => (
+                            <div key={sub.id} className="rounded-xl border border-gray-100 bg-white">
+                              <div className="flex items-center justify-between gap-3 px-3 py-2 border-b border-gray-100">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <FolderOpen className="w-4 h-4 text-indigo-400 shrink-0"/>
+                                  <span className="text-[10px] font-bold text-indigo-400 shrink-0">{idxModulo + 1}.{idxSub + 1}</span>
+                                  <h4 className="text-sm font-bold text-gray-700 truncate">{sub.titulo || 'Submódulo sin título'}</h4>
                                 </div>
+                                <span className="text-[11px] font-semibold text-gray-400 shrink-0">
+                                  {sub.lecciones.length} {sub.lecciones.length === 1 ? 'clase' : 'clases'}
+                                </span>
                               </div>
-                              {esExamen && <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-1 rounded font-bold uppercase">Examen</span>}
-                            </Link>
-                          ) : (
-                            <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-xl border border-gray-100 opacity-80 cursor-not-allowed">
-                              <div className="flex items-center gap-4">
-                                <span className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center font-bold text-sm text-gray-500">
-                                  <Lock size={14}/>
-                                </span>
-                                <div>
-                                  <h4 className="text-sm font-bold text-gray-600">{titulo}</h4>
-                                  <span className="text-[11px] text-gray-400 mt-0.5 block">Contenido bloqueado</span>
-                                </div>
+                              <div className="p-2 space-y-2">
+                                {sub.lecciones.length === 0 ? (
+                                  <p className="text-xs text-gray-400 italic text-center py-3">Contenido en preparación.</p>
+                                ) : (
+                                  sub.lecciones.map(renderLeccion)
+                                )}
                               </div>
                             </div>
-                          );
-                        })
+                          ))}
+                        </>
                       )}
                     </div>
                   </section>

@@ -13,9 +13,32 @@ export type ContenidoModulo = Tables<'contenido_modulos'> & {
   banco_lecciones: LeccionBanco | null;
 };
 
-/** Carpeta (`modulos_curso`) con su contenido ordenado. */
+/** Columnas de `modulos_curso` que usa el constructor. */
+export const SELECT_MODULO = 'id, titulo, orden, curso_id, parent_id, created_at';
+
+/** Carpeta (`modulos_curso`) con su contenido ordenado. `parent_id` nulo = módulo principal. */
 export type ModuloConContenido = Tables<'modulos_curso'> & {
   contenido_modulos: ContenidoModulo[];
 };
+
+/** Módulo principal con sus submódulos (las lecciones viven en los submódulos). */
+export type ModuloPrincipal = ModuloConContenido & {
+  submodulos: ModuloConContenido[];
+};
+
+/** Arma el árbol de dos niveles a partir de la lista plana ordenada por `orden`. */
+export function armarArbolModulos(modulos: ModuloConContenido[]): ModuloPrincipal[] {
+  const ids = new Set(modulos.map((m) => m.id));
+  const esRaiz = (m: ModuloConContenido) => !m.parent_id || !ids.has(m.parent_id);
+  const porOrden = (a: ModuloConContenido, b: ModuloConContenido) => a.orden - b.orden;
+
+  return modulos
+    .filter(esRaiz)
+    .sort(porOrden)
+    .map((raiz) => ({
+      ...raiz,
+      submodulos: modulos.filter((m) => !esRaiz(m) && m.parent_id === raiz.id).sort(porOrden),
+    }));
+}
 
 export type CursoResumen = Pick<Tables<'cursos'>, 'id' | 'nombre' | 'slug' | 'institucion'>;

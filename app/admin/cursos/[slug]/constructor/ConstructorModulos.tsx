@@ -4,12 +4,14 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useSupabase } from '../../../../components/AuthProvider';
 import {
-  AlertCircle, ArrowLeft, BookOpen, Check, CheckCircle, CheckSquare, ChevronDown,
-  ChevronRight, Eye, FileText, Folder, FolderOpen, FolderPlus, Layers, Library,
+  AlertCircle, AlertTriangle, ArrowLeft, BookOpen, Check, CheckCircle, CheckSquare, ChevronDown,
+  ChevronRight, Eye, FileText, Folder, FolderOpen, FolderPlus, FolderTree, Layers, Library,
   Loader2, Plus, Search, Trash2, Video, X, type LucideIcon,
 } from 'lucide-react';
+import { crearCarpeta } from './acciones';
 import {
   SELECT_LECCION_BANCO,
+  armarArbolModulos,
   type ContenidoModulo,
   type CursoResumen,
   type LeccionBanco,
@@ -23,6 +25,7 @@ interface Props {
 }
 
 type Alerta = { type: 'success' | 'error'; text: string } | null;
+type TipoCarpeta = 'principal' | 'submodulo';
 
 /** Estilo visual según `banco_lecciones.tipo`; los tipos desconocidos usan el genérico. */
 const TIPOS_LECCION: Record<string, { label: string; icon: LucideIcon; clases: string }> = {
@@ -48,15 +51,62 @@ function BadgeTipo({ tipo }: { tipo: string | null }) {
   );
 }
 
+function ListaLecciones({
+  contenido,
+  onQuitar,
+}: {
+  contenido: ContenidoModulo[];
+  onQuitar: (contenido: ContenidoModulo) => void;
+}) {
+  return (
+    <ol className="divide-y divide-gray-100">
+      {contenido.map((item, i) => (
+        <li key={item.id} className="flex items-center gap-4 px-5 py-3 hover:bg-gray-50 transition-colors group">
+          <span className="w-7 h-7 rounded-full bg-gray-100 text-gray-500 text-xs font-bold flex items-center justify-center shrink-0">
+            {i + 1}
+          </span>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-gray-800 truncate">
+              {item.titulo_mostrar || item.banco_lecciones?.titulo_interno || 'Lección sin título'}
+            </p>
+            <div className="flex flex-wrap items-center gap-2 mt-1">
+              <BadgeTipo tipo={item.banco_lecciones?.tipo || null} />
+              {item.is_preview && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[11px] font-bold uppercase tracking-wider text-purple-600 bg-purple-50 border-purple-100">
+                  <Eye size={10} /> Vista previa
+                </span>
+              )}
+              {!item.banco_lecciones && (
+                <span className="text-[11px] font-semibold text-rose-500">Lección eliminada del banco</span>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={() => onQuitar(item)}
+            title="Quitar de la carpeta"
+            className="p-2 text-gray-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 export default function ConstructorModulos({ curso, modulosIniciales, bancoLecciones }: Props) {
   const { supabase } = useSupabase();
 
+  /** Lista plana de carpetas de ambos niveles; el árbol se deriva con `armarArbolModulos`. */
   const [modulos, setModulos] = useState<ModuloConContenido[]>(modulosIniciales);
   const [colapsados, setColapsados] = useState<Set<string>>(new Set());
   const [alerta, setAlerta] = useState<Alerta>(null);
 
-  // Creación de carpetas
+  // Modal de creación de carpetas
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [tipoNueva, setTipoNueva] = useState<TipoCarpeta>('principal');
   const [nuevoTitulo, setNuevoTitulo] = useState('');
+  const [padreNuevaId, setPadreNuevaId] = useState('');
   const [creando, setCreando] = useState(false);
 
   // Panel lateral del banco ("pinza")
@@ -72,15 +122,27 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
     setTimeout(() => setAlerta(null), 4000);
   };
 
-  // Cerrar el panel con Escape
+  // Cerrar el panel o el modal con Escape
   useEffect(() => {
-    if (!panelAbierto) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && cerrarPanel();
+    if (!panelAbierto && !modalAbierto) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (modalAbierto) setModalAbierto(false);
+      else cerrarPanel();
+    };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [panelAbierto]);
+  }, [panelAbierto, modalAbierto]);
 
-  const moduloDestino = modulos.find((m) => m.id === moduloDestinoId) || null;
+  const arbol = useMemo(() => armarArbolModulos(modulos), [modulos]);
+  const totalSubmodulos = arbol.reduce((acc, raiz) => acc + raiz.submodulos.length, 0);
+  const totalLecciones = modulos.reduce((acc, m) => acc + m.contenido_modulos.length, 0);
+
+  /** Solo los submódulos admiten lecciones. */
+  const moduloDestino = useMemo(
+    () => arbol.flatMap((raiz) => raiz.submodulos).find((sub) => sub.id === moduloDestinoId) || null,
+    [arbol, moduloDestinoId]
+  );
 
   /** Lecciones que ya están dentro de la carpeta destino (no se pueden volver a agregar). */
   const idsEnDestino = useMemo(
@@ -106,28 +168,40 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
   const todasVisiblesSeleccionadas =
     seleccionables.length > 0 && seleccionables.every((l) => seleccion.has(l.id));
 
-  const totalLecciones = modulos.reduce((acc, m) => acc + m.contenido_modulos.length, 0);
-
   // ─── Carpetas ──────────────────────────────────────────────────────────────
 
-  const crearModulo = async (e: FormEvent) => {
+  const abrirModal = (padreId?: string) => {
+    const tipo: TipoCarpeta = padreId ? 'submodulo' : 'principal';
+    setTipoNueva(tipo);
+    setPadreNuevaId(padreId || arbol[0]?.id || '');
+    setNuevoTitulo('');
+    setModalAbierto(true);
+  };
+
+  const enviarCarpeta = async (e: FormEvent) => {
     e.preventDefault();
     const titulo = nuevoTitulo.trim();
     if (!titulo) return showAlert('error', 'Escribe un nombre para la carpeta.');
 
+    const parentId = tipoNueva === 'submodulo' ? padreNuevaId : null;
+    if (tipoNueva === 'submodulo' && !parentId) return showAlert('error', 'Elige el módulo principal.');
+
     setCreando(true);
-    const orden = modulos.reduce((max, m) => Math.max(max, m.orden), 0) + 1;
-    const { data, error } = await supabase
-      .from('modulos_curso')
-      .insert([{ curso_id: curso.id, titulo, orden }])
-      .select('id, titulo, orden, curso_id, created_at')
-      .single();
+    const resultado = await crearCarpeta({ cursoId: curso.id, titulo, parentId });
     setCreando(false);
 
-    if (error || !data) return showAlert('error', 'No se pudo crear la carpeta.');
-    setModulos((prev) => [...prev, { ...(data as ModuloConContenido), contenido_modulos: [] }]);
-    setNuevoTitulo('');
-    showAlert('success', `Carpeta "${titulo}" creada.`);
+    if (!resultado.ok) return showAlert('error', resultado.mensaje);
+
+    setModulos((prev) => [...prev, { ...resultado.modulo, contenido_modulos: [] }]);
+    if (parentId) {
+      setColapsados((prev) => {
+        const next = new Set(prev);
+        next.delete(parentId);
+        return next;
+      });
+    }
+    setModalAbierto(false);
+    showAlert('success', `${parentId ? 'Submódulo' : 'Módulo'} "${titulo}" creado.`);
   };
 
   const toggleColapso = (id: string) =>
@@ -154,8 +228,8 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
 
   // ─── Panel del banco ───────────────────────────────────────────────────────
 
-  const abrirPanel = (moduloId?: string) => {
-    setModuloDestinoId(moduloId || modulos[0]?.id || '');
+  const abrirPanel = (submoduloId?: string) => {
+    setModuloDestinoId(submoduloId || arbol.find((raiz) => raiz.submodulos.length > 0)?.submodulos[0]?.id || '');
     setSeleccion(new Set());
     setBusqueda('');
     setFiltroTipo('todos');
@@ -187,7 +261,7 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
     });
 
   const agregarSeleccion = async () => {
-    if (!moduloDestino) return showAlert('error', 'Elige una carpeta de destino.');
+    if (!moduloDestino) return showAlert('error', 'Elige un submódulo de destino.');
     if (seleccion.size === 0) return;
 
     // Se respeta el orden en que aparecen en el banco y se colocan al final de la carpeta.
@@ -216,6 +290,7 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
     setColapsados((prev) => {
       const next = new Set(prev);
       next.delete(moduloDestino.id);
+      if (moduloDestino.parent_id) next.delete(moduloDestino.parent_id);
       return next;
     });
     showAlert('success', `${nuevos.length} lección(es) agregada(s) a "${moduloDestino.titulo || ''}".`);
@@ -228,7 +303,7 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
     <div className="max-w-5xl mx-auto py-6 space-y-6">
       {alerta && (
         <div
-          className={`fixed top-5 right-5 z-[60] p-4 rounded-xl shadow-xl flex items-center gap-3 font-semibold text-white ${
+          className={`fixed top-5 right-5 z-[70] p-4 rounded-xl shadow-xl flex items-center gap-3 font-semibold text-white ${
             alerta.type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'
           }`}
         >
@@ -255,9 +330,10 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
               {curso.institucion ? <span className="text-slate-500"> · {curso.institucion}</span> : null}
             </p>
           </div>
-          <div className="flex gap-3 text-center">
+          <div className="flex flex-wrap gap-3 text-center">
             {[
-              { label: 'Carpetas', valor: modulos.length },
+              { label: 'Módulos', valor: arbol.length },
+              { label: 'Submódulos', valor: totalSubmodulos },
               { label: 'Lecciones', valor: totalLecciones },
               { label: 'En el banco', valor: bancoLecciones.length },
             ].map((s) => (
@@ -270,54 +346,47 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
         </div>
       </div>
 
-      {/* Crear carpeta */}
-      <form
-        onSubmit={crearModulo}
-        className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-3"
-      >
-        <div className="relative flex-1">
-          <FolderPlus className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <input
-            type="text"
-            value={nuevoTitulo}
-            onChange={(e) => setNuevoTitulo(e.target.value)}
-            placeholder="Nombre de la nueva carpeta (Ej: Módulo 1 · Aritmética)"
-            className="w-full pl-10 p-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition"
-          />
-        </div>
+      {/* Acciones */}
+      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row sm:items-center gap-3">
+        <p className="flex-1 text-sm text-gray-500 flex items-center gap-2">
+          <FolderTree className="w-5 h-5 text-indigo-400 shrink-0" />
+          Organiza el curso en módulos principales y submódulos; las lecciones van dentro de los submódulos.
+        </p>
         <button
-          type="submit"
-          disabled={creando}
-          className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md transition-all"
+          onClick={() => abrirModal()}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md transition-all"
         >
-          {creando ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />} Crear carpeta
+          <FolderPlus className="w-5 h-5" /> Nueva carpeta
         </button>
         <button
-          type="button"
           onClick={() => abrirPanel()}
-          disabled={modulos.length === 0}
+          disabled={totalSubmodulos === 0}
+          title={totalSubmodulos === 0 ? 'Crea primero un submódulo' : undefined}
           className="bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 disabled:opacity-40 disabled:cursor-not-allowed px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
         >
           <Library className="w-5 h-5" /> Banco de lecciones
         </button>
-      </form>
+      </div>
 
-      {/* Carpetas del curso */}
-      {modulos.length === 0 ? (
+      {/* Árbol de carpetas del curso */}
+      {arbol.length === 0 ? (
         <div className="bg-white rounded-2xl border-2 border-dashed border-gray-200 p-12 text-center text-gray-400 flex flex-col items-center">
           <Folder className="w-12 h-12 mb-3 opacity-30" />
-          <p className="font-semibold text-gray-500">Este curso aún no tiene carpetas.</p>
-          <p className="text-sm mt-1">Crea la primera arriba y luego llénala con lecciones del banco.</p>
+          <p className="font-semibold text-gray-500">Este curso aún no tiene módulos.</p>
+          <p className="text-sm mt-1">Crea un módulo principal (Ej: Física), luego sus submódulos (Ej: Cinemática) y llénalos con lecciones.</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {modulos.map((modulo, idx) => {
-            const abierto = !colapsados.has(modulo.id);
+          {arbol.map((raiz, idx) => {
+            const abierto = !colapsados.has(raiz.id);
+            const leccionesRaiz = raiz.submodulos.reduce((acc, s) => acc + s.contenido_modulos.length, raiz.contenido_modulos.length);
+
             return (
-              <section key={modulo.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <section key={raiz.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <header className="flex items-center gap-3 p-4 bg-gray-50/70 border-b border-gray-100">
                   <button
-                    onClick={() => toggleColapso(modulo.id)}
+                    onClick={() => toggleColapso(raiz.id)}
+                    aria-expanded={abierto}
                     className="flex items-center gap-3 flex-1 min-w-0 text-left group"
                   >
                     {abierto ? (
@@ -331,66 +400,229 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
                     <div className="min-w-0">
                       <p className="text-[11px] font-bold uppercase tracking-wider text-indigo-500">Módulo {idx + 1}</p>
                       <h2 className="font-bold text-gray-800 truncate group-hover:text-indigo-700 transition-colors">
-                        {modulo.titulo || 'Sin título'}
+                        {raiz.titulo || 'Sin título'}
                       </h2>
                     </div>
                   </button>
                   <span className="hidden sm:inline text-xs font-bold bg-white border border-gray-200 text-gray-500 px-2.5 py-1 rounded-full">
-                    {modulo.contenido_modulos.length} lecciones
+                    {raiz.submodulos.length} submódulos · {leccionesRaiz} lecciones
                   </span>
                   <button
-                    onClick={() => abrirPanel(modulo.id)}
-                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-600 hover:text-white rounded-lg transition-colors border border-indigo-100"
+                    onClick={() => abrirModal(raiz.id)}
+                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-600 bg-white hover:bg-slate-800 hover:text-white rounded-lg transition-colors border border-gray-200"
                   >
-                    <Plus className="w-4 h-4" /> Agregar lecciones
+                    <FolderPlus className="w-4 h-4" /> Submódulo
                   </button>
                 </header>
 
-                {abierto &&
-                  (modulo.contenido_modulos.length === 0 ? (
-                    <div className="p-6 text-center text-sm text-gray-400">
-                      Carpeta vacía.{' '}
-                      <button onClick={() => abrirPanel(modulo.id)} className="text-indigo-600 font-semibold hover:underline">
-                        Toma lecciones del banco
-                      </button>
-                    </div>
-                  ) : (
-                    <ol className="divide-y divide-gray-100">
-                      {modulo.contenido_modulos.map((contenido, i) => (
-                        <li key={contenido.id} className="flex items-center gap-4 px-5 py-3 hover:bg-gray-50 transition-colors group">
-                          <span className="w-7 h-7 rounded-full bg-gray-100 text-gray-500 text-xs font-bold flex items-center justify-center shrink-0">
-                            {i + 1}
-                          </span>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-gray-800 truncate">
-                              {contenido.titulo_mostrar || contenido.banco_lecciones?.titulo_interno || 'Lección sin título'}
-                            </p>
-                            <div className="flex flex-wrap items-center gap-2 mt-1">
-                              <BadgeTipo tipo={contenido.banco_lecciones?.tipo || null} />
-                              {contenido.is_preview && (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[11px] font-bold uppercase tracking-wider text-purple-600 bg-purple-50 border-purple-100">
-                                  <Eye size={10} /> Vista previa
+                {abierto && (
+                  <div className="p-3 sm:p-4 space-y-3 bg-slate-50/40">
+                    {raiz.contenido_modulos.length > 0 && (
+                      <div className="rounded-xl border border-amber-200 bg-amber-50/60 overflow-hidden">
+                        <p className="px-4 py-2.5 text-xs font-semibold text-amber-800 flex items-start gap-2 border-b border-amber-200">
+                          <AlertTriangle className="w-4 h-4 shrink-0 mt-px" />
+                          Estas lecciones están directamente en el módulo principal. Agrégalas a un submódulo y quítalas de aquí.
+                        </p>
+                        <div className="bg-white">
+                          <ListaLecciones contenido={raiz.contenido_modulos} onQuitar={(c) => quitarContenido(raiz, c)} />
+                        </div>
+                      </div>
+                    )}
+
+                    {raiz.submodulos.length === 0 ? (
+                      <div className="p-6 text-center text-sm text-gray-400 rounded-xl border-2 border-dashed border-gray-200 bg-white">
+                        Este módulo aún no tiene submódulos.{' '}
+                        <button onClick={() => abrirModal(raiz.id)} className="text-indigo-600 font-semibold hover:underline">
+                          Crea el primero
+                        </button>
+                      </div>
+                    ) : (
+                      raiz.submodulos.map((sub, idxSub) => {
+                        const subAbierto = !colapsados.has(sub.id);
+                        return (
+                          <div key={sub.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                            <div className="flex items-center gap-3 px-3 py-2.5 border-b border-gray-100">
+                              <button
+                                onClick={() => toggleColapso(sub.id)}
+                                aria-expanded={subAbierto}
+                                className="flex items-center gap-2.5 flex-1 min-w-0 text-left group"
+                              >
+                                {subAbierto ? (
+                                  <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
+                                ) : (
+                                  <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+                                )}
+                                <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+                                  {subAbierto ? <FolderOpen className="w-4 h-4" /> : <Folder className="w-4 h-4" />}
+                                </div>
+                                <span className="text-[11px] font-bold text-sky-600 shrink-0">
+                                  {idx + 1}.{idxSub + 1}
                                 </span>
-                              )}
-                              {!contenido.banco_lecciones && (
-                                <span className="text-[11px] font-semibold text-rose-500">Lección eliminada del banco</span>
-                              )}
+                                <h3 className="font-semibold text-gray-800 truncate group-hover:text-indigo-700 transition-colors">
+                                  {sub.titulo || 'Sin título'}
+                                </h3>
+                              </button>
+                              <span className="hidden sm:inline text-[11px] font-bold text-gray-400">
+                                {sub.contenido_modulos.length} lecciones
+                              </span>
+                              <button
+                                onClick={() => abrirPanel(sub.id)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-600 hover:text-white rounded-lg transition-colors border border-indigo-100"
+                              >
+                                <Plus className="w-4 h-4" /> Agregar lecciones
+                              </button>
                             </div>
+
+                            {subAbierto &&
+                              (sub.contenido_modulos.length === 0 ? (
+                                <div className="p-5 text-center text-sm text-gray-400">
+                                  Submódulo vacío.{' '}
+                                  <button onClick={() => abrirPanel(sub.id)} className="text-indigo-600 font-semibold hover:underline">
+                                    Toma lecciones del banco
+                                  </button>
+                                </div>
+                              ) : (
+                                <ListaLecciones contenido={sub.contenido_modulos} onQuitar={(c) => quitarContenido(sub, c)} />
+                              ))}
                           </div>
-                          <button
-                            onClick={() => quitarContenido(modulo, contenido)}
-                            title="Quitar de la carpeta"
-                            className="p-2 text-gray-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </li>
-                      ))}
-                    </ol>
-                  ))}
+                        );
+                      })
+                    )}
+                  </div>
+                )}
               </section>
             );
           })}
+        </div>
+      )}
+
+      {/* Modal: nueva carpeta */}
+      {modalAbierto && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-[1px]" onClick={() => setModalAbierto(false)} />
+
+          <form
+            onSubmit={enviarCarpeta}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-modal-carpeta"
+            className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-4 p-5 border-b border-gray-100">
+              <div>
+                <h2 id="titulo-modal-carpeta" className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                  <FolderPlus className="w-5 h-5 text-indigo-500" /> Nueva carpeta
+                </h2>
+                <p className="text-sm text-gray-500">Ej: Física (módulo) → Cinemática (submódulo) → MRU (lección).</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModalAbierto(false)}
+                className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <fieldset>
+                <legend className="block text-xs font-bold text-gray-500 uppercase mb-2">Tipo de carpeta</legend>
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    { valor: 'principal', titulo: 'Módulo principal', detalle: 'Agrupa submódulos', icon: Folder },
+                    { valor: 'submodulo', titulo: 'Submódulo', detalle: 'Contiene lecciones', icon: FolderOpen },
+                  ] as const).map((opcion) => {
+                    const activo = tipoNueva === opcion.valor;
+                    const deshabilitado = opcion.valor === 'submodulo' && arbol.length === 0;
+                    return (
+                      <label
+                        key={opcion.valor}
+                        className={`flex items-start gap-2.5 p-3 rounded-xl border-2 transition-colors ${
+                          deshabilitado
+                            ? 'opacity-40 cursor-not-allowed border-gray-200'
+                            : activo
+                            ? 'border-indigo-500 bg-indigo-50 cursor-pointer'
+                            : 'border-gray-200 hover:border-indigo-200 cursor-pointer'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="tipo-carpeta"
+                          className="sr-only"
+                          value={opcion.valor}
+                          checked={activo}
+                          disabled={deshabilitado}
+                          onChange={() => setTipoNueva(opcion.valor)}
+                        />
+                        <opcion.icon className={`w-5 h-5 shrink-0 ${activo ? 'text-indigo-600' : 'text-gray-400'}`} />
+                        <span>
+                          <span className="block text-sm font-bold text-gray-800">{opcion.titulo}</span>
+                          <span className="block text-[11px] text-gray-500">{opcion.detalle}</span>
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+                {arbol.length === 0 && (
+                  <p className="text-[11px] text-gray-400 mt-2">Crea primero un módulo principal para poder añadirle submódulos.</p>
+                )}
+              </fieldset>
+
+              {tipoNueva === 'submodulo' && (
+                <div>
+                  <label htmlFor="padre-carpeta" className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                    Módulo principal
+                  </label>
+                  <select
+                    id="padre-carpeta"
+                    value={padreNuevaId}
+                    onChange={(e) => setPadreNuevaId(e.target.value)}
+                    className="w-full p-2.5 border border-gray-200 rounded-xl bg-gray-50 font-semibold text-gray-800 focus:ring-2 focus:ring-indigo-500 outline-none"
+                  >
+                    {arbol.map((raiz, i) => (
+                      <option key={raiz.id} value={raiz.id}>
+                        Módulo {i + 1} · {raiz.titulo || 'Sin título'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="titulo-carpeta" className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                  Nombre
+                </label>
+                <input
+                  id="titulo-carpeta"
+                  type="text"
+                  autoFocus
+                  maxLength={150}
+                  value={nuevoTitulo}
+                  onChange={(e) => setNuevoTitulo(e.target.value)}
+                  placeholder={tipoNueva === 'principal' ? 'Ej: Física' : 'Ej: Cinemática'}
+                  className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                />
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-gray-100 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setModalAbierto(false)}
+                className="px-4 py-2.5 rounded-xl font-bold text-gray-600 hover:bg-gray-100 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={creando || !nuevoTitulo.trim() || (tipoNueva === 'submodulo' && !padreNuevaId)}
+                className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-md transition-all"
+              >
+                {creando ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                {tipoNueva === 'principal' ? 'Crear módulo' : 'Crear submódulo'}
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
@@ -406,7 +638,7 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
                   <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                     <Library className="w-5 h-5 text-indigo-500" /> Banco de lecciones
                   </h2>
-                  <p className="text-sm text-gray-500">Marca las lecciones que quieres meter en la carpeta.</p>
+                  <p className="text-sm text-gray-500">Marca las lecciones que quieres meter en el submódulo.</p>
                 </div>
                 <button onClick={cerrarPanel} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
                   <X className="w-5 h-5" />
@@ -414,7 +646,7 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Carpeta destino</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Submódulo destino</label>
                 <div className="relative">
                   <FolderOpen className="absolute left-3 top-1/2 -translate-y-1/2 text-indigo-500 w-5 h-5" />
                   <select
@@ -422,11 +654,20 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
                     onChange={(e) => cambiarDestino(e.target.value)}
                     className="w-full pl-10 p-2.5 border border-indigo-200 rounded-xl bg-indigo-50/50 font-semibold text-indigo-900 focus:ring-2 focus:ring-indigo-500 outline-none"
                   >
-                    {modulos.map((m, i) => (
-                      <option key={m.id} value={m.id}>
-                        Módulo {i + 1} · {m.titulo || 'Sin título'}
-                      </option>
-                    ))}
+                    {arbol
+                      .filter((raiz) => raiz.submodulos.length > 0)
+                      .map((raiz) => {
+                        const numero = arbol.indexOf(raiz) + 1;
+                        return (
+                          <optgroup key={raiz.id} label={`Módulo ${numero} · ${raiz.titulo || 'Sin título'}`}>
+                            {raiz.submodulos.map((sub, i) => (
+                              <option key={sub.id} value={sub.id}>
+                                {numero}.{i + 1} · {sub.titulo || 'Sin título'}
+                              </option>
+                            ))}
+                          </optgroup>
+                        );
+                      })}
                   </select>
                 </div>
               </div>
@@ -506,7 +747,7 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
                             </p>
                             <div className="flex items-center gap-2 mt-1">
                               <BadgeTipo tipo={leccion.tipo} />
-                              {yaEnCarpeta && <span className="text-[11px] font-semibold text-gray-500">Ya está en esta carpeta</span>}
+                              {yaEnCarpeta && <span className="text-[11px] font-semibold text-gray-500">Ya está en este submódulo</span>}
                             </div>
                           </div>
                         </label>
@@ -530,7 +771,7 @@ export default function ConstructorModulos({ curso, modulosIniciales, bancoLecci
                 className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:text-gray-500 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-md transition-all"
               >
                 {agregando ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                Agregar a la carpeta
+                Agregar al submódulo
               </button>
             </div>
           </aside>

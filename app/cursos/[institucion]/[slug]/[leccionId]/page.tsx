@@ -8,6 +8,7 @@ import {
   aplanarLecciones,
   cargarTemarioCurso,
   CAMPOS_BANCO_AULA,
+  rutaModuloLeccion,
   tituloLeccionTemario,
   type LeccionPlana,
 } from '@/lib/cursos/temario';
@@ -100,7 +101,7 @@ function aVista(leccion: LeccionPlana, completadas: Set<string>): ItemTemarioVis
     numero: leccion.numero,
     titulo: tituloLeccionTemario(leccion),
     moduloId: leccion.modulo.id,
-    moduloTitulo: leccion.modulo.titulo || 'Módulo',
+    moduloTitulo: rutaModuloLeccion(leccion),
     completada: completadas.has(leccion.id),
   };
 }
@@ -111,7 +112,7 @@ function aAula(leccion: LeccionPlana): LeccionAula {
     id: leccion.id,
     numero: leccion.numero,
     titulo: tituloLeccionTemario(leccion),
-    moduloTitulo: leccion.modulo.titulo || 'Módulo',
+    moduloTitulo: rutaModuloLeccion(leccion),
     videoUrl: banco?.video_url || null,
     simuladorId: banco?.simulador_id || null,
     contenidoHtml: banco?.contenido_html || null,
@@ -171,7 +172,8 @@ export default async function AulaVirtualPage({
     { label: 'Inicio', href: '/' },
     { label: `Cursos ${curso.institucion || ''}`, href: `/cursos/${params.institucion}` },
     { label: curso.nombre || '', href: hrefBase },
-    { label: aula.moduloTitulo },
+    ...(actual.moduloPadre ? [{ label: actual.moduloPadre.titulo || 'Módulo' }] : []),
+    { label: actual.modulo.titulo || 'Módulo' },
   ];
 
   return (

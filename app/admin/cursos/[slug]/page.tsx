@@ -20,7 +20,11 @@ export default async function AdminDetalleCursoPage({ params }: { params: { slug
   if (!curso) notFound();
 
   const [{ count: totalModulos }, { count: totalLecciones }, { count: totalEstudiantes }] = await Promise.all([
-    supabase.from('modulos_curso').select('id', { count: 'exact', head: true }).eq('curso_id', curso.id),
+    supabase
+      .from('modulos_curso')
+      .select('id', { count: 'exact', head: true })
+      .eq('curso_id', curso.id)
+      .is('parent_id', null),
     supabase
       .from('contenido_modulos')
       .select('id, modulos_curso!inner ( curso_id )', { count: 'exact', head: true })

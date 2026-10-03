@@ -1,0 +1,242 @@
+[
+    {
+      "enunciado": "La diferencia fundamental de terreno entre la victoria de Camino Real y la derrota del Primer Huachi radica en que:",
+      "opciones": [
+        "Camino Real era una planicie y Huachi un desfiladero",
+        "Camino Real era un terreno montañoso y cerrado que anulaba la caballería, mientras que Huachi era una llanura abierta perfecta para cargas ecuestres",
+        "Ambos eran desiertos arenosos",
+        "Camino Real era una batalla fluvial y Huachi terrestre"
+      ],
+      "respuesta": "b",
+      "explicacion": "El cambio abrupto de geografía engañó a los patriotas. El terreno cerrado de Bolívar los favoreció, pero la planicie de Tungurahua los dejó expuestos al arma más letal de los realistas: la caballería.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "Tras las derrotas en Huachi, la Junta de Guayaquil comprendió que no bastaba con el entusiasmo de los voluntarios locales. ¿Qué tipo de soldados empezaron a solicitar con urgencia a San Martín y Bolívar?",
+      "opciones": [
+        "Campesinos sin experiencia",
+        "Tropas regulares veteranas, curtidas en las guerras continentales y acostumbradas a las tácticas de campo abierto",
+        "Marineros mercantes",
+        "Artilleros navales"
+      ],
+      "respuesta": "b",
+      "explicacion": "Las masacres demostraron que el entusiasmo miliciano no podía competir contra la disciplina de los soldados regulares españoles. Se necesitaba urgentemente infantería veterana y caballería experimentada.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "¿Qué oficial realista lideró la letal carga de caballería en el Primer Combate de Huachi (1820)?",
+      "opciones": [
+        "Carlos Tolrá",
+        "Francisco González",
+        "Melchor de Aymerich",
+        "Toribio Montes"
+      ],
+      "respuesta": "b",
+      "explicacion": "El coronel Francisco González fue el encargado de comandar las fuerzas españolas y ejecutar la carga que destruyó a la División Protectora de Quito en el Primer Huachi.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "En contraste con 1820, ¿qué oficial realista fue el cerebro detrás del ataque envolvente de caballería en el Segundo Combate de Huachi (1821)?",
+      "opciones": [
+        "Francisco González",
+        "Agustín Agualongo",
+        "Carlos Tolrá",
+        "Juan de la Cruz Mourgeón"
+      ],
+      "respuesta": "c",
+      "explicacion": "Bajo las órdenes de Aymerich, el coronel Carlos Tolrá lideró la caballería realista en el Segundo Huachi, flanqueando y destrozando las líneas de Sucre.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "¿Qué armamento de avancarga estándar usaba la infantería patriota que resultó ineficaz para detener a los jinetes en Huachi debido a su lento tiempo de recarga?",
+      "opciones": [
+        "Rifles de cerrojo",
+        "Mosquetes de chispa (tipo Brown Bess o Charleville)",
+        "Arcabuces de mecha",
+        "Ametralladoras ligeras"
+      ],
+      "respuesta": "b",
+      "explicacion": "El mosquete de chispa, arma estándar de la época, tardaba valiosos segundos en recargarse. En terreno abierto, si la caballería enemiga sobrevivía a la primera descarga, alcanzaba las líneas antes del segundo tiro.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "La tregua del Armisticio de Babahoyo fijó temporalmente un mapa dividido en el actual Ecuador. ¿Cómo quedó esta división de facto?",
+      "opciones": [
+        "Norte para Colombia, Sur para Perú",
+        "Toda la región andina (Sierra) bajo control militar realista y la región litoral (Costa) bajo control independentista",
+        "Todo el país bajo control español",
+        "Todo el país independiente"
+      ],
+      "respuesta": "b",
+      "explicacion": "El tratado reflejó la realidad militar del momento: los patriotas eran dueños absolutos de la cuenca del Guayas y el Pacífico, pero los realistas eran inexpugnables en la cordillera.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "El Segundo Combate de Huachi generó una crisis política en Guayaquil respecto a su futuro como nación. ¿Qué bandos políticos se radicalizaron en la ciudad tras esta derrota?",
+      "opciones": [
+        "Los monárquicos y los republicanos",
+        "Los colombianistas (pro-anexión a Bolívar), los peruanistas (pro-anexión a San Martín) y los independientes (pro-República de Guayaquil)",
+        "Los conservadores y los comunistas",
+        "Los quiteños y los cuencanos"
+      ],
+      "respuesta": "b",
+      "explicacion": "La evidente vulnerabilidad militar avivó el debate. Algunos creían que la única salvación era unirse a la Gran Colombia, otros al Perú, y un grupo defendía mantener la Provincia Libre a toda costa.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "El general Antonio José de Sucre redactó un informe muy honesto a Simón Bolívar tras el Segundo Huachi. ¿Qué actitud mostró Sucre en este documento oficial?",
+      "opciones": [
+        "Culpó a los soldados guayaquileños de cobardía",
+        "Mintió diciendo que había sido un empate táctico",
+        "Asumió la responsabilidad total de la derrota, detalló la falta de caballería y pidió urgentes refuerzos para evitar perder Guayaquil",
+        "Renunció a su rango militar"
+      ],
+      "respuesta": "c",
+      "explicacion": "Sucre demostró su grandeza ética y militar al no buscar chivos expiatorios. Analizó la derrota objetivamente e hizo hincapié en la necesidad logística y estratégica para revertir la situación.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "Durante la persecución realista tras el Primer Combate de Huachi, la División Protectora tuvo que abandonar su artillería pesada en un lugar específico para poder escapar. ¿Dónde fue?",
+      "opciones": [
+        "En las faldas del Chimborazo",
+        "En la cuesta de Mocha",
+        "En el río Guayas",
+        "En las calles de Guaranda"
+      ],
+      "respuesta": "b",
+      "explicacion": "Para acelerar la retirada y evitar ser masacrados, los patriotas abandonaron los pesados cañones en las escarpadas cuestas cerca de Mocha, cayendo este valioso arsenal en manos españolas.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "¿Qué virrey gobernaba el Perú durante las batallas de Huachi, el cual representaba una amenaza constante de enviar refuerzos realistas por mar a Aymerich?",
+      "opciones": [
+        "Francisco de Toledo",
+        "Joaquín de la Pezuela (hasta 1821) y José de la Serna",
+        "Blasco Núñez Vela",
+        "Fernando de Abascal"
+      ],
+      "respuesta": "b",
+      "explicacion": "Durante esta etapa crítica, el Virreinato del Perú estaba en crisis. Pezuela fue depuesto en 1821 por el general La Serna, quien continuó siendo el gran enemigo realista en el sur del continente.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "La derrota de Huachi obligó a Guayaquil a potenciar su economía para sostener la guerra prolongada. ¿Qué astillero histórico se reactivó para construir buques y defender el golfo?",
+      "opciones": [
+        "El astillero de Manta",
+        "El astillero de Guayaquil (el más importante del Pacífico Sur colonial)",
+        "El astillero de Puná",
+        "El astillero de Esmeraldas"
+      ],
+      "respuesta": "b",
+      "explicacion": "La Junta de Guayaquil aprovechó la tradicional industria naval del puerto para armar pequeñas flotillas, cañoneras y asegurar el control fluvial del río Guayas y el estuario.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "A diferencia de las guerras modernas, en Huachi la música militar jugaba un rol táctico. ¿Qué función tenían los tambores en medio de la confusión y el polvo de la batalla?",
+      "opciones": [
+        "Entretener a la tropa",
+        "Marcar el paso de marcha, transmitir órdenes de formación (como formar cuadro) y mantener la moral",
+        "Asustar a los caballos enemigos",
+        "Invocar la ayuda divina"
+      ],
+      "respuesta": "b",
+      "explicacion": "Con el ruido ensordecedor de los mosquetes y la nula visibilidad por la pólvora y el polvo, los toques de tambor y corneta eran la única forma de que los oficiales dirigieran a la infantería.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "¿Qué alto oficial español celebró las victorias en Huachi creyendo que la rebelión guayaquileña estaba a punto de ser aplastada definitivamente?",
+      "opciones": [
+        "El general Toribio Montes",
+        "El presidente Melchor de Aymerich",
+        "El almirante Pascual Cervera",
+        "El virrey Amar y Borbón"
+      ],
+      "respuesta": "b",
+      "explicacion": "Aymerich, tras vencer a Sucre en el Segundo Huachi, sintió que había asegurado la Real Audiencia y que solo era cuestión de tiempo y recursos para retomar Guayaquil.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "El fracaso de la ruta central (Guayaquil-Guaranda-Ambato) forzó a Sucre a buscar un nuevo camino hacia Quito en 1822. ¿Qué ventaja geográfica ofrecía la nueva ruta por el sur (Cuenca)?",
+      "opciones": [
+        "Era un camino pavimentado",
+        "Era una ruta marítima directa a Quito",
+        "Permitía evitar los temibles llanos de Ambato y avanzar por terrenos que Sucre podía controlar paso a paso con los refuerzos peruanos",
+        "Era un valle sin montañas"
+      ],
+      "respuesta": "c",
+      "explicacion": "El flanqueo estratégico por Machala y Cuenca permitió a Sucre rodear las fortalezas realistas del centro, obligando a los españoles a abandonar Ambato y retroceder hacia Pichincha.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "Un mito común es que Bolívar estuvo presente en las derrotas de Huachi. La realidad es que el Libertador pisó territorio del actual Ecuador por primera vez en:",
+      "opciones": [
+        "Octubre de 1820",
+        "Junio de 1822, semanas después de la victoria en Pichincha",
+        "Diciembre de 1830",
+        "Nunca visitó el territorio"
+      ],
+      "respuesta": "b",
+      "explicacion": "Simón Bolívar llegó a Quito en junio de 1822 tras la Batalla de Pichincha y luego descendió a Guayaquil para la famosa entrevista con San Martín en julio.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "Las dos batallas de Huachi enseñaron a Sucre que el ejército español en Quito era una fuerza letal y altamente profesional. ¿Qué batallón realista mutinado alivió esta superioridad meses después?",
+      "opciones": [
+        "El Batallón Yaguachi",
+        "El Batallón Numancia, que se sublevó en Perú a favor de San Martín y debilitó el poder español en el Pacífico",
+        "La Guardia Suiza",
+        "El Batallón de Patricios"
+      ],
+      "respuesta": "b",
+      "explicacion": "El motín del batallón veterano Numancia (formado en gran parte por venezolanos y neogranadinos enrolados a la fuerza por España) fue un golpe moral y logístico terrible para el bando realista.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "Tras el Armisticio de Babahoyo, Sucre se dedicó a entrenar a su nueva infantería, instruyéndolos obsesivamente en una maniobra específica para evitar otro desastre como el de Huachi. ¿Cuál era?",
+      "opciones": [
+        "El asalto anfibio",
+        "La carga de bayoneta a pecho descubierto",
+        "La rápida formación en cuadro cerrado contra cargas de caballería",
+        "La construcción de trincheras"
+      ],
+      "respuesta": "c",
+      "explicacion": "Sucre sabía que volvería a enfrentarse a la caballería de Tolrá. Entrenó a sus tropas costeñas y colombianas hasta la saciedad para que pudieran formar cuadros perfectos en segundos bajo estrés.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "Si Guayaquil aportó el puerto y los recursos, y Bolívar envió a Sucre, ¿cuál fue la contribución de San Martín a la causa tras los desastres de Huachi?",
+      "opciones": [
+        "Envió buques piratas",
+        "Autorizó el envío de la División Auxiliar del Perú (incluyendo al batallón Piura y Granaderos a Caballo) para reforzar a Sucre",
+        "Atacó Quito desde la Amazonía",
+        "No aportó nada"
+      ],
+      "respuesta": "b",
+      "explicacion": "El Protector del Perú cumplió su palabra de apoyo continental, enviando tropas curtidas que suplieron las graves deficiencias de caballería e infantería que tenía Sucre.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "Históricamente, ¿cómo se justifica que la Junta de Guayaquil haya lanzado la ofensiva del Primer Huachi estando tan mal preparada logísticamente?",
+      "opciones": [
+        "Querían impresionar a los ingleses",
+        "Confiaban en que el alzamiento de las ciudades serranas (Guaranda, Riobamba) derrumbaría el poder español sin necesidad de batallas campales",
+        "Fueron engañados por espías peruanos",
+        "Tenían órdenes directas del Papa"
+      ],
+      "respuesta": "b",
+      "explicacion": "Olmedo y Urdaneta esperaban un levantamiento general de los pueblos de la Sierra (como un efecto dominó) que hiciera colapsar la Presidencia de Quito desde adentro, subestimando la capacidad de respuesta militar de Aymerich.",
+      "tema": "Combate de Huachi"
+    },
+    {
+      "enunciado": "Las llanuras de Huachi hoy forman parte de una importante zona agrícola y urbana en el Ecuador. ¿A qué ciudad andina pertenece este territorio histórico?",
+      "opciones": [
+        "Latacunga",
+        "Ambato",
+        "Riobamba",
+        "Guaranda"
+      ],
+      "respuesta": "b",
+      "explicacion": "Huachi (con sus actuales parroquias Huachi Chico, Huachi Grande, etc.) es una planicie que forma parte integral del tejido urbano y rural de la ciudad de Ambato.",
+      "tema": "Combate de Huachi"
+    }
+  ]
