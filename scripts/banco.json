@@ -1,242 +1,242 @@
 [
     {
-      "enunciado": "La diferencia fundamental de terreno entre la victoria de Camino Real y la derrota del Primer Huachi radica en que:",
+      "enunciado": "Según la **Ley de Seguridad Pública y del Estado**, ¿cómo se clasifica la información que manejan los organismos de inteligencia y defensa (como el CIES o el Comando Conjunto) cuya divulgación pueda poner en riesgo la soberanía nacional?",
       "opciones": [
-        "Camino Real era una planicie y Huachi un desfiladero",
-        "Camino Real era un terreno montañoso y cerrado que anulaba la caballería, mientras que Huachi era una llanura abierta perfecta para cargas ecuestres",
-        "Ambos eran desiertos arenosos",
-        "Camino Real era una batalla fluvial y Huachi terrestre"
+        "Información pública de libre acceso comercial",
+        "Información reservada, secreta o sumamente secreta por razones de seguridad nacional",
+        "Noticias de prensa deportiva",
+        "Información estadística municipal"
       ],
       "respuesta": "b",
-      "explicacion": "El cambio abrupto de geografía engañó a los patriotas. El terreno cerrado de Bolívar los favoreció, pero la planicie de Tungurahua los dejó expuestos al arma más letal de los realistas: la caballería.",
-      "tema": "Combate de Huachi"
+      "explicacion": "La ley protege los secretos de estado. Los documentos sobre planes militares, inteligencia estratégica o ciberdefensa tienen la categoría de reservados para evitar que caigan en manos adversarias.",
+      "tema": "Seguridad del Estado"
     },
     {
-      "enunciado": "Tras las derrotas en Huachi, la Junta de Guayaquil comprendió que no bastaba con el entusiasmo de los voluntarios locales. ¿Qué tipo de soldados empezaron a solicitar con urgencia a San Martín y Bolívar?",
+      "enunciado": "En la ejecución de operaciones militares conjuntas en el territorio nacional, ¿a qué nivel corresponde la planificación de las operaciones coordinadas entre el Ejército, la Armada y la Fuerza Aérea?",
       "opciones": [
-        "Campesinos sin experiencia",
-        "Tropas regulares veteranas, curtidas en las guerras continentales y acostumbradas a las tácticas de campo abierto",
-        "Marineros mercantes",
-        "Artilleros navales"
+        "Al Ministerio del Interior",
+        "Al Comando Conjunto de las Fuerzas Armadas (CC.FF.AA.)",
+        "A las Juntas Parroquiales",
+        "A los juzgados de tránsito"
       ],
       "respuesta": "b",
-      "explicacion": "Las masacres demostraron que el entusiasmo miliciano no podía competir contra la disciplina de los soldados regulares españoles. Se necesitaba urgentemente infantería veterana y caballería experimentada.",
-      "tema": "Combate de Huachi"
+      "explicacion": "El Comando Conjunto es el órgano técnico militar superior que planifica, dirige y ejecuta las operaciones combinadas y conjuntas de las tres ramas de las FF.AA. bajo las directrices del Ministerio de Defensa.",
+      "tema": "Seguridad del Estado"
     },
     {
-      "enunciado": "¿Qué oficial realista lideró la letal carga de caballería en el Primer Combate de Huachi (1820)?",
+      "enunciado": "Dentro de las funciones del **Ministerio de Defensa Nacional**, establecidas en la **Ley Orgánica de Defensa Nacional**, se encuentra la gestión del presupuesto y los recursos materiales. ¿Quién supervisa el uso de dichos recursos en el ámbito militar?",
       "opciones": [
-        "Carlos Tolrá",
-        "Francisco González",
-        "Melchor de Aymerich",
-        "Toribio Montes"
+        "El Ministro de Defensa, rindiendo cuentas ante la Asamblea Nacional y los órganos de control del Estado",
+        "Los alcaldes de cada ciudad",
+        "Las caprichosas decisiones de los comandantes sin control",
+        "Organizaciones no gubernamentales extranjeras"
+      ],
+      "respuesta": "a",
+      "explicacion": "El Ministerio de Defensa es el responsable político y administrativo del presupuesto militar, garantizando la transparencia y la sujeción a las leyes de contratación pública y control de la Contraloría.",
+      "tema": "Seguridad del Estado"
+    },
+    {
+      "enunciado": "Cuando el **Ministerio del Interior** diseña políticas de seguridad ciudadana, ¿con qué institución del Estado coordina de manera directa la operatividad preventiva y reacción en las calles?",
+      "opciones": [
+        "Con la Policía Nacional del Ecuador",
+        "Con el Banco Central",
+        "Con la Armada del Ecuador exclusivamente",
+        "Con el Ministerio de Relaciones Exteriores"
+      ],
+      "respuesta": "a",
+      "explicacion": "El Ministerio del Interior articula directamente su política operativa a través de la Policía Nacional, encargada de la seguridad interna y el mantenimiento del orden público ciudadano.",
+      "tema": "Seguridad del Estado"
+    },
+    {
+      "enunciado": "El **COSEPE** (Consejo de Seguridad Pública y del Estado) se reúne de forma ordinaria o extraordinaria. ¿Cuál de las siguientes autoridades NO forma parte de este consejo asesor supremo?",
+      "opciones": [
+        "El Presidente de la República",
+        "Los ministros de Estado de las carteras de Defensa e Interior",
+        "El Jefe del Comando Conjunto de las FF.AA. y el Comandante General de la Policía",
+        "Un representante de la banca privada internacional"
+      ],
+      "respuesta": "d",
+      "explicacion": "El COSEPE está integrado exclusivamente por altas autoridades del Estado y de la fuerza pública (Presidente, Ministros de Defensa, Interior, Relaciones Exteriores, Jefe del CC.FF.AA., Comandante de Policía, etc.).",
+      "tema": "Seguridad del Estado"
+    },
+    {
+      "enunciado": "La **Constitución de la República** prohíbe de forma categórica un aspecto crítico en materia geopolítica militar. ¿Cuál es?",
+      "opciones": [
+        "La fabricación de uniformes camuflados",
+        "El establecimiento de bases militares extranjeras en territorio ecuatoriano o la cesión de bases militares nacionales a fuerzas extranjeras",
+        "La compra de armamento a países aliados",
+        "Los desfiles militares del 24 de mayo"
       ],
       "respuesta": "b",
-      "explicacion": "El coronel Francisco González fue el encargado de comandar las fuerzas españolas y ejecutar la carga que destruyó a la División Protectora de Quito en el Primer Huachi.",
-      "tema": "Combate de Huachi"
+      "explicacion": "El Artículo 5 de la Constitución estipula claramente que el Ecuador es un territorio de paz y prohíbe la instalación de bases militares extranjeras o el uso de bases nacionales por parte de fuerzas militares foráneas.",
+      "tema": "Seguridad del Estado"
     },
     {
-      "enunciado": "En contraste con 1820, ¿qué oficial realista fue el cerebro detrás del ataque envolvente de caballería en el Segundo Combate de Huachi (1821)?",
+      "enunciado": "En el **Código Orgánico Integral Penal (COIP)**, el delito de 'Rebelión' se diferencia del terrorismo porque se configura cuando personas o miembros de grupos armados se alzan en armas para:",
       "opciones": [
-        "Francisco González",
-        "Agustín Agualongo",
-        "Carlos Tolrá",
-        "Juan de la Cruz Mourgeón"
-      ],
-      "respuesta": "c",
-      "explicacion": "Bajo las órdenes de Aymerich, el coronel Carlos Tolrá lideró la caballería realista en el Segundo Huachi, flanqueando y destrozando las líneas de Sucre.",
-      "tema": "Combate de Huachi"
-    },
-    {
-      "enunciado": "¿Qué armamento de avancarga estándar usaba la infantería patriota que resultó ineficaz para detener a los jinetes en Huachi debido a su lento tiempo de recarga?",
-      "opciones": [
-        "Rifles de cerrojo",
-        "Mosquetes de chispa (tipo Brown Bess o Charleville)",
-        "Arcabuces de mecha",
-        "Ametralladoras ligeras"
+        "Asaltar un banco comercial por dinero",
+        "Desconocer la Constitución, deponer al gobierno legítimamente constituido o impedir la toma de posesión de autoridades elegidas",
+        "Vender drogas ilícitas en las fronteras",
+        "Realizar contrabando de mercancías"
       ],
       "respuesta": "b",
-      "explicacion": "El mosquete de chispa, arma estándar de la época, tardaba valiosos segundos en recargarse. En terreno abierto, si la caballería enemiga sobrevivía a la primera descarga, alcanzaba las líneas antes del segundo tiro.",
-      "tema": "Combate de Huachi"
+      "explicacion": "La rebelión (Art. 336 del COIP) es un delito contra el Estado que busca subvertir el orden constitucional y derrocar al gobierno por la fuerza de las armas.",
+      "tema": "Seguridad del Estado"
     },
     {
-      "enunciado": "La tregua del Armisticio de Babahoyo fijó temporalmente un mapa dividido en el actual Ecuador. ¿Cómo quedó esta división de facto?",
+      "enunciado": "Cuando las Fuerzas Armadas actúan en el marco de un conflicto armado interno decretado por el Presidente, la normativa aplicable para regular el combate contra los grupos terroristas deja de ser exclusivamente policial y se rige también por:",
       "opciones": [
-        "Norte para Colombia, Sur para Perú",
-        "Toda la región andina (Sierra) bajo control militar realista y la región litoral (Costa) bajo control independentista",
-        "Todo el país bajo control español",
-        "Todo el país independiente"
+        "Las normas de tránsito terrestre",
+        "El Derecho Internacional Humanitario (DIH) y los Convenios de Ginebra aplicables a conflictos armados",
+        "El Código Civil de contratos",
+        "Las ordenanzas municipales de turismo"
       ],
       "respuesta": "b",
-      "explicacion": "El tratado reflejó la realidad militar del momento: los patriotas eran dueños absolutos de la cuenca del Guayas y el Pacífico, pero los realistas eran inexpugnables en la cordillera.",
-      "tema": "Combate de Huachi"
+      "explicacion": "Al reconocerse un conflicto armado interno, las operaciones militares se amparan en el Derecho Internacional Humanitario (DIH), permitiendo el uso de la fuerza letal contra objetivos militares identificados (grupos terroristas designados).",
+      "tema": "Seguridad del Estado"
     },
     {
-      "enunciado": "El Segundo Combate de Huachi generó una crisis política en Guayaquil respecto a su futuro como nación. ¿Qué bandos políticos se radicalizaron en la ciudad tras esta derrota?",
+      "enunciado": "En el resguardo de la soberanía marítima, la **Armada del Ecuador** realiza operaciones constantes de vigilancia en las 200 millas de la Zona Económica Exclusiva (ZEE) para prevenir principalmente:",
       "opciones": [
-        "Los monárquicos y los republicanos",
-        "Los colombianistas (pro-anexión a Bolívar), los peruanistas (pro-anexión a San Martín) y los independientes (pro-República de Guayaquil)",
-        "Los conservadores y los comunistas",
-        "Los quiteños y los cuencanos"
+        "La pesca ilegal no declarada y no reglamentada de flotas extranjeras y el narcotráfico transnacional",
+        "El turismo de cruceros internacionales",
+        "La navegación de veleros deportivos",
+        "Las mareas altas por cambio climático"
+      ],
+      "respuesta": "a",
+      "explicacion": "La Armada protege los recursos pesqueros y la soberanía en el mar territorial y la ZEE, especialmente frente a flotas pesqueras industriales extranjeras que operan en los límites de las islas Galápagos.",
+      "tema": "Seguridad del Estado"
+    },
+    {
+      "enunciado": "Para la defensa integral del espacio aéreo nacional, la **Fuerza Aérea Ecuatoriana (FAE)** cuenta con sistemas de radares y aviones interceptores encargados de neutralizar:",
+      "opciones": [
+        "Aeronaves no identificadas o ilegales vinculadas al narcotráfico que violen el espacio soberano ecuatoriano",
+        "Satélites meteorológicos civiles",
+        "Globos aerostáticos turísticos sin permiso",
+        "Aves migratorias protegidas"
+      ],
+      "respuesta": "a",
+      "explicacion": "La FAE vigila los cielos patrios y aplica los protocolos de intercepción aérea contra aeronaves sospechosas que utilicen pistas clandestinas o ingresen sin plan de vuelo autorizado.",
+      "tema": "Seguridad del Estado"
+    },
+    {
+      "enunciado": "En la frontera terrestre norte y sur, el **Ejército Ecuatoriano** despliega unidades de infantería acorazada y de selva para cumplir con su misión constitucional primordial, la cual es:",
+      "opciones": [
+        "Vigilar el tráfico vehicular urbano",
+        "Garantizar la defensa de la soberanía y la integridad territorial ante amenazas externas o grupos irregulares armados",
+        "Cobrar peajes en las carreteras internacionales",
+        "Organizar elecciones locales"
       ],
       "respuesta": "b",
-      "explicacion": "La evidente vulnerabilidad militar avivó el debate. Algunos creían que la única salvación era unirse a la Gran Colombia, otros al Perú, y un grupo defendía mantener la Provincia Libre a toda costa.",
-      "tema": "Combate de Huachi"
+      "explicacion": "El Ejército mantiene presencia permanente en los destacamentos de frontera para custodiar los hitos y repeler cualquier incursión de grupos armados ilegales o amenazas externas.",
+      "tema": "Seguridad del Estado"
     },
     {
-      "enunciado": "El general Antonio José de Sucre redactó un informe muy honesto a Simón Bolívar tras el Segundo Huachi. ¿Qué actitud mostró Sucre en este documento oficial?",
+      "enunciado": "Conforme a la **Ley Orgánica que Regula el Uso Legítimo de la Fuerza**, una vez que un gendarme o militar hace uso de su arma de dotación en acto de servicio causando heridas o muerte, tiene la obligación legal de:",
       "opciones": [
-        "Culpó a los soldados guayaquileños de cobardía",
-        "Mintió diciendo que había sido un empate táctico",
-        "Asumió la responsabilidad total de la derrota, detalló la falta de caballería y pidió urgentes refuerzos para evitar perder Guayaquil",
-        "Renunció a su rango militar"
-      ],
-      "respuesta": "c",
-      "explicacion": "Sucre demostró su grandeza ética y militar al no buscar chivos expiatorios. Analizó la derrota objetivamente e hizo hincapié en la necesidad logística y estratégica para revertir la situación.",
-      "tema": "Combate de Huachi"
-    },
-    {
-      "enunciado": "Durante la persecución realista tras el Primer Combate de Huachi, la División Protectora tuvo que abandonar su artillería pesada en un lugar específico para poder escapar. ¿Dónde fue?",
-      "opciones": [
-        "En las faldas del Chimborazo",
-        "En la cuesta de Mocha",
-        "En el río Guayas",
-        "En las calles de Guaranda"
+        "Ocultar el arma y no decir nada",
+        "Informar inmediatamente al superior jerárquico y poner a disposición de la Fiscalía General del Estado los indicios para la investigación transparente",
+        "Renunciar a la institución al día siguiente",
+        "Huir del país para evitar juicios"
       ],
       "respuesta": "b",
-      "explicacion": "Para acelerar la retirada y evitar ser masacrados, los patriotas abandonaron los pesados cañones en las escarpadas cuestas cerca de Mocha, cayendo este valioso arsenal en manos españolas.",
-      "tema": "Combate de Huachi"
+      "explicacion": "La ley garantiza el respaldo institucional, pero exige transparencia procesal: todo uso de fuerza letal debe ser reportado y puesto bajo indagación de la Fiscalía para certificar que se cumplieron los principios de necesidad y proporcionalidad.",
+      "tema": "Seguridad del Estado"
     },
     {
-      "enunciado": "¿Qué virrey gobernaba el Perú durante las batallas de Huachi, el cual representaba una amenaza constante de enviar refuerzos realistas por mar a Aymerich?",
+      "enunciado": "Durante la vigencia de un Estado de Excepción, la restricción de la libertad de asociación y de tránsito debe cumplir estrictamente con el principio de:",
       "opciones": [
-        "Francisco de Toledo",
-        "Joaquín de la Pezuela (hasta 1821) y José de la Serna",
-        "Blasco Núñez Vela",
-        "Fernando de Abascal"
+        "Proporcionalidad, temporalidad y necesidad para superar la crisis",
+        "Indefinición y castigo colectivo a la ciudadanía",
+        "Aumento de impuestos aduaneros",
+        "Privatización de empresas públicas"
+      ],
+      "respuesta": "a",
+      "explicacion": "Un estado de excepción no es una carta blanca para vulnerar derechos arbitrariamente; las medidas restrictivas deben ser proporcionales a la amenaza, limitadas en el tiempo y estrictamente necesarias.",
+      "tema": "Seguridad del Estado"
+    },
+    {
+      "enunciado": "En el ámbito de la ciberseguridad nacional, el **Comando Conjunto de las FF.AA.** y las entidades de inteligencia coordinan acciones para defenderse de ataques informáticos sofisticados conocidos en la doctrina moderna como:",
+      "opciones": [
+        "Ciberataques o ciberterrorismo dirigido a apagar redes eléctricas o sabotear bases de datos estatales",
+        "Virus informáticos de juegos en línea",
+        "Mensajes de texto comerciales",
+        "Actualizaciones de software operativo"
+      ],
+      "respuesta": "a",
+      "explicacion": "El ciberespacio es considerado un nuevo teatro de operaciones militares. Proteger los sistemas informáticos del Estado de ataques de hackers extranjeros o terroristas es una prioridad de la defensa nacional.",
+      "tema": "Seguridad del Estado"
+    },
+    {
+      "enunciado": "¿Qué diferencia doctrinal fundamental existe entre las funciones de la **Secretaría de Gestión de Riesgos** y el **COSEPE** en el manejo de crisis?",
+      "opciones": [
+        "No existe ninguna diferencia",
+        "La Secretaría de Gestión de Riesgos atiende emergencias de origen natural o antrópico (terremotos, inundaciones), mientras que el COSEPE atiende amenazas a la seguridad nacional, defensa y delincuencia organizada",
+        "El COSEPE apaga incendios forestales",
+        "La Secretaría de Gestión de Riesgos declara la guerra"
       ],
       "respuesta": "b",
-      "explicacion": "Durante esta etapa crítica, el Virreinato del Perú estaba en crisis. Pezuela fue depuesto en 1821 por el general La Serna, quien continuó siendo el gran enemigo realista en el sur del continente.",
-      "tema": "Combate de Huachi"
+      "explicacion": "Aunque ambas enfrentan crisis, la Secretaría de Gestión de Riesgos maneja desastres de la naturaleza o accidentes, mientras que el COSEPE coordina la estrategia frente a amenazas a la seguridad del Estado, soberanía y orden público.",
+      "tema": "Seguridad del Estado"
     },
     {
-      "enunciado": "La derrota de Huachi obligó a Guayaquil a potenciar su economía para sostener la guerra prolongada. ¿Qué astillero histórico se reactivó para construir buques y defender el golfo?",
+      "enunciado": "Según el **COIP**, el ciudadano o funcionario que vista ilegalmente uniformes, insignias o prendas de uso exclusivo de las Fuerzas Armadas o de la Policía Nacional para cometer delitos o engañar a la ciudadanía incurre en el delito de:",
       "opciones": [
-        "El astillero de Manta",
-        "El astillero de Guayaquil (el más importante del Pacífico Sur colonial)",
-        "El astillero de Puná",
-        "El astillero de Esmeraldas"
+        "Usurpación y simulación de funciones públicas (o uso indebido de uniforme)",
+        "Infracción de tránsito",
+        "Falta reglamentaria leve",
+        "Contravención de primera clase"
+      ],
+      "respuesta": "a",
+      "explicacion": "El COIP sanciona drásticamente a quienes simulan ser miembros de las fuerzas del orden utilizando uniformes falsos para cometer secuestros, robos o extorsiones.",
+      "tema": "Seguridad del Estado"
+    },
+    {
+      "enunciado": "De acuerdo con el mandato constitucional de subordinación y obediencia, los comandantes de las ramas militares responden directamente ante:",
+      "opciones": [
+        "Los partidos políticos de oposición",
+        "El Presidente de la República y el Ministro de Defensa Nacional",
+        "Los jueces de la Corte Nacional de Justicia",
+        "Los organismos internacionales de comercio"
       ],
       "respuesta": "b",
-      "explicacion": "La Junta de Guayaquil aprovechó la tradicional industria naval del puerto para armar pequeñas flotillas, cañoneras y asegurar el control fluvial del río Guayas y el estuario.",
-      "tema": "Combate de Huachi"
+      "explicacion": "La cadena de mando civil en el Ecuador sitúa al Presidente de la República como máxima autoridad, secundado por el Ministro de Defensa como cabeza sectorial que imparte las políticas a las Fuerzas Armadas.",
+      "tema": "Seguridad del Estado"
     },
     {
-      "enunciado": "A diferencia de las guerras modernas, en Huachi la música militar jugaba un rol táctico. ¿Qué función tenían los tambores en medio de la confusión y el polvo de la batalla?",
+      "enunciado": "En la doctrina del uso legítimo de la fuerza, el principio de **necesidad absoluta** significa que el gendarme o militar debe recurrir al uso de las armas de fuego:",
       "opciones": [
-        "Entretener a la tropa",
-        "Marcar el paso de marcha, transmitir órdenes de formación (como formar cuadro) y mantener la moral",
-        "Asustar a los caballos enemigos",
-        "Invocar la ayuda divina"
+        "De manera inmediata ante cualquier insulto verbal",
+        "Únicamente cuando los medios no letales (persuasión, control físico) hayan resultado ineficaces o no garanticen de ninguna manera el objetivo legítimo de proteger la vida",
+        "Cuando se le terminen las municiones de goma",
+        "Para obligar a un ciudadano a responder preguntas"
       ],
       "respuesta": "b",
-      "explicacion": "Con el ruido ensordecedor de los mosquetes y la nula visibilidad por la pólvora y el polvo, los toques de tambor y corneta eran la única forma de que los oficiales dirigieran a la infantería.",
-      "tema": "Combate de Huachi"
+      "explicacion": "La fuerza letal es siempre el último recurso absoluto. Si una amenaza puede controlarse con la palabra o con contención física sin poner en riesgo la vida, el uso de armas de fuego se considera ilegal.",
+      "tema": "Seguridad del Estado"
     },
     {
-      "enunciado": "¿Qué alto oficial español celebró las victorias en Huachi creyendo que la rebelión guayaquileña estaba a punto de ser aplastada definitivamente?",
+      "enunciado": "La cooperación y coordinación permanente entre el **Ministerio de Defensa**, el **Ministerio del Interior**, el **Comando Conjunto** y las instituciones del Estado tiene como finalidad primordial garantizar:",
       "opciones": [
-        "El general Toribio Montes",
-        "El presidente Melchor de Aymerich",
-        "El almirante Pascual Cervera",
-        "El virrey Amar y Borbón"
+        "La seguridad integral, la defensa de la soberanía, la paz social y el orden constitucional de la República del Ecuador",
+        "El lucro de las empresas contratistas de defensa",
+        "La suspensión indefinida de los derechos civiles",
+        "La independencia militar absoluta del poder civil"
+      ],
+      "respuesta": "a",
+      "explicacion": "La conjunción de todas estas entidades bajo el paraguas de la Constitución busca un Estado seguro, democrático, donde se proteja la vida humana y se resguarde firmemente la soberanía nacional.",
+      "tema": "Seguridad del Estado"
+    },
+    {
+      "enunciado": "Al haber completado este riguroso temario de **Seguridad del Estado**, **Constitución**, leyes de defensa y doctrina militar, ¿qué demuestra el aspirante en su preparación para los exámenes de ingreso a las Fuerzas Armadas?",
+      "opciones": [
+        "Un conocimiento superficial sin fundamento",
+        "Un dominio sólido, patriótico, legal y profesional de las normativas que rigen la defensa nacional y el orden público en el Ecuador",
+        "Una memorización temporal sin utilidad práctica",
+        "Un desinterés total por las leyes del país"
       ],
       "respuesta": "b",
-      "explicacion": "Aymerich, tras vencer a Sucre en el Segundo Huachi, sintió que había asegurado la Real Audiencia y que solo era cuestión de tiempo y recursos para retomar Guayaquil.",
-      "tema": "Combate de Huachi"
-    },
-    {
-      "enunciado": "El fracaso de la ruta central (Guayaquil-Guaranda-Ambato) forzó a Sucre a buscar un nuevo camino hacia Quito en 1822. ¿Qué ventaja geográfica ofrecía la nueva ruta por el sur (Cuenca)?",
-      "opciones": [
-        "Era un camino pavimentado",
-        "Era una ruta marítima directa a Quito",
-        "Permitía evitar los temibles llanos de Ambato y avanzar por terrenos que Sucre podía controlar paso a paso con los refuerzos peruanos",
-        "Era un valle sin montañas"
-      ],
-      "respuesta": "c",
-      "explicacion": "El flanqueo estratégico por Machala y Cuenca permitió a Sucre rodear las fortalezas realistas del centro, obligando a los españoles a abandonar Ambato y retroceder hacia Pichincha.",
-      "tema": "Combate de Huachi"
-    },
-    {
-      "enunciado": "Un mito común es que Bolívar estuvo presente en las derrotas de Huachi. La realidad es que el Libertador pisó territorio del actual Ecuador por primera vez en:",
-      "opciones": [
-        "Octubre de 1820",
-        "Junio de 1822, semanas después de la victoria en Pichincha",
-        "Diciembre de 1830",
-        "Nunca visitó el territorio"
-      ],
-      "respuesta": "b",
-      "explicacion": "Simón Bolívar llegó a Quito en junio de 1822 tras la Batalla de Pichincha y luego descendió a Guayaquil para la famosa entrevista con San Martín en julio.",
-      "tema": "Combate de Huachi"
-    },
-    {
-      "enunciado": "Las dos batallas de Huachi enseñaron a Sucre que el ejército español en Quito era una fuerza letal y altamente profesional. ¿Qué batallón realista mutinado alivió esta superioridad meses después?",
-      "opciones": [
-        "El Batallón Yaguachi",
-        "El Batallón Numancia, que se sublevó en Perú a favor de San Martín y debilitó el poder español en el Pacífico",
-        "La Guardia Suiza",
-        "El Batallón de Patricios"
-      ],
-      "respuesta": "b",
-      "explicacion": "El motín del batallón veterano Numancia (formado en gran parte por venezolanos y neogranadinos enrolados a la fuerza por España) fue un golpe moral y logístico terrible para el bando realista.",
-      "tema": "Combate de Huachi"
-    },
-    {
-      "enunciado": "Tras el Armisticio de Babahoyo, Sucre se dedicó a entrenar a su nueva infantería, instruyéndolos obsesivamente en una maniobra específica para evitar otro desastre como el de Huachi. ¿Cuál era?",
-      "opciones": [
-        "El asalto anfibio",
-        "La carga de bayoneta a pecho descubierto",
-        "La rápida formación en cuadro cerrado contra cargas de caballería",
-        "La construcción de trincheras"
-      ],
-      "respuesta": "c",
-      "explicacion": "Sucre sabía que volvería a enfrentarse a la caballería de Tolrá. Entrenó a sus tropas costeñas y colombianas hasta la saciedad para que pudieran formar cuadros perfectos en segundos bajo estrés.",
-      "tema": "Combate de Huachi"
-    },
-    {
-      "enunciado": "Si Guayaquil aportó el puerto y los recursos, y Bolívar envió a Sucre, ¿cuál fue la contribución de San Martín a la causa tras los desastres de Huachi?",
-      "opciones": [
-        "Envió buques piratas",
-        "Autorizó el envío de la División Auxiliar del Perú (incluyendo al batallón Piura y Granaderos a Caballo) para reforzar a Sucre",
-        "Atacó Quito desde la Amazonía",
-        "No aportó nada"
-      ],
-      "respuesta": "b",
-      "explicacion": "El Protector del Perú cumplió su palabra de apoyo continental, enviando tropas curtidas que suplieron las graves deficiencias de caballería e infantería que tenía Sucre.",
-      "tema": "Combate de Huachi"
-    },
-    {
-      "enunciado": "Históricamente, ¿cómo se justifica que la Junta de Guayaquil haya lanzado la ofensiva del Primer Huachi estando tan mal preparada logísticamente?",
-      "opciones": [
-        "Querían impresionar a los ingleses",
-        "Confiaban en que el alzamiento de las ciudades serranas (Guaranda, Riobamba) derrumbaría el poder español sin necesidad de batallas campales",
-        "Fueron engañados por espías peruanos",
-        "Tenían órdenes directas del Papa"
-      ],
-      "respuesta": "b",
-      "explicacion": "Olmedo y Urdaneta esperaban un levantamiento general de los pueblos de la Sierra (como un efecto dominó) que hiciera colapsar la Presidencia de Quito desde adentro, subestimando la capacidad de respuesta militar de Aymerich.",
-      "tema": "Combate de Huachi"
-    },
-    {
-      "enunciado": "Las llanuras de Huachi hoy forman parte de una importante zona agrícola y urbana en el Ecuador. ¿A qué ciudad andina pertenece este territorio histórico?",
-      "opciones": [
-        "Latacunga",
-        "Ambato",
-        "Riobamba",
-        "Guaranda"
-      ],
-      "respuesta": "b",
-      "explicacion": "Huachi (con sus actuales parroquias Huachi Chico, Huachi Grande, etc.) es una planicie que forma parte integral del tejido urbano y rural de la ciudad de Ambato.",
-      "tema": "Combate de Huachi"
+      "explicacion": "Dominar la normativa constitucional, las leyes orgánicas de defensa y las funciones de las instituciones armadas dota al futuro cadete o alumno de una base doctrinal excelente para triunfar en su proceso de selección y su futura carrera militar.",
+      "tema": "Seguridad del Estado"
     }
   ]
