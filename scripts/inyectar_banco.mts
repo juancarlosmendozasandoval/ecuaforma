@@ -29,22 +29,21 @@
  *
  * Usa SUPABASE_SERVICE_ROLE_KEY de .env.local: solo para uso local del admin.
  */
-import { readFileSync, existsSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { parseArgs } from 'node:util';
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-
-type Opcion = { type: 'text' | 'image'; value: string };
-
-type PreguntaLista = {
-  pregunta: string;
-  opciones: Opcion[];
-  respuesta: Opcion;
-  feedback: string | null;
-  pregunta_img_url: string | null;
-  youtube_url: string | null;
-  tema: string | null;
-};
+import type { SupabaseClient } from '@supabase/supabase-js';
+import {
+  UUID,
+  conectarSupabase,
+  ejecutar,
+  esperar,
+  leerJson,
+  literalLike,
+  salir,
+  slugify,
+  textoOpcional,
+  validarPregunta,
+  type PreguntaLista,
+} from './compartido/banco.mts';
 
 type Tema = { id: string; slug: string; nombre: string; materia_id: string };
 
@@ -56,38 +55,9 @@ type CreadoEnLote = {
   contenidoId: string | null;
 };
 
-const LETRAS = ['A', 'B', 'C', 'D', 'E', 'F'];
 const LOTE_POR_DEFECTO = 20;
 const LOTE_MAXIMO = 200;
 const PAUSA_POR_DEFECTO_MS = 400;
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-function slugify(texto: string) {
-  return texto
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-function esUrl(valor: string) {
-  return /^https?:\/\/\S+$/i.test(valor);
-}
-
-function textoOpcional(valor: unknown) {
-  return typeof valor === 'string' && valor.trim() ? valor.trim() : null;
-}
-
-/** Error esperado: se imprime sin stack. */
-class ErrorSalida extends Error {}
-
-// process.exit() con sockets de fetch abiertos hace fallar a Node en Windows (UV_HANDLE_CLOSING).
-function salir(mensaje: string): never {
-  throw new ErrorSalida(mensaje);
-}
-
-const esperar = (ms: number) => new Promise((resolver) => setTimeout(resolver, ms));
 
 function enteroOpcional(valor: string | undefined, nombre: string, minimo: number, maximo = Number.MAX_SAFE_INTEGER) {
   if (valor === undefined) return null;
@@ -102,69 +72,6 @@ function dividirEnLotes<T>(elementos: T[], tamano: number): T[][] {
   const lotes: T[][] = [];
   for (let inicio = 0; inicio < elementos.length; inicio += tamano) lotes.push(elementos.slice(inicio, inicio + tamano));
   return lotes;
-}
-
-/** Escapa % y _ para usar el texto literal dentro de un LIKE. */
-const literalLike = (texto: string) => texto.replace(/[\\%_]/g, (c) => `\\${c}`);
-
-function normalizarOpcion(cruda: unknown): Opcion | null {
-  if (typeof cruda === 'string' && cruda.trim()) return { type: 'text', value: cruda.trim() };
-  if (cruda && typeof cruda === 'object') {
-    const { type, value } = cruda as Record<string, unknown>;
-    if ((type === 'text' || type === 'image') && typeof value === 'string' && value.trim()) {
-      if (type === 'image' && !esUrl(value.trim())) return null;
-      return { type, value: value.trim() };
-    }
-  }
-  return null;
-}
-
-/** Devuelve la pregunta lista para insertar, o los errores encontrados. */
-function validarPregunta(cruda: unknown, numero: number): { ok: PreguntaLista } | { errores: string[] } {
-  const errores: string[] = [];
-  const p = (cruda && typeof cruda === 'object' ? cruda : {}) as Record<string, unknown>;
-  const prefijo = `Pregunta #${numero}`;
-
-  const enunciado = textoOpcional(p.enunciado);
-  if (!enunciado) errores.push(`${prefijo}: falta "enunciado".`);
-
-  const opcionesCrudas = Array.isArray(p.opciones) ? p.opciones : [];
-  const opciones = opcionesCrudas.map(normalizarOpcion);
-  if (opcionesCrudas.length < 2 || opcionesCrudas.length > LETRAS.length) {
-    errores.push(`${prefijo}: "opciones" debe tener entre 2 y ${LETRAS.length} elementos.`);
-  }
-  if (opciones.some((opcion) => !opcion)) errores.push(`${prefijo}: hay opciones vacías o con formato inválido.`);
-  const validas = opciones.filter((opcion): opcion is Opcion => !!opcion);
-  if (new Set(validas.map((opcion) => opcion.value)).size !== validas.length) {
-    errores.push(`${prefijo}: hay opciones repetidas.`);
-  }
-
-  let respuesta: Opcion | undefined;
-  const respuestaCruda = normalizarOpcion(p.respuesta);
-  if (respuestaCruda) {
-    respuesta = validas.find((opcion) => opcion.value === respuestaCruda.value);
-    const indiceLetra = LETRAS.indexOf(respuestaCruda.value.toUpperCase());
-    if (!respuesta && respuestaCruda.value.length === 1 && indiceLetra >= 0) respuesta = validas[indiceLetra];
-  }
-  if (!respuesta) errores.push(`${prefijo}: "respuesta" debe ser el texto exacto de una opción o su letra (A-${LETRAS[validas.length - 1] || 'D'}).`);
-
-  const imagen = textoOpcional(p.imagen_url);
-  if (imagen && !esUrl(imagen)) errores.push(`${prefijo}: "imagen_url" no es una URL http(s).`);
-  const youtube = textoOpcional(p.youtube_url);
-  if (youtube && !esUrl(youtube)) errores.push(`${prefijo}: "youtube_url" no es una URL http(s).`);
-
-  if (errores.length > 0 || !enunciado || !respuesta) return { errores };
-  return {
-    ok: {
-      pregunta: enunciado,
-      opciones: validas,
-      respuesta,
-      feedback: textoOpcional(p.explicacion),
-      pregunta_img_url: imagen,
-      youtube_url: youtube,
-      tema: textoOpcional(p.tema),
-    },
-  };
 }
 
 /** Deshace, en orden inverso, lo que un lote alcanzó a crear. Devuelve lo que no se pudo borrar. */
@@ -220,15 +127,7 @@ async function main() {
 
   const archivo = positionals[0];
   if (!archivo) salir('Indica el archivo JSON. Ej: npm run inyectar -- banco.json --prefijo "Simulador: Seguridad del Estado"');
-  const ruta = resolve(process.cwd(), archivo);
-  if (!existsSync(ruta)) salir(`No existe el archivo ${ruta}`);
-
-  let contenido: unknown;
-  try {
-    contenido = JSON.parse(readFileSync(ruta, 'utf8').replace(/^\uFEFF/, ''));
-  } catch (error) {
-    salir(`El archivo no es JSON válido: ${error instanceof Error ? error.message : error}`);
-  }
+  const contenido = leerJson(archivo);
 
   const envoltura = (!Array.isArray(contenido) && contenido && typeof contenido === 'object' ? contenido : {}) as Record<string, unknown>;
   const crudas = Array.isArray(contenido) ? contenido : envoltura.preguntas;
@@ -256,7 +155,7 @@ async function main() {
   const preguntas: PreguntaLista[] = [];
   const errores: string[] = [];
   crudas.forEach((cruda, indice) => {
-    const resultado = validarPregunta(cruda, indice + 1);
+    const resultado = validarPregunta(cruda, `Pregunta #${indice + 1}`);
     if ('ok' in resultado) preguntas.push(resultado.ok);
     else errores.push(...resultado.errores);
   });
@@ -267,11 +166,7 @@ async function main() {
   if (inicioLote > lotes.length) salir(`--inicio-lote ${inicioLote} supera los ${lotes.length} lotes del archivo.`);
 
   // 2. Conectar con la service role (solo existe en el entorno local del admin).
-  if (existsSync('.env.local')) process.loadEnvFile('.env.local');
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const llave = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !llave) salir('Faltan NEXT_PUBLIC_SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY en .env.local.');
-  const supabase = createClient(url, llave, { auth: { persistSession: false, autoRefreshToken: false } });
+  const supabase = conectarSupabase();
 
   // 3. Resolver cada "tema" (slug o nombre) a temas.id.
   let materia: { id: string; nombre: string } | null = null;
@@ -494,9 +389,4 @@ async function main() {
   console.log(`\n✔ Listo: ${completados.length} simuladores y ${totalPreguntas} preguntas.\n`);
 }
 
-main().catch((error) => {
-  const mensaje = error instanceof Error ? error.message : String(error);
-  console.error(`\n✖ ${mensaje}\n`);
-  if (!(error instanceof ErrorSalida) && error instanceof Error && error.stack) console.error(error.stack);
-  process.exitCode = 1;
-});
+ejecutar(main);

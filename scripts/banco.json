@@ -1,242 +1,962 @@
 [
-    {
-      "enunciado": "Según la **Ley de Seguridad Pública y del Estado**, ¿cómo se clasifica la información que manejan los organismos de inteligencia y defensa (como el CIES o el Comando Conjunto) cuya divulgación pueda poner en riesgo la soberanía nacional?",
-      "opciones": [
-        "Información pública de libre acceso comercial",
-        "Información reservada, secreta o sumamente secreta por razones de seguridad nacional",
-        "Noticias de prensa deportiva",
-        "Información estadística municipal"
-      ],
-      "respuesta": "b",
-      "explicacion": "La ley protege los secretos de estado. Los documentos sobre planes militares, inteligencia estratégica o ciberdefensa tienen la categoría de reservados para evitar que caigan en manos adversarias.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "En la ejecución de operaciones militares conjuntas en el territorio nacional, ¿a qué nivel corresponde la planificación de las operaciones coordinadas entre el Ejército, la Armada y la Fuerza Aérea?",
-      "opciones": [
-        "Al Ministerio del Interior",
-        "Al Comando Conjunto de las Fuerzas Armadas (CC.FF.AA.)",
-        "A las Juntas Parroquiales",
-        "A los juzgados de tránsito"
-      ],
-      "respuesta": "b",
-      "explicacion": "El Comando Conjunto es el órgano técnico militar superior que planifica, dirige y ejecuta las operaciones combinadas y conjuntas de las tres ramas de las FF.AA. bajo las directrices del Ministerio de Defensa.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "Dentro de las funciones del **Ministerio de Defensa Nacional**, establecidas en la **Ley Orgánica de Defensa Nacional**, se encuentra la gestión del presupuesto y los recursos materiales. ¿Quién supervisa el uso de dichos recursos en el ámbito militar?",
-      "opciones": [
-        "El Ministro de Defensa, rindiendo cuentas ante la Asamblea Nacional y los órganos de control del Estado",
-        "Los alcaldes de cada ciudad",
-        "Las caprichosas decisiones de los comandantes sin control",
-        "Organizaciones no gubernamentales extranjeras"
-      ],
-      "respuesta": "a",
-      "explicacion": "El Ministerio de Defensa es el responsable político y administrativo del presupuesto militar, garantizando la transparencia y la sujeción a las leyes de contratación pública y control de la Contraloría.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "Cuando el **Ministerio del Interior** diseña políticas de seguridad ciudadana, ¿con qué institución del Estado coordina de manera directa la operatividad preventiva y reacción en las calles?",
-      "opciones": [
-        "Con la Policía Nacional del Ecuador",
-        "Con el Banco Central",
-        "Con la Armada del Ecuador exclusivamente",
-        "Con el Ministerio de Relaciones Exteriores"
-      ],
-      "respuesta": "a",
-      "explicacion": "El Ministerio del Interior articula directamente su política operativa a través de la Policía Nacional, encargada de la seguridad interna y el mantenimiento del orden público ciudadano.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "El **COSEPE** (Consejo de Seguridad Pública y del Estado) se reúne de forma ordinaria o extraordinaria. ¿Cuál de las siguientes autoridades NO forma parte de este consejo asesor supremo?",
-      "opciones": [
-        "El Presidente de la República",
-        "Los ministros de Estado de las carteras de Defensa e Interior",
-        "El Jefe del Comando Conjunto de las FF.AA. y el Comandante General de la Policía",
-        "Un representante de la banca privada internacional"
-      ],
-      "respuesta": "d",
-      "explicacion": "El COSEPE está integrado exclusivamente por altas autoridades del Estado y de la fuerza pública (Presidente, Ministros de Defensa, Interior, Relaciones Exteriores, Jefe del CC.FF.AA., Comandante de Policía, etc.).",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "La **Constitución de la República** prohíbe de forma categórica un aspecto crítico en materia geopolítica militar. ¿Cuál es?",
-      "opciones": [
-        "La fabricación de uniformes camuflados",
-        "El establecimiento de bases militares extranjeras en territorio ecuatoriano o la cesión de bases militares nacionales a fuerzas extranjeras",
-        "La compra de armamento a países aliados",
-        "Los desfiles militares del 24 de mayo"
-      ],
-      "respuesta": "b",
-      "explicacion": "El Artículo 5 de la Constitución estipula claramente que el Ecuador es un territorio de paz y prohíbe la instalación de bases militares extranjeras o el uso de bases nacionales por parte de fuerzas militares foráneas.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "En el **Código Orgánico Integral Penal (COIP)**, el delito de 'Rebelión' se diferencia del terrorismo porque se configura cuando personas o miembros de grupos armados se alzan en armas para:",
-      "opciones": [
-        "Asaltar un banco comercial por dinero",
-        "Desconocer la Constitución, deponer al gobierno legítimamente constituido o impedir la toma de posesión de autoridades elegidas",
-        "Vender drogas ilícitas en las fronteras",
-        "Realizar contrabando de mercancías"
-      ],
-      "respuesta": "b",
-      "explicacion": "La rebelión (Art. 336 del COIP) es un delito contra el Estado que busca subvertir el orden constitucional y derrocar al gobierno por la fuerza de las armas.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "Cuando las Fuerzas Armadas actúan en el marco de un conflicto armado interno decretado por el Presidente, la normativa aplicable para regular el combate contra los grupos terroristas deja de ser exclusivamente policial y se rige también por:",
-      "opciones": [
-        "Las normas de tránsito terrestre",
-        "El Derecho Internacional Humanitario (DIH) y los Convenios de Ginebra aplicables a conflictos armados",
-        "El Código Civil de contratos",
-        "Las ordenanzas municipales de turismo"
-      ],
-      "respuesta": "b",
-      "explicacion": "Al reconocerse un conflicto armado interno, las operaciones militares se amparan en el Derecho Internacional Humanitario (DIH), permitiendo el uso de la fuerza letal contra objetivos militares identificados (grupos terroristas designados).",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "En el resguardo de la soberanía marítima, la **Armada del Ecuador** realiza operaciones constantes de vigilancia en las 200 millas de la Zona Económica Exclusiva (ZEE) para prevenir principalmente:",
-      "opciones": [
-        "La pesca ilegal no declarada y no reglamentada de flotas extranjeras y el narcotráfico transnacional",
-        "El turismo de cruceros internacionales",
-        "La navegación de veleros deportivos",
-        "Las mareas altas por cambio climático"
-      ],
-      "respuesta": "a",
-      "explicacion": "La Armada protege los recursos pesqueros y la soberanía en el mar territorial y la ZEE, especialmente frente a flotas pesqueras industriales extranjeras que operan en los límites de las islas Galápagos.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "Para la defensa integral del espacio aéreo nacional, la **Fuerza Aérea Ecuatoriana (FAE)** cuenta con sistemas de radares y aviones interceptores encargados de neutralizar:",
-      "opciones": [
-        "Aeronaves no identificadas o ilegales vinculadas al narcotráfico que violen el espacio soberano ecuatoriano",
-        "Satélites meteorológicos civiles",
-        "Globos aerostáticos turísticos sin permiso",
-        "Aves migratorias protegidas"
-      ],
-      "respuesta": "a",
-      "explicacion": "La FAE vigila los cielos patrios y aplica los protocolos de intercepción aérea contra aeronaves sospechosas que utilicen pistas clandestinas o ingresen sin plan de vuelo autorizado.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "En la frontera terrestre norte y sur, el **Ejército Ecuatoriano** despliega unidades de infantería acorazada y de selva para cumplir con su misión constitucional primordial, la cual es:",
-      "opciones": [
-        "Vigilar el tráfico vehicular urbano",
-        "Garantizar la defensa de la soberanía y la integridad territorial ante amenazas externas o grupos irregulares armados",
-        "Cobrar peajes en las carreteras internacionales",
-        "Organizar elecciones locales"
-      ],
-      "respuesta": "b",
-      "explicacion": "El Ejército mantiene presencia permanente en los destacamentos de frontera para custodiar los hitos y repeler cualquier incursión de grupos armados ilegales o amenazas externas.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "Conforme a la **Ley Orgánica que Regula el Uso Legítimo de la Fuerza**, una vez que un gendarme o militar hace uso de su arma de dotación en acto de servicio causando heridas o muerte, tiene la obligación legal de:",
-      "opciones": [
-        "Ocultar el arma y no decir nada",
-        "Informar inmediatamente al superior jerárquico y poner a disposición de la Fiscalía General del Estado los indicios para la investigación transparente",
-        "Renunciar a la institución al día siguiente",
-        "Huir del país para evitar juicios"
-      ],
-      "respuesta": "b",
-      "explicacion": "La ley garantiza el respaldo institucional, pero exige transparencia procesal: todo uso de fuerza letal debe ser reportado y puesto bajo indagación de la Fiscalía para certificar que se cumplieron los principios de necesidad y proporcionalidad.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "Durante la vigencia de un Estado de Excepción, la restricción de la libertad de asociación y de tránsito debe cumplir estrictamente con el principio de:",
-      "opciones": [
-        "Proporcionalidad, temporalidad y necesidad para superar la crisis",
-        "Indefinición y castigo colectivo a la ciudadanía",
-        "Aumento de impuestos aduaneros",
-        "Privatización de empresas públicas"
-      ],
-      "respuesta": "a",
-      "explicacion": "Un estado de excepción no es una carta blanca para vulnerar derechos arbitrariamente; las medidas restrictivas deben ser proporcionales a la amenaza, limitadas en el tiempo y estrictamente necesarias.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "En el ámbito de la ciberseguridad nacional, el **Comando Conjunto de las FF.AA.** y las entidades de inteligencia coordinan acciones para defenderse de ataques informáticos sofisticados conocidos en la doctrina moderna como:",
-      "opciones": [
-        "Ciberataques o ciberterrorismo dirigido a apagar redes eléctricas o sabotear bases de datos estatales",
-        "Virus informáticos de juegos en línea",
-        "Mensajes de texto comerciales",
-        "Actualizaciones de software operativo"
-      ],
-      "respuesta": "a",
-      "explicacion": "El ciberespacio es considerado un nuevo teatro de operaciones militares. Proteger los sistemas informáticos del Estado de ataques de hackers extranjeros o terroristas es una prioridad de la defensa nacional.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "¿Qué diferencia doctrinal fundamental existe entre las funciones de la **Secretaría de Gestión de Riesgos** y el **COSEPE** en el manejo de crisis?",
-      "opciones": [
-        "No existe ninguna diferencia",
-        "La Secretaría de Gestión de Riesgos atiende emergencias de origen natural o antrópico (terremotos, inundaciones), mientras que el COSEPE atiende amenazas a la seguridad nacional, defensa y delincuencia organizada",
-        "El COSEPE apaga incendios forestales",
-        "La Secretaría de Gestión de Riesgos declara la guerra"
-      ],
-      "respuesta": "b",
-      "explicacion": "Aunque ambas enfrentan crisis, la Secretaría de Gestión de Riesgos maneja desastres de la naturaleza o accidentes, mientras que el COSEPE coordina la estrategia frente a amenazas a la seguridad del Estado, soberanía y orden público.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "Según el **COIP**, el ciudadano o funcionario que vista ilegalmente uniformes, insignias o prendas de uso exclusivo de las Fuerzas Armadas o de la Policía Nacional para cometer delitos o engañar a la ciudadanía incurre en el delito de:",
-      "opciones": [
-        "Usurpación y simulación de funciones públicas (o uso indebido de uniforme)",
-        "Infracción de tránsito",
-        "Falta reglamentaria leve",
-        "Contravención de primera clase"
-      ],
-      "respuesta": "a",
-      "explicacion": "El COIP sanciona drásticamente a quienes simulan ser miembros de las fuerzas del orden utilizando uniformes falsos para cometer secuestros, robos o extorsiones.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "De acuerdo con el mandato constitucional de subordinación y obediencia, los comandantes de las ramas militares responden directamente ante:",
-      "opciones": [
-        "Los partidos políticos de oposición",
-        "El Presidente de la República y el Ministro de Defensa Nacional",
-        "Los jueces de la Corte Nacional de Justicia",
-        "Los organismos internacionales de comercio"
-      ],
-      "respuesta": "b",
-      "explicacion": "La cadena de mando civil en el Ecuador sitúa al Presidente de la República como máxima autoridad, secundado por el Ministro de Defensa como cabeza sectorial que imparte las políticas a las Fuerzas Armadas.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "En la doctrina del uso legítimo de la fuerza, el principio de **necesidad absoluta** significa que el gendarme o militar debe recurrir al uso de las armas de fuego:",
-      "opciones": [
-        "De manera inmediata ante cualquier insulto verbal",
-        "Únicamente cuando los medios no letales (persuasión, control físico) hayan resultado ineficaces o no garanticen de ninguna manera el objetivo legítimo de proteger la vida",
-        "Cuando se le terminen las municiones de goma",
-        "Para obligar a un ciudadano a responder preguntas"
-      ],
-      "respuesta": "b",
-      "explicacion": "La fuerza letal es siempre el último recurso absoluto. Si una amenaza puede controlarse con la palabra o con contención física sin poner en riesgo la vida, el uso de armas de fuego se considera ilegal.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "La cooperación y coordinación permanente entre el **Ministerio de Defensa**, el **Ministerio del Interior**, el **Comando Conjunto** y las instituciones del Estado tiene como finalidad primordial garantizar:",
-      "opciones": [
-        "La seguridad integral, la defensa de la soberanía, la paz social y el orden constitucional de la República del Ecuador",
-        "El lucro de las empresas contratistas de defensa",
-        "La suspensión indefinida de los derechos civiles",
-        "La independencia militar absoluta del poder civil"
-      ],
-      "respuesta": "a",
-      "explicacion": "La conjunción de todas estas entidades bajo el paraguas de la Constitución busca un Estado seguro, democrático, donde se proteja la vida humana y se resguarde firmemente la soberanía nacional.",
-      "tema": "Seguridad del Estado"
-    },
-    {
-      "enunciado": "Al haber completado este riguroso temario de **Seguridad del Estado**, **Constitución**, leyes de defensa y doctrina militar, ¿qué demuestra el aspirante en su preparación para los exámenes de ingreso a las Fuerzas Armadas?",
-      "opciones": [
-        "Un conocimiento superficial sin fundamento",
-        "Un dominio sólido, patriótico, legal y profesional de las normativas que rigen la defensa nacional y el orden público en el Ecuador",
-        "Una memorización temporal sin utilidad práctica",
-        "Un desinterés total por las leyes del país"
-      ],
-      "respuesta": "b",
-      "explicacion": "Dominar la normativa constitucional, las leyes orgánicas de defensa y las funciones de las instituciones armadas dota al futuro cadete o alumno de una base doctrinal excelente para triunfar en su proceso de selección y su futura carrera militar.",
-      "tema": "Seguridad del Estado"
-    }
-  ]
+  {
+    "enunciado": "FALSE FRIEND TRAP: In English, what is a 'suburb'?",
+    "opciones": [
+      "An extremely poor, dangerous, and dirty area with no water or electricity.",
+      "A quiet, often middle- or upper-class residential area located on the outskirts of a large city.",
+      "An underground train station.",
+      "A military submarine base."
+    ],
+    "respuesta": "b",
+    "explicacion": "¡Falso amigo clásico! En inglés, 'the suburbs' son zonas residenciales tranquilas y acomodadas en las afueras de la ciudad. Para decir 'barrio marginal o invasión' se usa 'slum' o 'shantytown'.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Contrast with the previous question: What do we call an overcrowded, impoverished urban area consisting of poorly built shacks and lacking basic services?",
+    "opciones": [
+      "A suburb",
+      "A slum (or shantytown)",
+      "A gated community",
+      "A pedestrian zone"
+    ],
+    "respuesta": "b",
+    "explicacion": "Un 'slum' o 'shantytown' es un barrio marginal o asentamiento precario.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "What is the difference between a 'neighbor' and a 'neighborhood'?",
+    "opciones": [
+      "'Neighbor' is the person who lives next to you, while 'neighborhood' is the geographic area or district where you live.",
+      "'Neighborhood' is a person, and 'neighbor' is a building.",
+      "They mean the exact same thing.",
+      "'Neighbor' is only for cities, and 'neighborhood' is for farms."
+    ],
+    "respuesta": "a",
+    "explicacion": "'Neighbor' es el vecino (la persona); 'neighborhood' es el barrio o vecindario (el lugar).",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "What is the main government building in a city or town where the mayor and city council have their offices?",
+    "opciones": [
+      "The community center",
+      "City Hall (or Town Hall)",
+      "The nursing home",
+      "The food bank"
+    ],
+    "respuesta": "b",
+    "explicacion": "'City Hall' o 'Town Hall' es el Palacio Municipal, Alcaldía o Ayuntamiento.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Who is the elected politician that serves as the head of a city's local government?",
+    "opciones": [
+      "The governor",
+      "The mayor",
+      "The ambassador",
+      "The referee"
+    ],
+    "respuesta": "b",
+    "explicacion": "El alcalde o alcaldesa de una ciudad se denomina 'the mayor' (no confundir con el rango militar 'Major' con 'j').",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "A public place in a neighborhood where local residents can go for meetings, social events, youth clubs, and recreational classes is a:",
+    "opciones": [
+      "customs office",
+      "community center",
+      "power plant",
+      "baggage claim"
+    ],
+    "respuesta": "b",
+    "explicacion": "Un 'community center' es el centro comunitario o casa comunal del barrio.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "A residential facility that provides 24-hour housing, meals, and medical care for elderly people who cannot live alone is a:",
+    "opciones": [
+      "youth hostel",
+      "nursing home (or retirement home)",
+      "daycare center",
+      "boarding school"
+    ],
+    "respuesta": "b",
+    "explicacion": "Un 'nursing home' o 'retirement home' es un hogar de ancianos o residencia geriátrica.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "A charitable place that provides temporary beds, protection, and warm meals for people who live on the streets is a:",
+    "opciones": [
+      "luxury resort",
+      "homeless shelter",
+      "penthouse",
+      "city hall"
+    ],
+    "respuesta": "b",
+    "explicacion": "Un 'homeless shelter' es un albergue o refugio para personas sin hogar.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Where are stray or abandoned dogs and cats taken to be cared for until a family adopts them?",
+    "opciones": [
+      "A slaughterhouse",
+      "An animal shelter",
+      "A aquarium",
+      "A botanical garden"
+    ],
+    "respuesta": "b",
+    "explicacion": "Un 'animal shelter' es un refugio o albergue de protección animal.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "A non-profit place where donated groceries are stored and distributed for free to low-income families in the community is a:",
+    "opciones": [
+      "supermarket",
+      "food bank",
+      "duty-free shop",
+      "steakhouse"
+    ],
+    "respuesta": "b",
+    "explicacion": "Un 'food bank' es un banco de alimentos que entrega víveres a familias necesitadas.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "What is the paved path on the side of a street built specifically for people walking on foot?",
+    "opciones": [
+      "The highway",
+      "The sidewalk (US) / pavement (UK)",
+      "The runway",
+      "The traffic light"
+    ],
+    "respuesta": "b",
+    "explicacion": "La acera o vereda se llama 'sidewalk' en inglés americano y 'pavement' en inglés británico.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "What do we call the painted white stripes on the road where cars must stop to let people walk across the street safely?",
+    "opciones": [
+      "A roundabout",
+      "A crosswalk (US) / zebra crossing (UK)",
+      "A pothole",
+      "A billboard"
+    ],
+    "respuesta": "b",
+    "explicacion": "El paso cebra o cruce peatonal se llama 'crosswalk' (EE. UU.) o 'zebra crossing' (Reino Unido).",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "What is the term for a person who is walking along a street or road, rather than driving in a vehicle?",
+    "opciones": [
+      "A commuter",
+      "A pedestrian",
+      "A passenger",
+      "A motorist"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Pedestrian' significa peatón.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "A street in the historic center of a city where cars and buses are banned and only people on foot are allowed is a:",
+    "opciones": [
+      "freeway",
+      "pedestrian zone (or pedestrian mall)",
+      "parking lot",
+      "toll road"
+    ],
+    "respuesta": "b",
+    "explicacion": "Una 'pedestrian zone' es una zona o calle exclusivamente peatonal.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "To promote eco-friendly transportation and safety, the mayor built a special painted path on the road just for cyclists called a:",
+    "opciones": [
+      "bus stop",
+      "bike lane (or cycle lane)",
+      "sidewalk",
+      "tunnel"
+    ],
+    "respuesta": "b",
+    "explicacion": "Una 'bike lane' es una ciclovía.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "A residential neighborhood surrounded by walls or fences where visitors must pass through a security guardhouse to enter is a:",
+    "opciones": [
+      "slum",
+      "gated community",
+      "downtown",
+      "public park"
+    ],
+    "respuesta": "b",
+    "explicacion": "Una urbanización cerrada con garita de seguridad (muy común en Guayaquil y Samborondón) se llama en inglés 'a gated community'.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "What is the difference between an 'urban area' and a 'rural area'?",
+    "opciones": [
+      "An 'urban area' is a city or town with high population density, while a 'rural area' is the countryside with farms and small villages.",
+      "A 'rural area' has skyscrapers and subways, while an 'urban area' has cows and tractors.",
+      "They are identical.",
+      "'Urban' means underwater, and 'rural' means in the air."
+    ],
+    "respuesta": "a",
+    "explicacion": "'Urban' se refiere a la ciudad; 'rural' se refiere al campo.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Where can working parents leave their babies and toddlers (ages 1 to 4) to be cared for during the daytime while they are at work?",
+    "opciones": [
+      "A nursing home",
+      "A daycare center (or nursery)",
+      "A university",
+      "A shelter"
+    ],
+    "respuesta": "b",
+    "explicacion": "Una guardería infantil o centro de cuidado diario se llama 'daycare center' o 'nursery'.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Small local shops, parks, libraries, swimming pools, and streetlights that make a neighborhood comfortable and pleasant to live in are called public:",
+    "opciones": [
+      "emergencies",
+      "amenities (or facilities)",
+      "obstacles",
+      "penalties"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Public amenities' o 'facilities' son los servicios e instalaciones públicas que brindan comodidad a una comunidad.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "A place where residents can take separated plastic bottles, cardboard, glass, and aluminum cans to be processed and reused is a:",
+    "opciones": [
+      "landfill",
+      "recycling center",
+      "coal mine",
+      "gas station"
+    ],
+    "respuesta": "b",
+    "explicacion": "Un 'recycling center' es un centro de reciclaje o punto limpio.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "VOLUNTEERING & CIVIC LIFE: What do we call a person who freely offers to take part in a task or work for a community organization without being paid?",
+    "opciones": [
+      "An employee",
+      "A volunteer",
+      "A freelancer",
+      "A taxpayer"
+    ],
+    "respuesta": "b",
+    "explicacion": "Un 'volunteer' (voluntario) trabaja de forma altruista en beneficio de la comunidad sin recibir salario.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "What does 'NGO' stand for in international aid and community development?",
+    "opciones": [
+      "National Guard Office",
+      "Non-Governmental Organization",
+      "New Global Order",
+      "Naval General Operation"
+    ],
+    "respuesta": "b",
+    "explicacion": "'NGO' significa 'Non-Governmental Organization' (Organización No Gubernamental - ONG).",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "An organization (like the Red Cross or UNICEF) that uses its money only to help people in need rather than to make money for owners is a:",
+    "opciones": [
+      "commercial corporation",
+      "non-profit organization (or charity)",
+      "stock market",
+      "franchise"
+    ],
+    "respuesta": "b",
+    "explicacion": "Una 'non-profit organization' (organización sin fines de lucro) o 'charity' (organización benéfica) destina todos sus recursos a una causa social.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "When people give money, food, clothes, or blood for free to help a charity or hospital, they _______ them.",
+    "opciones": [
+      "borrow",
+      "donate",
+      "charge",
+      "rent"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Donate' significa donar.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "WORD FAMILY CHECK: Complete the sentence with the correct forms of 'donate': 'Every _______ who _______ blood today will help save lives through their generous _______.'",
+    "opciones": [
+      "donation / donates / donor",
+      "donor / donates / donation",
+      "donate / donor / donating",
+      "donor / donation / donates"
+    ],
+    "respuesta": "b",
+    "explicacion": "La persona que dona es 'donor' (donante), el verbo es 'donates' (dona) y el acto o regalo es 'donation' (donación).",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "An organized community campaign where mobile medical units visit a school, base, or neighborhood so citizens can donate blood is called a:",
+    "opciones": [
+      "blood test",
+      "blood drive",
+      "blood pressure",
+      "blood vessel"
+    ],
+    "respuesta": "b",
+    "explicacion": "En inglés, una campaña de recolección voluntaria se llama 'a drive': 'blood drive' (campaña de donación de sangre), 'food drive' (colecta de alimentos) o 'toy drive' (colecta de juguetes).",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "A concert, dinner, marathon, or bake sale organized specifically to collect money for a school, hospital, or charity is a:",
+    "opciones": [
+      "strike",
+      "fundraiser (or fundraising event)",
+      "press conference",
+      "curfew"
+    ],
+    "respuesta": "b",
+    "explicacion": "Un 'fundraiser' es un evento benéfico para recaudar fondos.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "When neighbors organize themselves in coordination with the local police to keep an eye on each other's houses, report suspicious activity, and prevent crime, they form a:",
+    "opciones": [
+      "street gang",
+      "neighborhood watch",
+      "choir",
+      "labor union"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Neighborhood watch' es un comité o brigada de vigilancia barrial contra la delincuencia.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "If the residents of a neighborhood want the mayor to install traffic lights in front of a school, they can write a formal request signed by hundreds of citizens. This document is a:",
+    "opciones": [
+      "prescription",
+      "petition",
+      "receipt",
+      "brochure"
+    ],
+    "respuesta": "b",
+    "explicacion": "Una 'petition' (petición ciudadana) es un documento formal firmado por muchos vecinos para solicitar una obra o cambio a las autoridades.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Unpaid work performed by a person or group of people for the benefit and improvement of their local area (such as painting a school or planting trees) is:",
+    "opciones": [
+      "overtime",
+      "community service",
+      "remote work",
+      "freelancing"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Community service' es el servicio o labor comunitaria.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Voting in elections, paying taxes, obeying the law, and defending the country are examples of a citizen's:",
+    "opciones": [
+      "bad habits",
+      "civic duties (or civic responsibilities)",
+      "leisure activities",
+      "perks"
+    ],
+    "respuesta": "b",
+    "explicacion": "Los 'civic duties' son los deberes y responsabilidades cívicas de todo ciudadano.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "When the Armed Forces send doctors, dentists, and engineers to remote rural villages to provide free healthcare and repair schools, this operation is a:",
+    "opciones": [
+      "naval blockade",
+      "civic-military action (or humanitarian outreach)",
+      "mutiny",
+      "court-martial"
+    ],
+    "respuesta": "b",
+    "explicacion": "Las brigadas de apoyo al desarrollo y asistencia médica a la población civil son 'civic-military actions' o 'humanitarian outreach'.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "In Ecuadorian culture, a traditional communal workday where all neighbors come together to clean their street, fix a road, or build a canal is known as a *minga*. What is the closest English equivalent?",
+    "opciones": [
+      "A solo shift",
+      "A community work party (or communal cleanup / barn raising)",
+      "A general strike",
+      "A private party"
+    ],
+    "respuesta": "b",
+    "explicacion": "Una *minga* se traduce al inglés como 'a community work party' o 'communal cleanup', donde toda la comunidad aporta trabajo voluntario colectivo.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "What do we call a senior student or experienced professional who volunteers their time to guide, advise, and be a positive role model for a younger person in the community?",
+    "opciones": [
+      "A rival",
+      "A mentor",
+      "A bystander",
+      "A tenant"
+    ],
+    "respuesta": "b",
+    "explicacion": "Un 'mentor' es un guía o consejero con experiencia que orienta a jóvenes de la comunidad.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "When a local business gives money or uniforms to a youth soccer team in exchange for advertising or to support the community, the business _______ the team.",
+    "opciones": [
+      "fines",
+      "sponsors",
+      "evicts",
+      "arrests"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Sponsor' significa patrocinar o auspiciar un equipo, evento o causa comunitaria.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "What is a 'public awareness campaign'?",
+    "opciones": [
+      "A secret military mission.",
+      "An organized effort using posters, media, and talks to educate the community about an important issue (like dengue prevention or road safety).",
+      "A commercial to sell luxury cars.",
+      "A private birthday party."
+    ],
+    "respuesta": "b",
+    "explicacion": "Una 'awareness campaign' es una campaña de concientización ciudadana.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "What is the term for a person who legally belongs to a country and has the rights and protection of that nation?",
+    "opciones": [
+      "A tourist",
+      "A citizen",
+      "A visitor",
+      "A guest"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Citizen' significa ciudadano. ('Senior citizen' es un término muy respetuoso para referirse a un adulto mayor o persona de la tercera edad).",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Someone who lives in a particular building, street, or neighborhood on a long-term basis is a local:",
+    "opciones": [
+      "pedestrian",
+      "resident",
+      "commuter",
+      "stranger"
+    ],
+    "respuesta": "b",
+    "explicacion": "Un 'resident' es un morador o residente del sector.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "If a person commits a minor community offense (like parking in a handicap spot or littering in a park), the municipality will make them pay a:",
+    "opciones": [
+      "ransom",
+      "fine (or penalty)",
+      "scholarship",
+      "pension"
+    ],
+    "respuesta": "b",
+    "explicacion": "Una multa económica por infringir una ordenanza municipal o ley de tránsito se llama 'a fine'.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "To make a building accessible for people who use wheelchairs, architects must build a sloped surface next to the stairs called a:",
+    "opciones": [
+      "pothole",
+      "wheelchair ramp",
+      "fence",
+      "chimney"
+    ],
+    "respuesta": "b",
+    "explicacion": "Una 'wheelchair ramp' es una rampa de acceso para sillas de ruedas.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "COMMUNITY ISSUES: After the heavy winter rains, the asphalt on the streets broke apart, leaving deep, dangerous holes for cars and motorcycles. What are these holes in the road called?",
+    "opciones": [
+      "Manholes",
+      "Potholes",
+      "Portholes",
+      "Keyholes"
+    ],
+    "respuesta": "b",
+    "explicacion": "Los baches o huecos en el pavimento de las calles se llaman 'potholes'. (Recuerda que 'porthole' es la ventana de un barco).",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "COMMUNITY ISSUES: The crime of intentionally destroying, breaking, or spray-painting public property (such as park benches, bus stops, or school walls) is:",
+    "opciones": [
+      "shoplifting",
+      "vandalism",
+      "smuggling",
+      "phishing"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Vandalism' (vandalismo) es el daño deliberado a la propiedad pública o privada.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "COMMUNITY ISSUES: Dogs and cats that have no home and wander around the streets looking for food in the trash are called:",
+    "opciones": [
+      "wild predators",
+      "stray animals (or strays)",
+      "endangered species",
+      "poultry"
+    ],
+    "respuesta": "b",
+    "explicacion": "Los animales domésticos abandonados o callejeros sin dueño se denominan 'stray animals' (ej. stray dogs, stray cats).",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "COMMUNITY ISSUES: When storm drains are clogged with plastic bottles and trash thrown on the street by careless people, heavy rain quickly causes:",
+    "opciones": [
+      "droughts",
+      "street flooding",
+      "wildfires",
+      "avalanches"
+    ],
+    "respuesta": "b",
+    "explicacion": "La basura que tapa las alcantarillas ('clogged drains') provoca inundaciones en las calles ('street flooding').",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "COMMUNITY ISSUES: What do we call the hours in the morning (07:00–09:00) and evening (17:00–19:00) when traffic congestion is at its worst because everyone is traveling to or from work?",
+    "opciones": [
+      "Prime time",
+      "Rush hour",
+      "Happy hour",
+      "Half-time"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Rush hour' es la hora pico de tráfico en una ciudad.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "COMMUNITY ISSUES: Loud car horns, construction drills, and neighbors playing music at maximum volume at 03:00 AM are examples of:",
+    "opciones": [
+      "air pollution",
+      "noise pollution",
+      "water shortage",
+      "global warming"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Noise pollution' es la contaminación acústica o por ruido excesivo.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "COMMUNITY ISSUES: If it is dangerous to walk at night in a certain district because street lamps are broken, the neighborhood suffers from poor:",
+    "opciones": [
+      "public transport",
+      "street lighting",
+      "recycling",
+      "air conditioning"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Street lighting' es el alumbrado público.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "COMMUNITY ISSUES: When rents and house prices are too high for working families to pay, the city has a shortage of:",
+    "opciones": [
+      "luxury mansions",
+      "affordable housing",
+      "shopping malls",
+      "parking meters"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Affordable housing' significa vivienda asequible o de interés social al alcance del bolsillo ciudadano.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "PHRASAL VERBS: 'If everyone in the neighborhood _______ for just two hours this Saturday, we can paint the school and clean the park before noon!'",
+    "opciones": [
+      "pitches in (or chips in)",
+      "backs out",
+      "gives up",
+      "cuts off"
+    ],
+    "respuesta": "a",
+    "explicacion": "'Pitch in' o 'chip in' significa colaborar entre todos, sumar esfuerzos o aportar dinero en grupo para lograr una meta común.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "PHRASAL VERBS: 'After becoming a successful engineer, Juan Carlos decided to _______ to his community by offering free math classes to low-income students.'",
+    "opciones": [
+      "give back",
+      "look down",
+      "run out",
+      "tear down"
+    ],
+    "respuesta": "a",
+    "explicacion": "'Give back (to the community)' significa retribuir o devolver a la sociedad parte de lo recibido ayudando a los demás.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "PHRASAL VERBS: 'This Sunday, 200 naval cadets are going to Playas to _______ the beach and remove plastic waste.'",
+    "opciones": [
+      "clean up",
+      "mess up",
+      "blow up",
+      "give up"
+    ],
+    "respuesta": "a",
+    "explicacion": "'Clean up' significa limpiar y recoger la basura de un lugar (y como sustantivo con guion: 'a beach clean-up').",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "PHRASAL VERBS: 'The Red Cross needs volunteers to _______ at the shelter by serving hot soup to flood victims.'",
+    "opciones": [
+      "help out",
+      "pass out",
+      "wipe out",
+      "check out"
+    ],
+    "respuesta": "a",
+    "explicacion": "'Help out' significa ayudar o echar una mano en una tarea o emergencia.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "PHRASAL VERBS: 'The municipality decided to _______ the old, abandoned factory and build a modern children's hospital in its place.'",
+    "opciones": [
+      "tear down (or knock down / pull down)",
+      "put up",
+      "set up",
+      "look after"
+    ],
+    "respuesta": "a",
+    "explicacion": "'Tear down', 'knock down' o 'pull down' significan demoler o derribar un edificio o estructura.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Contrast with the previous question: Instead of demolishing a historic building, the city council decided to repair, paint, and modernize it. They decided to _______ it _______.",
+    "opciones": [
+      "tear / down",
+      "do / up (or fix / up / renovate)",
+      "burn / down",
+      "cut / off"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Do up' o 'fix up' (un edificio o casa antigua) significa remodelar, restaurar o renovar.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "PHRASAL VERBS: 'After the earthquake, the Navy quickly _______ a temporary field hospital and water distribution center in the town square.'",
+    "opciones": [
+      "set up",
+      "broke down",
+      "called off",
+      "gave up"
+    ],
+    "respuesta": "a",
+    "explicacion": "'Set up' significa instalar, montar o fundar (un campamento, hospital móvil, comité u organización).",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "PHRASAL VERBS: 'Brave firefighters risked their lives for six hours to _______ the huge fire at the warehouse.'",
+    "opciones": [
+      "put out",
+      "set off",
+      "turn on",
+      "point out"
+    ],
+    "respuesta": "a",
+    "explicacion": "'Put out (a fire)' significa apagar o extinguir un incendio.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "PHRASAL VERBS: 'Volunteers stood outside the community center to _______ free blankets and bottled water to the affected families.'",
+    "opciones": [
+      "hand out (or give out)",
+      "hand in",
+      "take off",
+      "look up"
+    ],
+    "respuesta": "a",
+    "explicacion": "'Hand out' o 'give out' significa repartir o distribuir cosas a un grupo de personas.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "PHRASAL VERBS: 'In a strong community, neighbors always _______ each other, especially when someone is elderly or sick.'",
+    "opciones": [
+      "look out for (or look after)",
+      "look down on",
+      "run out of",
+      "get away from"
+    ],
+    "respuesta": "a",
+    "explicacion": "'Look out for' (velar por el bienestar y seguridad de alguien) y 'look after' (cuidar a alguien) reflejan solidaridad vecinal.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "PHRASAL VERBS: 'The youth program aims to _______ troubled teenagers and offer them sports and job training instead of street life.'",
+    "opciones": [
+      "reach out to",
+      "cut down on",
+      "hang up on",
+      "back out of"
+    ],
+    "respuesta": "a",
+    "explicacion": "'Reach out to someone' significa tender la mano o acercarse a personas que necesitan apoyo o ayuda.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "PHRASAL VERBS: 'Instead of just complaining about neighborhood problems on social media, citizens should _______ local projects to solve them.'",
+    "opciones": [
+      "get involved in (or take part in)",
+      "drop out of",
+      "stay away from",
+      "run out of"
+    ],
+    "respuesta": "a",
+    "explicacion": "'Get involved in' significa involucrarse o comprometerse activamente en una causa o proyecto.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "GRAMMAR TRAP (THE + ADJECTIVE = PLURAL GROUP): Complete the sentence: 'During the freezing winter months, the homeless _______ warm shelter and food.'",
+    "opciones": [
+      "needs",
+      "need",
+      "is needing",
+      "has needed"
+    ],
+    "respuesta": "b",
+    "explicacion": "¡Regla gramatical de oro! Cuando usamos 'THE + adjetivo' (the homeless, the poor, the elderly, the unemployed, the disabled) para referirnos a todo ese grupo social de personas, es SIEMPRE PLURAL (= homeless people) y exige el verbo en plural ('need').",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "GRAMMAR TRAP (THE + ADJECTIVE): Identify the grammatically CORRECT sentence:",
+    "opciones": [
+      "The elderly is very respected in our community.",
+      "The elderlies are very respected in our community.",
+      "The elderly are very respected in our community.",
+      "An elderly are very respected in our community."
+    ],
+    "respuesta": "c",
+    "explicacion": "'The elderly' (los adultos mayores como grupo colectivo) nunca lleva '-s' ni cambia a plural escrito, pero gramaticalmente es PLURAL y lleva 'are'.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "GRAMMAR TRAP (THE + ADJECTIVE): 'After the earthquake, the injured _______ taken immediately to the naval hospital by helicopter.'",
+    "opciones": [
+      "was",
+      "were",
+      "is",
+      "has been"
+    ],
+    "respuesta": "b",
+    "explicacion": "'The injured' (los heridos) es un sustantivo colectivo plural, por lo que requiere el verbo en pasado plural 'were'.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "GRAMMAR TRAP (THE + ADJECTIVE): ' ramps and elevators are installed in public buildings so that _______ can access all services easily.'",
+    "opciones": [
+      "the disabled",
+      "the disableds",
+      "a disabled",
+      "disableds people"
+    ],
+    "respuesta": "a",
+    "explicacion": "Para referirse a las personas con discapacidad en general se usa 'the disabled' (sin '-s' final) o 'people with disabilities'.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "VERB TRAP (RAISE vs RISE): 'Thanks to the charity concert, our community _______ over $15,000 to buy an ambulance.'",
+    "opciones": [
+      "rose",
+      "raised",
+      "rised",
+      "arose"
+    ],
+    "respuesta": "b",
+    "explicacion": "Como hay un objeto directo después del verbo ('$15,000'), se debe usar el verbo transitivo 'raise' (recaudar fondos), cuyo pasado es regular: 'raised'.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Contrast with the previous question (RAISE vs RISE): 'Because of the new neighborhood watch and police patrols, safety has improved and the crime rate has not _______ this year.'",
+    "opciones": [
+      "raised",
+      "risen",
+      "rose",
+      "raising"
+    ],
+    "respuesta": "b",
+    "explicacion": "Aquí no hay objeto directo después del verbo (la tasa sube por sí sola = intransitivo). Por tanto, se usa 'rise -> rose -> risen' ('has not risen').",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Choose the correct pair of verbs (RAISE vs RISE): 'When the cost of living _______, the charity had to _______ more funds to feed poor families.'",
+    "opciones": [
+      "raised / rise",
+      "rose / raise",
+      "risen / raised",
+      "rised / raise"
+    ],
+    "respuesta": "b",
+    "explicacion": "El costo de la vida subió solo (intransitivo en pasado: 'rose'), y la fundación tuvo que recaudar más fondos (transitivo con objeto 'more funds': 'raise').",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "COLLOCATION TRAP (MAKE vs DO in Community): Complete the sentence: 'Even if you only have two hours a week to _______ volunteer work, you can still _______ a huge difference in someone's life!'",
+    "opciones": [
+      "make / do",
+      "do / make",
+      "do / do",
+      "make / make"
+    ],
+    "respuesta": "b",
+    "explicacion": "Regla de colocación: 'DO volunteer work / DO community service / DO good', pero 'MAKE a difference / MAKE a donation / MAKE a contribution'.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "COLLOCATION TRAP (MAKE vs DO): 'The local supermarket decided to _______ a generous donation to the food bank and _______ a favor for the shelter.'",
+    "opciones": [
+      "do / make",
+      "make / do",
+      "make / make",
+      "take / do"
+    ],
+    "respuesta": "b",
+    "explicacion": "Se dice 'make a donation' (hacer una donación) y 'do a favor' (hacer un favor).",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "GRAMMAR TRAP (COMMITTED TO / DEDICATED TO + -ING): 'Our foundation is completely dedicated to _______ stray animals and finding them loving homes.'",
+    "opciones": [
+      "rescue",
+      "rescuing",
+      "rescued",
+      "be rescue"
+    ],
+    "respuesta": "b",
+    "explicacion": "¡Trampa de examen! En 'be dedicated to', 'be committed to' y 'devote time to', la palabra 'to' es una PREPOSICIÓN, por lo que el verbo siguiente DEBE ir en gerundio (-ing): 'dedicated to rescuing'.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Compare with the verb 'volunteer': 'Ten cadets volunteered _______ the elderly carry their groceries.'",
+    "opciones": [
+      "helping",
+      "to help",
+      "for help",
+      "helped"
+    ],
+    "respuesta": "b",
+    "explicacion": "A diferencia de 'dedicated to + -ing', el verbo 'volunteer' va seguido de un infinitivo normal ('volunteer TO help').",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "PREPOSITIONS IN COMMUNITY: 'We are raising money to provide clean drinking water _______ rural communities.'",
+    "opciones": [
+      "for (or to)",
+      "at",
+      "with",
+      "by"
+    ],
+    "respuesta": "a",
+    "explicacion": "La estructura del verbo 'provide' es: 'provide [algo] FOR / TO [alguien]' (o 'provide [alguien] WITH [algo]').",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Apply the reverse structure of 'provide': 'The emergency relief team provided the flood victims _______ warm blankets, clean water, and medicine.'",
+    "opciones": [
+      "to",
+      "with",
+      "for",
+      "of"
+    ],
+    "respuesta": "b",
+    "explicacion": "Cuando después de 'provide' va primero la PERSONA ('the flood victims'), la preposición obligatoria que sigue es 'WITH' ('provide someone WITH something').",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "CAUSATIVE VERBS IN THE COMMUNITY (HAVE / GET SOMETHING DONE): 'The mayor didn't pave the street with his own hands; the municipality _______ by an engineering company.'",
+    "opciones": [
+      "had the street paved",
+      "had paved the street",
+      "made the street pave",
+      "did the street paved"
+    ],
+    "respuesta": "a",
+    "explicacion": "La estructura causativa 'have/get + objeto + participio pasado' ('had the street paved') indica que la alcaldía contrató o encargó la obra a profesionales.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "What does the community motto 'Think globally, act locally' mean?",
+    "opciones": [
+      "Only care about your own house and ignore the rest of the world.",
+      "Consider the health and problems of the entire planet, but take practical action right in your own neighborhood and community.",
+      "Move to another country to help the environment.",
+      "Wait for the United Nations to clean your street."
+    ],
+    "respuesta": "b",
+    "explicacion": "Significa tener conciencia de los grandes desafíos globales, pero empezar a resolverlos mediante acciones concretas en tu propio barrio y ciudad.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Integration Question 1: Choose the sentence with NO grammatical or lexical errors.",
+    "opciones": [
+      "The unemployed needs help, so our charity rose $5,000 to make community service in the suburb.",
+      "The unemployed need support, so our charity raised $5,000 to set up a job-training center in the neighborhood.",
+      "The unemployeds need support, so our charity raised $5,000 for do a difference.",
+      "An unemployed need support, and the crime rate has raised in the slums."
+    ],
+    "respuesta": "b",
+    "explicacion": "La B es impecable: 'The unemployed' lleva verbo plural ('need'), usa el transitivo 'raised $5,000' para recaudar dinero y el phrasal verb 'set up' para fundar un centro.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Integration Question 2: Complete the report on a civic-military action: 'Fifty naval cadets volunteered _______ community service; everyone _______ to clean up the park and repair the school roof.'",
+    "opciones": [
+      "doing / backed out",
+      "to do / pitched in",
+      "to make / tore down",
+      "making / handed in"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Volunteered to do community service' (infinitivo + colocación con 'do'), 'pitched in' (pusieron el hombro / colaboraron entre todos) y 'clean up' (limpiar).",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Integration Question 3: Choose the sentence that uses prepositions and gerunds/infinitives with 100% accuracy.",
+    "opciones": [
+      "This non-profit organization is committed to helping the elderly and providing low-income families with free medical care.",
+      "This non-profit organization is committed to help the elderlies and providing low-income families to free medical care.",
+      "This NGO is dedicated to help the poors and making volunteer work.",
+      "The mayor is committed to fix the potholes on the sidewalk."
+    ],
+    "respuesta": "a",
+    "explicacion": "La A respeta las tres reglas: 'committed to helping' (preposición 'to' + -ing), 'the elderly' (sin -s) y 'providing [someone] WITH [something]'.",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Integration Question 4: Identify the logical statement about urban infrastructure and community safety.",
+    "opciones": [
+      "To protect pedestrians and cyclists, the city council repaired the potholes on the road, painted new crosswalks, installed brighter streetlights, and built a bike lane.",
+      "To protect pedestrians, the mayor tore down the hospital, littered on the sidewalk, and encouraged vandalism in the gated community.",
+      "We live in a dangerous slum on the outskirts because suburbs in English mean extreme poverty.",
+      "The neighborhood watch was set up to increase the crime rate and abandon stray dogs."
+    ],
+    "respuesta": "a",
+    "explicacion": "La A integra con total coherencia el vocabulario urbano: proteger peatones ('pedestrians'), reparar baches ('potholes'), pintar pasos cebra ('crosswalks'), alumbrado público ('streetlights') y ciclovía ('bike lane').",
+    "tema": "Community"
+  },
+  {
+    "enunciado": "Integration Question 5: Complete the inspiring graduation message: 'As future officers, remember that giving _______ to the community and helping those in need is the best way to _______ a lasting difference in our country!'",
+    "opciones": [
+      "up / do",
+      "back / make",
+      "out / take",
+      "off / do"
+    ],
+    "respuesta": "b",
+    "explicacion": "'Giving back to the community' (retribuir a la comunidad) y 'make a lasting difference' (marcar una diferencia duradera).",
+    "tema": "Community"
+  }
+]

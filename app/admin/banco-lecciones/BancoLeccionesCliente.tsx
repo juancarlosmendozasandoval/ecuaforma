@@ -257,8 +257,9 @@ export default function BancoLeccionesCliente({
     const contenido = form.contenido_html.trim();
 
     if (!titulo) return { error: 'El título interno es obligatorio.' };
+    const admiteVideo = form.tipo === 'video' || form.tipo === 'texto';
     if (form.tipo === 'video' && !videoUrl) return { error: 'Indica la URL del video.' };
-    if (form.tipo === 'video' && !/^https?:\/\//i.test(videoUrl)) return { error: 'La URL del video debe empezar con http(s)://' };
+    if (admiteVideo && videoUrl && !/^https?:\/\//i.test(videoUrl)) return { error: 'La URL del video debe empezar con http(s)://' };
     if (form.tipo === 'texto' && !contenido) return { error: 'El contenido del recurso de texto es obligatorio.' };
     if (form.tipo === 'simulador' && !form.simulador_id) return { error: 'Selecciona un simulador.' };
 
@@ -280,7 +281,8 @@ export default function BancoLeccionesCliente({
       payload: {
         titulo_interno: titulo,
         tipo: form.tipo,
-        video_url: form.tipo === 'video' ? videoUrl : null,
+        // Las cápsulas de texto pueden llevar su video encima del Markdown (AulaCliente lo pinta arriba).
+        video_url: admiteVideo ? videoUrl || null : null,
         simulador_id: form.tipo === 'simulador' ? form.simulador_id : null,
         contenido_html: contenido || null,
         adjuntos: conApuntesPizarra(adjuntos, apuntesUrl),
@@ -471,9 +473,11 @@ export default function BancoLeccionesCliente({
               </div>
             </div>
 
-            {form.tipo === 'video' && (
+            {(form.tipo === 'video' || form.tipo === 'texto') && (
               <div>
-                <label className="block text-xs font-bold text-indigo-700 uppercase mb-1">URL del video *</label>
+                <label className="block text-xs font-bold text-indigo-700 uppercase mb-1">
+                  {form.tipo === 'video' ? 'URL del video *' : 'URL del video (opcional, se muestra encima de la teoría)'}
+                </label>
                 <div className="relative">
                   <Video className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
                   <input
@@ -736,7 +740,7 @@ export default function BancoLeccionesCliente({
                 {visibles.map((recurso) => {
                   const ruta = jerarquia(recurso);
                   const detalle =
-                    recurso.tipo === 'video'
+                    recurso.tipo === 'video' || recurso.tipo === 'texto'
                       ? recurso.video_url || ''
                       : recurso.tipo === 'simulador'
                       ? nombreSimulador(recurso.simulador_id)
