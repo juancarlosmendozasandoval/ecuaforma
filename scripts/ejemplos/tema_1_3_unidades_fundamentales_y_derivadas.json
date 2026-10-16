@@ -1,0 +1,471 @@
+{
+  "cursoSlug": "curso-completo-essuna",
+  "moduloPadreId": "4e8a99ce-e311-40bc-ae94-0e2f3bc5c74f",
+  "materiaSlug": "fisica",
+  "institucion": "Armada",
+  "publico": true,
+  "tema": {
+    "nombre": "1.3 Unidades fundamentales y derivadas",
+    "slug": "unidades-fundamentales-y-derivadas",
+    "orden": 3
+  },
+  "SubmoduloTitulo": "1.3 Unidades fundamentales y derivadas",
+  "bloques": [
+    {
+      "tituloCapsula": "📖 Cápsula 1: Las 7 Unidades Fundamentales del SI y su Definición Moderna",
+      "markdown": "### 📖 Cápsula 1: Las 7 Unidades Fundamentales del SI\n\nEn el tema anterior viste que el SI se construye sobre siete magnitudes base. Ahora vamos a conocer a fondo sus **unidades fundamentales** (o unidades de base): cómo se escriben, qué dimensión representan y cómo se definen hoy con una precisión que ya no depende de ningún objeto físico.\n\n#### 1. ¿Qué es una unidad fundamental?\nEs una unidad que se define de forma **independiente** de las demás y que sirve como cimiento para construir todas las otras unidades. Cada una está asociada a una **dimensión** propia, que es la que se usa en el análisis dimensional.\n\n| Magnitud | Unidad | Símbolo | Dimensión | Constante que la define |\n| :--- | :--- | :--- | :--- | :--- |\n| Tiempo | segundo | s | $[T]$ | Frecuencia del cesio-133, $\\Delta\\nu_{\\text{Cs}}$ |\n| Longitud | metro | m | $[L]$ | Velocidad de la luz en el vacío, $c$ |\n| Masa | kilogramo | kg | $[M]$ | Constante de Planck, $h$ |\n| Corriente eléctrica | amperio | A | $[I]$ | Carga elemental, $e$ |\n| Temperatura termodinámica | kelvin | K | $[\\Theta]$ | Constante de Boltzmann, $k_B$ |\n| Cantidad de sustancia | mol | mol | $[N]$ | Constante de Avogadro, $N_A$ |\n| Intensidad luminosa | candela | cd | $[J]$ | Eficacia luminosa, $K_{\\text{cd}}$ |\n\n> **⚓ Trampa de examen:** La dimensión de la temperatura es $[\\Theta]$ (theta), no $[T]$, porque $[T]$ está reservada para el tiempo. Y la unidad es el **kelvin** (K), nunca \"grado kelvin\" ni °K.\n\n#### 2. La gran redefinición del SI (20 de mayo de 2019)\nDurante 130 años el kilogramo fue la masa de un cilindro de platino e iridio guardado en Sèvres (Francia). El problema: un objeto puede ensuciarse, perder átomos o desgastarse, y con él cambiaría el kilogramo de todo el planeta.\n\nPor eso la Conferencia General de Pesas y Medidas (CGPM) decidió definir **todas** las unidades fijando valores **exactos** a siete constantes de la naturaleza:\n\n| Constante | Valor exacto | Define al |\n| :--- | :--- | :--- |\n| Frecuencia hiperfina del cesio-133 | $\\Delta\\nu_{\\text{Cs}} = 9\\,192\\,631\\,770\\text{ Hz}$ | segundo |\n| Velocidad de la luz en el vacío | $c = 299\\,792\\,458\\text{ m/s}$ | metro |\n| Constante de Planck | $h = 6{,}626\\,070\\,15 \\times 10^{-34}\\text{ J}\\cdot\\text{s}$ | kilogramo |\n| Carga elemental | $e = 1{,}602\\,176\\,634 \\times 10^{-19}\\text{ C}$ | amperio |\n| Constante de Boltzmann | $k_B = 1{,}380\\,649 \\times 10^{-23}\\text{ J/K}$ | kelvin |\n| Constante de Avogadro | $N_A = 6{,}022\\,140\\,76 \\times 10^{23}\\text{ mol}^{-1}$ | mol |\n| Eficacia luminosa de una radiación de $540 \\times 10^{12}\\text{ Hz}$ | $K_{\\text{cd}} = 683\\text{ lm/W}$ | candela |\n\n#### 3. Las definiciones que más se preguntan\n- **Segundo (s):** duración de $9\\,192\\,631\\,770$ periodos de la radiación del átomo de cesio-133. Es la base de los relojes atómicos.\n- **Metro (m):** distancia que recorre la luz en el vacío durante $\\frac{1}{299\\,792\\,458}$ de segundo.\n- **Kilogramo (kg):** queda fijado por el valor exacto de $h$, cuya unidad ($\\text{J}\\cdot\\text{s} = \\text{kg}\\cdot\\text{m}^2/\\text{s}$) combina el kilogramo con el metro y el segundo, que ya están definidos.\n- **Amperio (A):** corriente que transporta una carga de 1 C cada segundo, con la carga elemental $e$ fijada exactamente.\n- **Mol (mol):** cantidad de sustancia que contiene exactamente $6{,}022\\,140\\,76 \\times 10^{23}$ entidades elementales (átomos, moléculas o iones).\n\n> **⚓ Ojo Naval:** El kilogramo es la **única** unidad base que ya lleva un prefijo en su nombre (kilo). Por eso los múltiplos y submúltiplos de masa se forman a partir del gramo: se escribe 1 mg, nunca 1 µkg. Y recuerda: los relojes atómicos de los satélites GPS, con los que un buque fija su posición, son la aplicación directa de la definición del segundo.",
+      "videoUrl": null,
+      "tituloSimulador": "Simulador: Unidades Fundamentales y Derivadas 1",
+      "tituloLeccionSimulador": "🎯 Práctica 1: Las 7 Unidades Fundamentales y su Definición",
+      "preguntas": [
+        {
+          "enunciado": "¿Cuál es la unidad SI de la temperatura termodinámica y su símbolo correcto?",
+          "opciones": [
+            "Grado Celsius (°C)",
+            "Kelvin (K)",
+            "Grado kelvin (°K)",
+            "Grado Fahrenheit (°F)"
+          ],
+          "respuesta": "b",
+          "explicacion": "La unidad base es el kelvin, de símbolo K, sin la palabra \"grado\" ni el símbolo °. La forma °K se abandonó en 1967. El grado Celsius es una unidad derivada con nombre especial, y el Fahrenheit no pertenece al SI."
+        },
+        {
+          "enunciado": "¿Cuál es el símbolo correcto de la unidad de corriente eléctrica del SI?",
+          "opciones": [
+            "Amp",
+            "amp",
+            "A",
+            "I"
+          ],
+          "respuesta": "c",
+          "explicacion": "El amperio se simboliza con A mayúscula porque honra a André-Marie Ampère. La letra I designa a la magnitud (la intensidad de corriente), no a la unidad."
+        },
+        {
+          "enunciado": "La unidad SI de cantidad de sustancia es:",
+          "opciones": [
+            "El mol (mol)",
+            "El gramo (g)",
+            "El litro (L)",
+            "La molécula (molec)"
+          ],
+          "respuesta": "a",
+          "explicacion": "Un mol contiene exactamente $6{,}022\\,140\\,76 \\times 10^{23}$ entidades elementales (el número de Avogadro). Su símbolo coincide con su nombre: mol."
+        },
+        {
+          "enunciado": "¿Cuál es la unidad fundamental del SI para la intensidad luminosa?",
+          "opciones": [
+            "El lumen (lm)",
+            "El lux (lx)",
+            "El watt (W)",
+            "La candela (cd)"
+          ],
+          "respuesta": "d",
+          "explicacion": "La candela es la séptima unidad base. El lumen (flujo luminoso) y el lux (iluminancia) son unidades derivadas que se construyen a partir de la candela, y el watt es la unidad de potencia."
+        },
+        {
+          "enunciado": "Desde la redefinición del SI que entró en vigor el 20 de mayo de 2019, todas las unidades fundamentales se definen a partir de:",
+          "opciones": [
+            "Objetos patrón metálicos guardados en Sèvres, Francia.",
+            "Las dimensiones del planeta Tierra.",
+            "Valores numéricos exactos fijados para siete constantes de la naturaleza, como $c$, $h$ y $e$.",
+            "El promedio de las mediciones hechas por los laboratorios de cada país."
+          ],
+          "respuesta": "c",
+          "explicacion": "En 2019 la CGPM fijó valores exactos para siete constantes: la frecuencia del cesio, $c$, $h$, $e$, $k_B$, $N_A$ y $K_{\\text{cd}}$. Así las unidades son estables y reproducibles en cualquier laboratorio del mundo."
+        },
+        {
+          "enunciado": "Actualmente, el metro se define a partir de:",
+          "opciones": [
+            "La velocidad de la luz en el vacío, fijada exactamente en $c = 299\\,792\\,458\\text{ m/s}$.",
+            "La diezmillonésima parte de la distancia entre el polo norte y el ecuador.",
+            "Una barra de platino e iridio que se conserva en París.",
+            "La longitud de un péndulo que bate segundos."
+          ],
+          "respuesta": "a",
+          "explicacion": "Un metro es la distancia que recorre la luz en el vacío durante $\\frac{1}{299\\,792\\,458}$ de segundo. La definición del meridiano (1791) y la de la barra patrón (1889) son históricas y ya fueron abandonadas."
+        },
+        {
+          "enunciado": "¿En qué fenómeno se basa la definición actual del segundo?",
+          "opciones": [
+            "En la duración del día solar medio dividida entre 86 400.",
+            "En el periodo de oscilación de un péndulo de un metro de largo.",
+            "En el tiempo que tarda la Luna en dar una vuelta alrededor de la Tierra.",
+            "En la frecuencia de la transición hiperfina del átomo de cesio-133, fijada en $9\\,192\\,631\\,770\\text{ Hz}$."
+          ],
+          "respuesta": "d",
+          "explicacion": "El segundo es la duración de $9\\,192\\,631\\,770$ periodos de la radiación del cesio-133. La rotación de la Tierra no es perfectamente regular, por eso se reemplazó por los relojes atómicos, que hoy son la referencia del tiempo oficial y del sistema GPS."
+        },
+        {
+          "enunciado": "Hasta 2019 el kilogramo se definía como la masa de un cilindro de platino e iridio guardado en Francia. ¿Qué constante se fijó para definirlo hoy?",
+          "opciones": [
+            "La constante de Planck, $h$",
+            "La constante de gravitación universal, $G$",
+            "La aceleración de la gravedad, $g$",
+            "La velocidad del sonido en el aire"
+          ],
+          "respuesta": "a",
+          "explicacion": "Desde 2019, $h = 6{,}626\\,070\\,15 \\times 10^{-34}\\text{ J}\\cdot\\text{s}$ exactamente. Como $\\text{J}\\cdot\\text{s} = \\text{kg}\\cdot\\text{m}^2/\\text{s}$ y el metro y el segundo ya están definidos, el kilogramo queda fijado. El cilindro patrón podía ganar o perder átomos con el tiempo."
+        },
+        {
+          "enunciado": "¿Qué constante de la naturaleza se fijó para definir el amperio?",
+          "opciones": [
+            "La constante de Avogadro, $N_A$",
+            "La carga elemental, $e$",
+            "La constante de Boltzmann, $k_B$",
+            "La velocidad de la luz, $c$"
+          ],
+          "respuesta": "b",
+          "explicacion": "El amperio se define fijando $e = 1{,}602\\,176\\,634 \\times 10^{-19}\\text{ C}$: un amperio equivale al paso de una carga de 1 coulomb por segundo. $k_B$ define el kelvin, $N_A$ el mol y $c$ el metro."
+        },
+        {
+          "enunciado": "En análisis dimensional, ¿cuáles son los símbolos de dimensión de la temperatura termodinámica y de la corriente eléctrica, respectivamente?",
+          "opciones": [
+            "$[T]$ e $[I]$",
+            "$[K]$ y $[A]$",
+            "$[t]$ y $[C]$",
+            "$[\\Theta]$ e $[I]$"
+          ],
+          "respuesta": "d",
+          "explicacion": "La temperatura usa la letra griega theta, $[\\Theta]$, porque $[T]$ ya está reservada para el tiempo. K y A son unidades, no dimensiones."
+        },
+        {
+          "enunciado": "¿Cuál de las siguientes unidades NO es una unidad fundamental del SI?",
+          "opciones": [
+            "Mol",
+            "Kelvin",
+            "Newton",
+            "Candela"
+          ],
+          "respuesta": "c",
+          "explicacion": "El newton es una unidad derivada: $1\\text{ N} = 1\\text{ kg}\\cdot\\text{m/s}^2$. Las siete unidades base son metro, kilogramo, segundo, amperio, kelvin, mol y candela."
+        },
+        {
+          "enunciado": "¿Qué particularidad tiene el kilogramo frente a las demás unidades fundamentales?",
+          "opciones": [
+            "Es la única unidad base cuyo nombre ya contiene un prefijo (kilo); por eso los múltiplos y submúltiplos de masa se forman a partir del gramo.",
+            "Es la única unidad que se escribe con mayúscula inicial.",
+            "Es la única unidad que no tiene una definición oficial.",
+            "Es la única unidad que no puede medirse con instrumentos."
+          ],
+          "respuesta": "a",
+          "explicacion": "Por esa razón se escribe 1 mg (miligramo) y no 1 µkg, aunque ambos representen $10^{-6}\\text{ kg}$: el SI no admite dos prefijos seguidos."
+        },
+        {
+          "enunciado": "El cronómetro de navegación de un buque se sincroniza con la señal de los satélites GPS, que llevan relojes atómicos a bordo. Esta tecnología se apoya directamente en la definición de:",
+          "opciones": [
+            "El metro",
+            "El segundo",
+            "La candela",
+            "El mol"
+          ],
+          "respuesta": "b",
+          "explicacion": "Los relojes atómicos materializan el segundo a partir de la frecuencia del cesio. La precisión es crítica: un error de una millonésima de segundo en el reloj de un satélite produciría un error de unos 300 m en la posición del buque, porque la señal viaja a la velocidad de la luz."
+        }
+      ]
+    },
+    {
+      "tituloCapsula": "📖 Cápsula 2: Unidades Derivadas y su Expresión en Unidades Fundamentales",
+      "markdown": "### 📖 Cápsula 2: Unidades Derivadas y su Expresión en Unidades Fundamentales\n\nCon solo siete unidades base se pueden expresar **todas** las magnitudes de la Física. Las unidades que se obtienen combinándolas se llaman **unidades derivadas**.\n\n#### 1. ¿Cómo se forma una unidad derivada?\nSe toma la **ecuación que define la magnitud** y se reemplaza cada magnitud por su unidad. En el SI las unidades derivadas son **coherentes**: se forman solo con productos y cocientes de unidades base, sin factores numéricos distintos de 1.\n\n**Ejemplo:** de la definición de velocidad, $v = \\frac{d}{t}$, se obtiene la unidad $\\frac{\\text{m}}{\\text{s}} = \\text{m/s}$.\n\n#### 2. Unidades derivadas sin nombre especial\n\n| Magnitud | Ecuación de definición | Unidad SI |\n| :--- | :--- | :--- |\n| Área | $A = l^2$ | $\\text{m}^2$ |\n| Volumen | $V = l^3$ | $\\text{m}^3$ |\n| Velocidad | $v = d / t$ | $\\text{m/s}$ |\n| Aceleración | $a = \\Delta v / \\Delta t$ | $\\text{m/s}^2$ |\n| Densidad | $\\rho = m / V$ | $\\text{kg/m}^3$ |\n| Caudal | $Q = V / t$ | $\\text{m}^3/\\text{s}$ |\n\n#### 3. Unidades derivadas con nombre especial\nAlgunas unidades derivadas se usan tanto que reciben un nombre propio, casi siempre en honor a un científico:\n\n| Magnitud | Unidad | Símbolo | En otras unidades SI | En unidades fundamentales |\n| :--- | :--- | :--- | :--- | :--- |\n| Frecuencia | hertz | Hz | ciclos por segundo | $\\text{s}^{-1}$ |\n| Fuerza | newton | N | de $F = m \\cdot a$ | $\\text{kg}\\cdot\\text{m}\\cdot\\text{s}^{-2}$ |\n| Presión | pascal | Pa | $\\text{N/m}^2$ | $\\text{kg}\\cdot\\text{m}^{-1}\\cdot\\text{s}^{-2}$ |\n| Energía, trabajo, calor | joule (julio) | J | $\\text{N}\\cdot\\text{m}$ | $\\text{kg}\\cdot\\text{m}^2\\cdot\\text{s}^{-2}$ |\n| Potencia | watt (vatio) | W | $\\text{J/s}$ | $\\text{kg}\\cdot\\text{m}^2\\cdot\\text{s}^{-3}$ |\n| Carga eléctrica | coulomb (culombio) | C | de $q = I \\cdot t$ | $\\text{A}\\cdot\\text{s}$ |\n| Diferencia de potencial | volt (voltio) | V | $\\text{W/A}$ | $\\text{kg}\\cdot\\text{m}^2\\cdot\\text{s}^{-3}\\cdot\\text{A}^{-1}$ |\n| Resistencia eléctrica | ohm (ohmio) | $\\Omega$ | $\\text{V/A}$ | $\\text{kg}\\cdot\\text{m}^2\\cdot\\text{s}^{-3}\\cdot\\text{A}^{-2}$ |\n| Temperatura Celsius | grado Celsius | °C | $t = T - 273{,}15$ | K |\n| Ángulo plano | radián | rad | $\\text{m/m} = 1$ | adimensional |\n\n#### 4. Método paso a paso para deducir una unidad\n1. Escribe la ecuación que define la magnitud.\n2. Reemplaza cada magnitud por su unidad SI.\n3. Simplifica con las reglas del álgebra (las unidades se multiplican, dividen y cancelan como si fueran variables).\n\n**Ejemplo naval:** la presión del agua sobre el casco de un submarino es $p = \\rho \\cdot g \\cdot h$.\n\n$$[p] = \\frac{\\text{kg}}{\\text{m}^3} \\cdot \\frac{\\text{m}}{\\text{s}^2} \\cdot \\text{m} = \\frac{\\text{kg}}{\\text{m}\\cdot\\text{s}^2} = \\text{Pa}$$\n\nA $10\\text{ m}$ de profundidad en agua de mar, con $\\rho \\approx 1\\,025\\text{ kg/m}^3$ y $g = 9{,}8\\text{ m/s}^2$:\n\n$$p = 1\\,025 \\cdot 9{,}8 \\cdot 10 \\approx 1{,}0 \\times 10^{5}\\text{ Pa}$$\n\nEs decir, cada 10 m de profundidad la presión del agua aumenta aproximadamente en una atmósfera.\n\n> **⚓ Trampa de examen:** Para hallar la unidad de una **constante**, despéjala y reemplaza las unidades. En la ley de Hooke, $F = k \\cdot x$, resulta $k = F / x$, cuya unidad es $\\text{N/m}$. Y no confundas $\\text{J}\\cdot\\text{s}$ (unidad de la constante de Planck) con $\\text{J/s}$ (el watt).",
+      "videoUrl": null,
+      "tituloSimulador": "Simulador: Unidades Fundamentales y Derivadas 2",
+      "tituloLeccionSimulador": "🎯 Práctica 2: Unidades Derivadas en Unidades Fundamentales",
+      "preguntas": [
+        {
+          "enunciado": "¿Qué es una unidad derivada del SI?",
+          "opciones": [
+            "Una unidad que no tiene relación con las unidades fundamentales.",
+            "Una unidad antigua que ya no se usa en la ciencia.",
+            "Una unidad que se obtiene multiplicando o dividiendo unidades fundamentales según la ecuación que define la magnitud.",
+            "Cualquier unidad que lleve un prefijo como kilo o mili."
+          ],
+          "respuesta": "c",
+          "explicacion": "Por ejemplo, de $v = d / t$ se obtiene la unidad de velocidad, m/s. En el SI las unidades derivadas son coherentes: se forman sin factores numéricos distintos de 1."
+        },
+        {
+          "enunciado": "La densidad se define como $\\rho = m / V$. ¿Cuál es su unidad en el SI?",
+          "opciones": [
+            "$\\text{kg/m}^3$",
+            "$\\text{g/cm}^2$",
+            "$\\text{kg}\\cdot\\text{m}^3$",
+            "$\\text{m}^3/\\text{kg}$"
+          ],
+          "respuesta": "a",
+          "explicacion": "Masa (kg) entre volumen (m³) da kg/m³. El agua de mar tiene una densidad aproximada de $1\\,025\\text{ kg/m}^3$, algo mayor que la del agua dulce, de $1\\,000\\text{ kg/m}^3$."
+        },
+        {
+          "enunciado": "Si la aceleración es el cambio de velocidad por unidad de tiempo, $a = \\Delta v / \\Delta t$, su unidad SI es:",
+          "opciones": [
+            "$\\text{m/s}$",
+            "$\\text{m}\\cdot\\text{s}$",
+            "$\\text{m}^2/\\text{s}$",
+            "$\\text{m/s}^2$"
+          ],
+          "respuesta": "d",
+          "explicacion": "$\\frac{\\text{m/s}}{\\text{s}} = \\text{m/s}^2$, que también puede escribirse como $\\text{m}\\cdot\\text{s}^{-2}$."
+        },
+        {
+          "enunciado": "A partir de la segunda ley de Newton, $F = m \\cdot a$, el newton expresado en unidades fundamentales es:",
+          "opciones": [
+            "$\\text{kg}\\cdot\\text{m/s}$",
+            "$\\text{kg}\\cdot\\text{m/s}^2$",
+            "$\\text{kg}\\cdot\\text{m}^2/\\text{s}^2$",
+            "$\\text{kg/s}^2$"
+          ],
+          "respuesta": "b",
+          "explicacion": "$1\\text{ N} = 1\\text{ kg} \\cdot 1\\text{ m/s}^2$: es la fuerza que imprime a una masa de 1 kg una aceleración de 1 m/s². Ojo: kg·m/s es la unidad de la cantidad de movimiento y kg·m²/s² es el joule."
+        },
+        {
+          "enunciado": "El trabajo se define como $W = F \\cdot d$. ¿A qué equivale 1 joule (J) en unidades fundamentales?",
+          "opciones": [
+            "$\\text{kg}\\cdot\\text{m/s}^2$",
+            "$\\text{kg}\\cdot\\text{m}^2/\\text{s}^3$",
+            "$\\text{kg}\\cdot\\text{m}^2/\\text{s}^2$",
+            "$\\text{kg}\\cdot\\text{m/s}^3$"
+          ],
+          "respuesta": "c",
+          "explicacion": "$1\\text{ J} = 1\\text{ N}\\cdot\\text{m} = (\\text{kg}\\cdot\\text{m/s}^2)\\cdot\\text{m} = \\text{kg}\\cdot\\text{m}^2/\\text{s}^2$. El joule mide trabajo, energía y calor."
+        },
+        {
+          "enunciado": "La potencia es la rapidez con que se realiza un trabajo, $P = W / t$. Su unidad, el watt (W), equivale a:",
+          "opciones": [
+            "$\\text{J/s} = \\text{kg}\\cdot\\text{m}^2/\\text{s}^3$",
+            "$\\text{J}\\cdot\\text{s} = \\text{kg}\\cdot\\text{m}^2/\\text{s}$",
+            "$\\text{N/s} = \\text{kg}\\cdot\\text{m/s}^3$",
+            "$\\text{N}\\cdot\\text{m} = \\text{kg}\\cdot\\text{m}^2/\\text{s}^2$"
+          ],
+          "respuesta": "a",
+          "explicacion": "Un watt es un joule por segundo. Al dividir el joule ($\\text{kg}\\cdot\\text{m}^2/\\text{s}^2$) entre segundos se obtiene $\\text{kg}\\cdot\\text{m}^2/\\text{s}^3$. J·s es la unidad de la constante de Planck y N·m es el joule, no el watt."
+        },
+        {
+          "enunciado": "La presión se define como fuerza por unidad de área, $p = F / A$. El pascal (Pa) equivale a:",
+          "opciones": [
+            "$\\text{N}\\cdot\\text{m}^2$",
+            "$\\text{kg}\\cdot\\text{m/s}^2$",
+            "$\\text{J/s}$",
+            "$\\text{N/m}^2 = \\text{kg}\\cdot\\text{m}^{-1}\\cdot\\text{s}^{-2}$"
+          ],
+          "respuesta": "d",
+          "explicacion": "$1\\text{ Pa} = \\frac{1\\text{ N}}{1\\text{ m}^2} = \\frac{\\text{kg}\\cdot\\text{m/s}^2}{\\text{m}^2} = \\text{kg}\\cdot\\text{m}^{-1}\\cdot\\text{s}^{-2}$. Es una unidad pequeña: la presión atmosférica normal es de $101\\,325\\text{ Pa}$."
+        },
+        {
+          "enunciado": "El sonar de una corbeta emite pulsos con una frecuencia de 12 kHz. ¿Cuál es la expresión del hertz (Hz) en unidades fundamentales?",
+          "opciones": [
+            "$\\text{s}$",
+            "$\\text{s}^{-1}$",
+            "$\\text{m/s}$",
+            "$\\text{rad}\\cdot\\text{s}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "La frecuencia cuenta ciclos por segundo, y un ciclo es adimensional: $1\\text{ Hz} = 1\\text{ s}^{-1}$. Así, $12\\text{ kHz} = 12\\,000\\text{ s}^{-1}$: el transductor del sonar vibra 12 000 veces cada segundo."
+        },
+        {
+          "enunciado": "Una corriente de 1 A que circula durante 1 s transporta una carga de 1 coulomb (C). Por lo tanto, el coulomb en unidades fundamentales es:",
+          "opciones": [
+            "$\\text{A/s}$",
+            "$\\text{s/A}$",
+            "$\\text{A}\\cdot\\text{s}$",
+            "$\\text{A}\\cdot\\text{s}^2$"
+          ],
+          "respuesta": "c",
+          "explicacion": "De $I = q / t$ se despeja $q = I \\cdot t$, de modo que $1\\text{ C} = 1\\text{ A}\\cdot\\text{s}$. El coulomb es una unidad derivada; el amperio es la unidad base."
+        },
+        {
+          "enunciado": "El volt (V) es la unidad de diferencia de potencial eléctrico. Sabiendo que la potencia eléctrica es $P = \\Delta V \\cdot I$, ¿cuál es una expresión correcta del volt?",
+          "opciones": [
+            "$\\text{W/A}$",
+            "$\\text{W}\\cdot\\text{A}$",
+            "$\\text{A/W}$",
+            "$\\text{J}\\cdot\\text{A}$"
+          ],
+          "respuesta": "a",
+          "explicacion": "Al despejar, $\\Delta V = P / I$, por lo que $1\\text{ V} = 1\\text{ W/A} = 1\\text{ J/C}$. En unidades fundamentales: $\\text{kg}\\cdot\\text{m}^2\\cdot\\text{s}^{-3}\\cdot\\text{A}^{-1}$."
+        },
+        {
+          "enunciado": "La escotilla de un submarino tiene un área de $0{,}5\\text{ m}^2$ y el agua ejerce sobre ella una fuerza de $5 \\times 10^{5}\\text{ N}$. ¿Qué presión soporta la escotilla?",
+          "opciones": [
+            "$2{,}5 \\times 10^{5}\\text{ Pa}$",
+            "$5 \\times 10^{5}\\text{ Pa}$",
+            "$1 \\times 10^{5}\\text{ Pa}$",
+            "$1 \\times 10^{6}\\text{ Pa}$"
+          ],
+          "respuesta": "d",
+          "explicacion": "$p = \\frac{F}{A} = \\frac{5 \\times 10^{5}\\text{ N}}{0{,}5\\text{ m}^2} = 1 \\times 10^{6}\\text{ Pa} = 1\\text{ MPa}$. Dividir entre un número menor que 1 aumenta el resultado. Es una presión unas diez veces mayor que la atmosférica, propia de unos 100 m de profundidad."
+        },
+        {
+          "enunciado": "El cabrestante de un buque realiza un trabajo de $18\\,000\\text{ J}$ en $6\\text{ s}$ al levar el ancla. ¿Cuál es su potencia media?",
+          "opciones": [
+            "$108\\,000\\text{ W}$",
+            "$3\\,000\\text{ W}$",
+            "$300\\text{ W}$",
+            "$1\\,800\\text{ W}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "$P = \\frac{W}{t} = \\frac{18\\,000\\text{ J}}{6\\text{ s}} = 3\\,000\\text{ W} = 3\\text{ kW}$. Multiplicar, como en la opción de $108\\,000$, sería confundir el watt (J/s) con J·s."
+        },
+        {
+          "enunciado": "En la ley de Hooke, $F = k \\cdot x$, la fuerza se mide en newtons y el estiramiento $x$ en metros. ¿Cuál es la unidad SI de la constante elástica $k$?",
+          "opciones": [
+            "$\\text{N/m}$",
+            "$\\text{N}\\cdot\\text{m}$",
+            "$\\text{N}\\cdot\\text{m}^2$",
+            "$\\text{m/N}$"
+          ],
+          "respuesta": "a",
+          "explicacion": "Al despejar, $k = F / x$, por lo que su unidad es N/m, equivalente a $\\text{kg/s}^2$ en unidades fundamentales. Este método sirve para hallar la unidad de cualquier constante: se despeja y se reemplazan las unidades."
+        },
+        {
+          "enunciado": "La energía cinética se calcula con $E_c = \\frac{1}{2} m v^2$. ¿Qué unidad SI resulta de esta expresión?",
+          "opciones": [
+            "$\\text{kg}\\cdot\\text{m/s}^2$ (newton)",
+            "$\\text{kg}\\cdot\\text{m/s}$ (cantidad de movimiento)",
+            "$\\text{kg}\\cdot\\text{m}^2/\\text{s}^2$ (joule)",
+            "$\\text{kg}^2\\cdot\\text{m/s}$ (sin nombre especial)"
+          ],
+          "respuesta": "c",
+          "explicacion": "El factor $\\frac{1}{2}$ es adimensional y no aporta unidades: $\\text{kg}\\cdot(\\text{m/s})^2 = \\text{kg}\\cdot\\text{m}^2/\\text{s}^2 = \\text{J}$. Toda forma de energía se mide en joules."
+        }
+      ]
+    },
+    {
+      "tituloCapsula": "📖 Cápsula 3: Escritura Correcta de Unidades y Unidades Aceptadas Fuera del SI",
+      "markdown": "### 📖 Cápsula 3: Escritura Correcta y Unidades Aceptadas Fuera del SI\n\nConocer las unidades no basta: en el examen y en los documentos navales se evalúa que sepas **escribirlas correctamente** y que domines las unidades de uso marítimo que conviven con el SI.\n\n#### 1. Reglas de escritura de unidades\n\n| Regla | Correcto | Incorrecto |\n| :--- | :--- | :--- |\n| Espacio entre el número y el símbolo | 25 m, 20 °C, 50 % | 25m, 20°C, 50% |\n| Producto: punto centrado o espacio | N·m, kW·h | mN cuando se quiere decir metro-newton |\n| Cociente: una sola barra o exponentes negativos | m/s², m·s⁻² | m/s/s |\n| No mezclar nombres y símbolos | km/h o kilómetros por hora | km/hora, kilómetros/h |\n| Nombres de unidades en minúscula | newton, pascal, kelvin | Newton, Pascal, Kelvin |\n| Sin prefijos dobles | mg, nm | µkg, mµm |\n| Símbolos sin plural ni punto | 5 kg, 3 h | 5 kgs., 3 hrs. |\n\nLos **nombres** de las unidades sí admiten plural (\"5 newtons\", \"20 kilogramos\"), pero los **símbolos** nunca. La única unidad cuyo nombre lleva mayúscula es el **grado Celsius**.\n\n> **⚓ Excepción naval:** Los símbolos de ángulo plano (°, ′ y ″) van pegados al número: un rumbo de 045° o una latitud de 2° 10′ S. En cambio, el grado Celsius sí lleva espacio: 25 °C.\n\n#### 2. Unidades fuera del SI aceptadas para usarse con él\nNo pertenecen al SI, pero su uso está aceptado por su enorme importancia práctica:\n\n| Unidad | Símbolo | Equivalencia en el SI | Uso típico en la Armada |\n| :--- | :--- | :--- | :--- |\n| minuto | min | $1\\text{ min} = 60\\text{ s}$ | Guardias y cronometraje |\n| hora | h | $1\\text{ h} = 3\\,600\\text{ s}$ | Singladuras y velocidades |\n| día | d | $1\\text{ d} = 86\\,400\\text{ s}$ | Autonomía de un buque |\n| litro | L | $1\\text{ L} = 1\\text{ dm}^3 = 10^{-3}\\text{ m}^3$ | Tanques de agua y combustible |\n| tonelada | t | $1\\text{ t} = 10^{3}\\text{ kg}$ | Desplazamiento de buques |\n| grado (ángulo) | ° | $1^\\circ = \\frac{\\pi}{180}\\text{ rad}$ | Rumbos y coordenadas |\n| milla náutica | M (también NM) | $1\\text{ M} = 1\\,852\\text{ m}$ | Distancias en navegación |\n| nudo | kn | $1\\text{ kn} = 1\\text{ M/h} \\approx 0{,}514\\text{ m/s}$ | Velocidad de buques |\n| bar | bar | $1\\text{ bar} = 10^{5}\\text{ Pa}$ | Manómetros, buceo y meteorología |\n\n#### 3. Celsius y kelvin: temperaturas y diferencias\nAmbas escalas tienen el **mismo tamaño de grado**; solo difieren en su origen:\n\n$$T\\,(\\text{K}) = t\\,(^\\circ\\text{C}) + 273{,}15$$\n\n- Para convertir una **temperatura**: el agua a 25 °C está a $298{,}15\\text{ K}$.\n- Para una **diferencia** de temperatura no se suma nada: un aumento de 10 °C es un aumento de 10 K.\n\n> **⚓ Trampa de examen:** Si la pregunta habla de un **cambio** de temperatura, el valor numérico en °C y en K es el mismo. Si habla de una temperatura **absoluta**, hay que sumar $273{,}15$.",
+      "videoUrl": null,
+      "tituloSimulador": "Simulador: Unidades Fundamentales y Derivadas 3",
+      "tituloLeccionSimulador": "🎯 Práctica 3: Escritura Correcta y Unidades Navales",
+      "preguntas": [
+        {
+          "enunciado": "Según las reglas de escritura del SI, ¿cuál de las siguientes expresiones de una aceleración está escrita correctamente?",
+          "opciones": [
+            "9,8 m/s/s",
+            "9,8 m/seg²",
+            "9,8 m/s²",
+            "9,8m/s²"
+          ],
+          "respuesta": "c",
+          "explicacion": "Se usa una sola barra de división (m/s² o m·s⁻²), el símbolo oficial del segundo es s (no seg) y entre el número y la unidad siempre va un espacio."
+        },
+        {
+          "enunciado": "¿Qué representa el símbolo mN?",
+          "opciones": [
+            "Metro-newton, unidad de momento de fuerza",
+            "Milinewton, es decir, $10^{-3}\\text{ N}$",
+            "Meganewton, es decir, $10^{6}\\text{ N}$",
+            "Metro por newton"
+          ],
+          "respuesta": "b",
+          "explicacion": "Una m pegada a la izquierda de un símbolo es el prefijo mili. Para escribir el producto newton-metro (unidad de momento de fuerza) se usa un punto centrado o un espacio: N·m o N m. El prefijo mega es M mayúscula."
+        },
+        {
+          "enunciado": "¿Cómo se escribe correctamente el nombre de la unidad de presión del SI dentro de una oración?",
+          "opciones": [
+            "Pascal, siempre con mayúscula por ser un apellido",
+            "PASCAL, en mayúsculas",
+            "Pa., con punto de abreviatura",
+            "pascal, con minúscula, aunque su símbolo Pa lleve mayúscula"
+          ],
+          "respuesta": "d",
+          "explicacion": "Los nombres de las unidades son nombres comunes y se escriben en minúscula (newton, joule, pascal, kelvin), aunque provengan de un apellido. Solo el símbolo lleva mayúscula: Pa, N, J, K. La única excepción es el grado Celsius."
+        },
+        {
+          "enunciado": "Una millonésima de kilogramo ($10^{-6}\\text{ kg}$) se escribe correctamente como:",
+          "opciones": [
+            "1 mg",
+            "1 µkg",
+            "1 µg",
+            "1 mkg"
+          ],
+          "respuesta": "a",
+          "explicacion": "No se permiten prefijos dobles (µkg, mkg). Como $10^{-6}\\text{ kg} = 10^{-3}\\text{ g}$, el prefijo se aplica al gramo: 1 mg. En cambio, 1 µg equivale a $10^{-9}\\text{ kg}$, mil veces menos."
+        },
+        {
+          "enunciado": "¿Cuál de las siguientes expresiones mezcla incorrectamente nombres y símbolos de unidades?",
+          "opciones": [
+            "80 km/h",
+            "80 kilómetros por hora",
+            "80 km/hora",
+            "22,2 m/s"
+          ],
+          "respuesta": "c",
+          "explicacion": "En una misma expresión no se mezclan nombres y símbolos: se escribe km/h (solo símbolos) o kilómetros por hora (solo nombres). Por cierto, 80 km/h entre 3,6 da aproximadamente 22,2 m/s, que también es una expresión correcta."
+        },
+        {
+          "enunciado": "El tanque de agua dulce de un patrullero tiene una capacidad de 12 000 L. Sabiendo que $1\\text{ L} = 1\\text{ dm}^3 = 10^{-3}\\text{ m}^3$, ¿cuál es su capacidad en metros cúbicos?",
+          "opciones": [
+            "$1{,}2\\text{ m}^3$",
+            "$12\\text{ m}^3$",
+            "$120\\text{ m}^3$",
+            "$12\\,000\\text{ m}^3$"
+          ],
+          "respuesta": "b",
+          "explicacion": "$12\\,000\\text{ L} \\times 10^{-3}\\text{ m}^3/\\text{L} = 12\\text{ m}^3$. El litro no es una unidad SI, pero está aceptado para usarse con él. Su símbolo puede ser L o l; se prefiere L para no confundirlo con el número 1."
+        },
+        {
+          "enunciado": "Una fragata tiene un desplazamiento de 2 500 t. Sabiendo que $1\\text{ t} = 10^{3}\\text{ kg}$, su masa en kilogramos es:",
+          "opciones": [
+            "$2{,}5 \\times 10^{3}\\text{ kg}$",
+            "$2{,}5 \\times 10^{4}\\text{ kg}$",
+            "$2{,}5 \\times 10^{5}\\text{ kg}$",
+            "$2{,}5 \\times 10^{6}\\text{ kg}$"
+          ],
+          "respuesta": "d",
+          "explicacion": "$2\\,500\\text{ t} \\times 10^{3}\\text{ kg/t} = 2\\,500\\,000\\text{ kg} = 2{,}5 \\times 10^{6}\\text{ kg}$. La tonelada (t) está aceptada junto al SI; los símbolos Tn o Ton son incorrectos."
+        },
+        {
+          "enunciado": "Un buque navega durante 3 h a una velocidad constante de 12 nudos. Si un nudo equivale a una milla náutica por hora, ¿qué distancia recorre?",
+          "opciones": [
+            "36 millas náuticas",
+            "4 millas náuticas",
+            "15 millas náuticas",
+            "144 millas náuticas"
+          ],
+          "respuesta": "a",
+          "explicacion": "$d = v \\cdot t = 12\\text{ M/h} \\times 3\\text{ h} = 36\\text{ M}$, es decir, $36 \\times 1\\,852\\text{ m} = 66\\,672\\text{ m} \\approx 66{,}7\\text{ km}$. El nudo y la milla náutica no son unidades SI, pero se aceptan en la navegación marítima y aérea."
+        },
+        {
+          "enunciado": "La temperatura del agua de mar en la costa ecuatoriana es de 25 °C. ¿Cuál es su valor en kelvin?",
+          "opciones": [
+            "$248{,}15\\text{ K}$",
+            "$298{,}15\\text{ K}$",
+            "$25\\text{ K}$",
+            "$77\\text{ K}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "$T = t + 273{,}15 = 25 + 273{,}15 = 298{,}15\\text{ K}$. Se escribe 298,15 K, sin la palabra grado ni el símbolo °. El valor 77 corresponde a la misma temperatura en grados Fahrenheit, y 248,15 resulta de restar en lugar de sumar."
+        },
+        {
+          "enunciado": "Durante una guardia, la temperatura de la sala de máquinas sube de 30 °C a 45 °C. ¿Cuál es el aumento de temperatura expresado en kelvin?",
+          "opciones": [
+            "$318{,}15\\text{ K}$",
+            "$288{,}15\\text{ K}$",
+            "$15\\text{ K}$",
+            "$59\\text{ K}$"
+          ],
+          "respuesta": "c",
+          "explicacion": "Una diferencia de 1 °C es igual a una diferencia de 1 K, porque ambas escalas tienen el mismo tamaño de grado y solo están desplazadas 273,15 unidades. Así, 45 °C menos 30 °C da 15 °C, que equivalen a 15 K. El valor 318,15 K es la temperatura final, no el aumento."
+        },
+        {
+          "enunciado": "El manómetro de una botella de buceo de la Armada marca 200 bar. Sabiendo que $1\\text{ bar} = 10^{5}\\text{ Pa}$, ¿cuál es la presión en pascales?",
+          "opciones": [
+            "$2 \\times 10^{3}\\text{ Pa}$",
+            "$2 \\times 10^{5}\\text{ Pa}$",
+            "$2 \\times 10^{9}\\text{ Pa}$",
+            "$2 \\times 10^{7}\\text{ Pa}$"
+          ],
+          "respuesta": "d",
+          "explicacion": "$200\\text{ bar} \\times 10^{5}\\text{ Pa/bar} = 2 \\times 10^{2} \\times 10^{5}\\text{ Pa} = 2 \\times 10^{7}\\text{ Pa} = 20\\text{ MPa}$. El bar no pertenece al SI, pero es muy usado en meteorología (en forma de hPa o mbar) y en los equipos de buceo."
+        },
+        {
+          "enunciado": "¿Cuál de las siguientes afirmaciones sobre las unidades fundamentales y derivadas es completamente correcta?",
+          "opciones": [
+            "El newton es una unidad fundamental y el kilogramo es una unidad derivada.",
+            "Desde 2019 las 7 unidades base se definen con constantes exactas de la naturaleza, y todas las demás (como N, J, W y Pa) se derivan de ellas mediante productos y cocientes.",
+            "El kelvin se escribe °K y el litro es una unidad fundamental del SI.",
+            "El radián es una unidad base y el segundo se define con la rotación de la Tierra."
+          ],
+          "respuesta": "b",
+          "explicacion": "Las siete unidades base (m, kg, s, A, K, mol y cd) se definen con constantes exactas, y las derivadas, como $\\text{N} = \\text{kg}\\cdot\\text{m/s}^2$ o $\\text{Pa} = \\text{N/m}^2$, se construyen a partir de ellas. Las demás opciones tienen errores: el kelvin no lleva °, el litro es una unidad aceptada fuera del SI, el radián es una unidad derivada adimensional y el segundo se define con el átomo de cesio."
+        }
+      ]
+    }
+  ]
+}

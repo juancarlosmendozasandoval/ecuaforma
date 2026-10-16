@@ -8,13 +8,7 @@ import type { SimulatorType, QuestionType } from '../../../../simulador/[slug]/p
 import { esApuntePizarra, parsearAdjuntos } from '@/lib/cursos/adjuntos';
 import { cargarExamenLeccion } from './acciones';
 import { useSupabase } from '../../../../components/AuthProvider';
-
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-// @ts-ignore
-import 'katex/dist/katex.min.css';
+import TextoMarkdown from '../../../../components/TextoMarkdown';
 
 export type LeccionAula = {
   id: string;
@@ -33,12 +27,6 @@ function getYouTubeEmbedUrl(url: string | null) {
   const match = url.match(regExp);
   return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : null;
 }
-
-/** `\[ \]` pasa a bloque `$$`; `\( \)` pasa a fórmula en línea `$`. */
-const normalizarLatex = (texto: string) =>
-  texto
-    .replace(/\\\[([\s\S]*?)\\\]/g, (_, formula) => `\n\n$$\n${(formula || '').trim()}\n$$\n\n`)
-    .replace(/\\\(([\s\S]*?)\\\)/g, (_, formula) => `$${(formula || '').trim()}$`);
 
 export default function AulaCliente({
   leccion,
@@ -258,26 +246,7 @@ export default function AulaCliente({
 
           {contenidoTexto && (
             <article className="prose prose-slate mx-auto max-w-3xl px-5 py-6 sm:prose-lg">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[rehypeKatex]}
-                components={{
-                  a: ({ node, ...props }) => <a {...props} target="_blank" rel="noopener noreferrer" />,
-                  table: ({ node, ...props }) => (
-                    <div className="not-prose my-6 overflow-x-auto rounded-xl border border-gray-200">
-                      <table {...props} className="min-w-full divide-y divide-gray-200 text-sm" />
-                    </div>
-                  ),
-                  th: ({ node, ...props }) => (
-                    <th {...props} className="bg-gray-50 px-4 py-2.5 text-left font-bold text-gray-700" />
-                  ),
-                  td: ({ node, ...props }) => (
-                    <td {...props} className="border-t border-gray-100 px-4 py-2.5 align-top text-gray-700" />
-                  ),
-                }}
-              >
-                {normalizarLatex(contenidoTexto)}
-              </ReactMarkdown>
+              <TextoMarkdown texto={contenidoTexto} prosa />
             </article>
           )}
 

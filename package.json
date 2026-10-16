@@ -25,6 +25,7 @@
     "react-katex": "^3.0.1",
     "react-markdown": "^10.1.0",
     "rehype-katex": "^7.0.1",
+    "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
     "resend": "^6.31.0",

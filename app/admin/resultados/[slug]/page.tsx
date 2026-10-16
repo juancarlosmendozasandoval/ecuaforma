@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSupabase } from '../../../components/AuthProvider';
+import TextoMarkdown from '../../../components/TextoMarkdown';
 import { ArrowLeft, Users, TrendingUp, AlertTriangle, RefreshCw, Trophy, Trash2, Download } from 'lucide-react';
 import Link from 'next/link';
 import { mapearPreguntasExamen } from '@/lib/simuladores/preguntasDeExamen';
@@ -233,7 +234,7 @@ export default function ResultadosPage({ params }: { params: { slug: string } })
               <div key={item.id} className="relative">
                 <div className="flex justify-between text-sm mb-1 font-medium">
                   <span className="truncate w-3/4 text-gray-700">
-                    {idx + 1}. {item.texto}
+                    {idx + 1}. <TextoMarkdown texto={(item.texto || '').replace(/\s*\n\s*/g, ' ')} variante="inline" />
                   </span>
                   <span className={item.tasaFallo > 50 ? 'text-red-600 font-bold' : 'text-gray-600'}>
                     {Math.round(item.tasaFallo)}% fallos

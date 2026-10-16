@@ -1,0 +1,473 @@
+{
+  "cursoSlug": "curso-completo-essuna",
+  "moduloPadreId": "4e8a99ce-e311-40bc-ae94-0e2f3bc5c74f",
+  "materiaSlug": "fisica",
+  "institucion": "Armada",
+  "publico": true,
+  "tema": {
+    "nombre": "1.2 Sistemas de unidades",
+    "slug": "sistemas-de-unidades",
+    "orden": 2
+  },
+  "SubmoduloTitulo": "1.2 Sistemas de unidades",
+  "bloques": [
+    {
+      "tituloCapsula": "📖 Cápsula 1: Magnitudes Físicas, Unidades Fundamentales y el Sistema Internacional (SI)",
+      "markdown": "### 📖 Cápsula 1: Magnitudes Físicas, Unidades Fundamentales y el SI\n\nPara describir cualquier fenómeno físico de forma cuantitativa se necesitan **magnitudes**, **unidades** y **patrones de medida** aceptados universalmente.\n\n#### 1. ¿Qué es una Magnitud Física?\nUna **magnitud física** es toda propiedad de un cuerpo o fenómeno que puede medirse y expresarse numéricamente con una **cantidad + unidad** (ej. $L = 3{,}50\\text{ m}$). Si no se puede medir, no es una magnitud física.\n\n#### 2. Magnitudes Fundamentales vs. Derivadas\n\n| Tipo | Definición | Ejemplos |\n| :--- | :--- | :--- |\n| **Magnitud Fundamental (Base)** | Se define por sí misma; no depende de otras magnitudes. Son los \"ladrillos\" del sistema. | Longitud ($L$), masa ($m$), tiempo ($t$), temperatura ($T$), corriente eléctrica ($I$), cantidad de sustancia ($n$), intensidad luminosa ($I_v$). |\n| **Magnitud Derivada** | Se obtiene combinando magnitudes fundamentales mediante ecuaciones. | Velocidad $v = L / t$, aceleración $a = L / t^2$, fuerza $F = m \\cdot L / t^2$, energía, presión, potencia, etc. |\n\n#### 3. El Sistema Internacional de Unidades (SI)\nEl **SI** (*Système International d'Unités*) fue establecido en 1960 por la Conferencia General de Pesas y Medidas (CGPM) y es el sistema **oficial y obligatorio** en la ciencia, la ingeniería naval y las publicaciones académicas.\n\n**Las 7 unidades fundamentales del SI:**\n\n| Magnitud Fundamental | Unidad SI | Símbolo |\n| :--- | :--- | :--- |\n| Longitud | metro | m |\n| Masa | kilogramo | kg |\n| Tiempo | segundo | s |\n| Temperatura termodinámica | kelvin | K |\n| Corriente eléctrica | amperio | A |\n| Cantidad de sustancia | mol | mol |\n| Intensidad luminosa | candela | cd |\n\n> **⚓ Ojo Naval para el Examen:** Los símbolos de unidades SI son **invariables**: se escriben en **minúscula** (m, kg, s) excepto cuando derivan de un nombre propio (K de Kelvin, A de Ampère, N de Newton). NUNCA llevan punto ni se pluralizan: se escribe $5\\text{ kg}$, NO \"5 kgs.\" ni \"5 Kg\".\n\n#### 4. Prefijos del SI (Múltiplos y Submúltiplos)\nLos prefijos permiten expresar cantidades muy grandes o muy pequeñas sin escribir muchos ceros:\n\n| Prefijo | Símbolo | Factor | Ejemplo Naval |\n| :--- | :--- | :--- | :--- |\n| tera | T | $10^{12}$ | Frecuencias de radar avanzado |\n| giga | G | $10^{9}$ | Frecuencia de radio satelital: $1{,}5\\text{ GHz}$ |\n| mega | M | $10^{6}$ | Potencia de turbina: $25\\text{ MW}$ |\n| kilo | k | $10^{3}$ | Distancia: $5\\text{ km} = 5\\,000\\text{ m}$ |\n| centi | c | $10^{-2}$ | Calibre de un proyectil: $7{,}62\\text{ cm}$ |\n| mili | m | $10^{-3}$ | Espesor de lámina: $0{,}5\\text{ mm}$ |\n| micro | $\\mu$ | $10^{-6}$ | Longitud de onda infrarroja: $10\\text{ }\\mu\\text{m}$ |\n| nano | n | $10^{-9}$ | Tamaño de transistores: $5\\text{ nm}$ |\n\n#### 5. Otros Sistemas de Unidades: CGS e Inglés\nAunque el SI domina la ciencia y la ingeniería moderna, en los exámenes ESSUNA suelen preguntar por los otros dos sistemas históricos:\n\n| Sistema | Longitud | Masa | Tiempo | Uso típico |\n| :--- | :--- | :--- | :--- | :--- |\n| **SI (MKS)** | metro (m) | kilogramo (kg) | segundo (s) | Ciencia, ingeniería, normativa internacional |\n| **CGS (Gaussiano)** | centímetro (cm) | gramo (g) | segundo (s) | Laboratorios de física clásica, textos antiguos |\n| **Inglés (Imperial/Técnico)** | pie (ft) | libra-masa (lb) o slug | segundo (s) | Manuales técnicos de la US Navy, aviación |\n\n> **⚓ Trampa de examen:** El sistema CGS usa las mismas magnitudes fundamentales que el SI (longitud, masa, tiempo) pero con unidades más pequeñas. La relación es: $1\\text{ m} = 100\\text{ cm}$ y $1\\text{ kg} = 1\\,000\\text{ g}$. El sistema Inglés usa el **pie** ($1\\text{ ft} = 0{,}3048\\text{ m}$) y la **libra** ($1\\text{ lb} \\approx 0{,}4536\\text{ kg}$).",
+      "videoUrl": null,
+      "tituloSimulador": "Simulador: Sistemas de Unidades 1",
+      "tituloLeccionSimulador": "🎯 Práctica 1: Magnitudes, Unidades SI y Prefijos",
+      "preguntas": [
+        {
+          "enunciado": "¿Qué es una magnitud física?",
+          "opciones": [
+            "Una opinión subjetiva sobre la belleza de un fenómeno natural.",
+            "Toda propiedad de un cuerpo o fenómeno que puede medirse y expresarse con un valor numérico y una unidad.",
+            "Un número puro sin unidades que describe emociones.",
+            "Un instrumento de laboratorio utilizado para pesar objetos."
+          ],
+          "respuesta": "b",
+          "explicacion": "Una magnitud física es cualquier propiedad medible y cuantificable de un cuerpo o fenómeno (longitud, masa, tiempo, velocidad, etc.). Siempre se expresa como cantidad + unidad."
+        },
+        {
+          "enunciado": "¿Cuál de las siguientes opciones es una magnitud fundamental (base) del Sistema Internacional?",
+          "opciones": [
+            "Velocidad",
+            "Fuerza",
+            "Masa",
+            "Aceleración"
+          ],
+          "respuesta": "c",
+          "explicacion": "La masa es una de las 7 magnitudes fundamentales del SI. La velocidad, la fuerza y la aceleración son magnitudes derivadas porque se definen a partir de combinaciones de magnitudes fundamentales."
+        },
+        {
+          "enunciado": "¿Cuántas magnitudes fundamentales (base) tiene el Sistema Internacional de Unidades (SI)?",
+          "opciones": [
+            "3",
+            "5",
+            "7",
+            "10"
+          ],
+          "respuesta": "c",
+          "explicacion": "El SI posee exactamente 7 magnitudes fundamentales: longitud, masa, tiempo, temperatura termodinámica, corriente eléctrica, cantidad de sustancia e intensidad luminosa."
+        },
+        {
+          "enunciado": "¿Cuál es la diferencia entre una magnitud fundamental y una magnitud derivada?",
+          "opciones": [
+            "La magnitud fundamental se mide con instrumentos caros y la derivada con instrumentos baratos.",
+            "La magnitud fundamental se define por sí misma y no depende de otras, mientras que la derivada se obtiene combinando magnitudes fundamentales mediante ecuaciones.",
+            "Las magnitudes derivadas son más importantes que las fundamentales.",
+            "No existe diferencia; todos los términos significan lo mismo."
+          ],
+          "respuesta": "b",
+          "explicacion": "Las magnitudes fundamentales (longitud, masa, tiempo, etc.) son independientes entre sí. Las derivadas (velocidad, fuerza, energía, etc.) se construyen combinándolas algebraicamente."
+        },
+        {
+          "enunciado": "La velocidad $v = d / t$ se obtiene dividiendo longitud entre tiempo. Por lo tanto, la velocidad es una magnitud:",
+          "opciones": [
+            "Fundamental del SI",
+            "Derivada",
+            "Adimensional",
+            "Escalar pura sin unidades"
+          ],
+          "respuesta": "b",
+          "explicacion": "Como la velocidad se define en términos de dos magnitudes fundamentales (longitud y tiempo), es una magnitud derivada. Sus unidades en el SI son $\\text{m/s}$."
+        },
+        {
+          "enunciado": "¿En qué año y por qué organismo internacional fue establecido oficialmente el Sistema Internacional de Unidades (SI)?",
+          "opciones": [
+            "En 1776 por la Royal Society de Londres.",
+            "En 1960 por la Conferencia General de Pesas y Medidas (CGPM).",
+            "En 1900 por Max Planck en Berlín.",
+            "En 2020 por la Organización Marítima Internacional (OMI)."
+          ],
+          "respuesta": "b",
+          "explicacion": "La 11.a Conferencia General de Pesas y Medidas (CGPM) adoptó oficialmente el SI en 1960, unificando las unidades de medida a nivel mundial."
+        },
+        {
+          "enunciado": "¿Cuál es la unidad SI de masa y cuál es su símbolo correcto?",
+          "opciones": [
+            "Gramo, símbolo g",
+            "Kilogramo, símbolo kg",
+            "Libra, símbolo lb",
+            "Tonelada, símbolo t"
+          ],
+          "respuesta": "b",
+          "explicacion": "La unidad SI de masa es el kilogramo (símbolo: kg, en minúscula). El gramo es la unidad del sistema CGS, y la libra pertenece al sistema Inglés."
+        },
+        {
+          "enunciado": "Según las reglas de escritura del SI, ¿cuál de las siguientes expresiones está escrita CORRECTAMENTE?",
+          "opciones": [
+            "$5\\text{ Kgs.}$",
+            "$5\\text{ kg}$",
+            "$5\\text{ KG}$",
+            "$5\\text{ kgs}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "Los símbolos SI se escriben en minúscula (salvo que deriven de nombre propio), no llevan punto final y nunca se pluralizan. Lo correcto es $5\\text{ kg}$."
+        },
+        {
+          "enunciado": "¿Cuál de los siguientes símbolos de unidades SI está escrito correctamente según la convención de nombre propio?",
+          "opciones": [
+            "n (newton)",
+            "N (newton)",
+            "new (newton)",
+            "NW (newton)"
+          ],
+          "respuesta": "b",
+          "explicacion": "Las unidades que derivan de un nombre propio (Newton, Kelvin, Ampère, Pascal, etc.) llevan su símbolo en mayúscula: N, K, A, Pa. El nombre completo de la unidad se escribe en minúscula: newton."
+        },
+        {
+          "enunciado": "El prefijo SI \"kilo\" representa un factor de:",
+          "opciones": [
+            "$10^{-3}$",
+            "$10^{3}$",
+            "$10^{6}$",
+            "$10^{9}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "El prefijo \"kilo\" (símbolo k) equivale a $10^3 = 1\\,000$. Así, $1\\text{ km} = 1\\,000\\text{ m}$ y $1\\text{ kg} = 1\\,000\\text{ g}$."
+        },
+        {
+          "enunciado": "¿Cuántos metros hay en $3{,}5\\text{ km}$?",
+          "opciones": [
+            "$35\\text{ m}$",
+            "$350\\text{ m}$",
+            "$3\\,500\\text{ m}$",
+            "$35\\,000\\text{ m}$"
+          ],
+          "respuesta": "c",
+          "explicacion": "Como $1\\text{ km} = 10^3\\text{ m} = 1\\,000\\text{ m}$, entonces $3{,}5\\text{ km} = 3{,}5 \\times 1\\,000 = 3\\,500\\text{ m}$."
+        },
+        {
+          "enunciado": "Una fragata tiene una turbina de gas con potencia nominal de $25\\text{ MW}$. Exprese esta potencia en watts (W).",
+          "opciones": [
+            "$25\\,000\\text{ W}$",
+            "$2\\,500\\,000\\text{ W}$",
+            "$25\\,000\\,000\\text{ W}$",
+            "$250\\text{ W}$"
+          ],
+          "respuesta": "c",
+          "explicacion": "El prefijo \"mega\" (M) equivale a $10^6$. Entonces $25\\text{ MW} = 25 \\times 10^6\\text{ W} = 25\\,000\\,000\\text{ W}$."
+        },
+        {
+          "enunciado": "El prefijo \"mili\" (m) representa un factor de $10^{-3}$. ¿Cuántos milímetros (mm) equivalen a $1\\text{ m}$?",
+          "opciones": [
+            "$10\\text{ mm}$",
+            "$100\\text{ mm}$",
+            "$1\\,000\\text{ mm}$",
+            "$10\\,000\\text{ mm}$"
+          ],
+          "respuesta": "c",
+          "explicacion": "Si $1\\text{ mm} = 10^{-3}\\text{ m}$, entonces $1\\text{ m} = 1 / 10^{-3} = 10^3 = 1\\,000\\text{ mm}$."
+        },
+        {
+          "enunciado": "¿Cuáles son las tres unidades fundamentales mecánicas del sistema CGS?",
+          "opciones": [
+            "Metro, kilogramo, segundo",
+            "Centímetro, gramo, segundo",
+            "Pie, libra, segundo",
+            "Kilómetro, tonelada, hora"
+          ],
+          "respuesta": "b",
+          "explicacion": "CGS significa Centímetro-Gramo-Segundo. Es un sistema métrico más antiguo que el SI, usado en textos clásicos de física."
+        },
+        {
+          "enunciado": "¿Cuáles son las unidades fundamentales mecánicas del sistema Inglés (Imperial)?",
+          "opciones": [
+            "Metro, kilogramo, segundo",
+            "Centímetro, gramo, segundo",
+            "Pie, libra, segundo",
+            "Yarda, onza, minuto"
+          ],
+          "respuesta": "c",
+          "explicacion": "El sistema Inglés (o Imperial/Técnico) utiliza el pie (ft) para longitud, la libra (lb) para masa/fuerza y el segundo (s) para tiempo."
+        },
+        {
+          "enunciado": "La equivalencia correcta entre el pie y el metro es:",
+          "opciones": [
+            "$1\\text{ ft} = 1\\text{ m}$",
+            "$1\\text{ ft} = 0{,}3048\\text{ m}$",
+            "$1\\text{ ft} = 2{,}54\\text{ m}$",
+            "$1\\text{ ft} = 0{,}001\\text{ m}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "Por definición exacta, $1\\text{ ft} = 0{,}3048\\text{ m}$ (aproximadamente $30{,}48\\text{ cm}$). Esta equivalencia es fundamental para convertir entre el sistema Inglés y el SI."
+        },
+        {
+          "enunciado": "¿Cuál es la equivalencia aproximada entre la libra-masa y el kilogramo?",
+          "opciones": [
+            "$1\\text{ lb} \\approx 4{,}536\\text{ kg}$",
+            "$1\\text{ lb} \\approx 0{,}4536\\text{ kg}$",
+            "$1\\text{ lb} \\approx 1\\text{ kg}$",
+            "$1\\text{ lb} \\approx 100\\text{ kg}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "La equivalencia es $1\\text{ lb} \\approx 0{,}4536\\text{ kg}$, o equivalentemente, $1\\text{ kg} \\approx 2{,}205\\text{ lb}$."
+        },
+        {
+          "enunciado": "¿Cuál de los siguientes sistemas de unidades es el oficial y obligatorio en publicaciones científicas y en la normativa de ingeniería internacional?",
+          "opciones": [
+            "El sistema CGS",
+            "El sistema Inglés (Imperial)",
+            "El Sistema Internacional de Unidades (SI)",
+            "El sistema natural (unidades de Planck)"
+          ],
+          "respuesta": "c",
+          "explicacion": "El SI es el sistema oficial adoptado por la CGPM y la norma ISO para la ciencia, la ingeniería y el comercio internacional."
+        },
+        {
+          "enunciado": "Un aspirante escribe en su examen la expresión $v = 25\\text{ mts/seg}$. Según las reglas del SI, ¿cuál es el error cometido?",
+          "opciones": [
+            "No hay ningún error; la expresión es perfecta.",
+            "Los símbolos de las unidades SI son fijos e invariables: metro es \"m\" (no \"mts\") y segundo es \"s\" (no \"seg\"). La forma correcta es $v = 25\\text{ m/s}$.",
+            "El error es que debería usar pies en vez de metros.",
+            "El error es no poner punto final después del símbolo."
+          ],
+          "respuesta": "b",
+          "explicacion": "Los símbolos del SI son abreviaturas universales fijas: m para metro, s para segundo, kg para kilogramo, etc. No se modifican, abrevian de otra forma ni se pluralizan."
+        },
+        {
+          "enunciado": "¿Cuál de las siguientes magnitudes NO es una de las 7 magnitudes fundamentales del SI?",
+          "opciones": [
+            "Longitud",
+            "Tiempo",
+            "Fuerza",
+            "Temperatura termodinámica"
+          ],
+          "respuesta": "c",
+          "explicacion": "La fuerza es una magnitud derivada ($F = m \\cdot a$, con unidades $\\text{kg} \\cdot \\text{m/s}^2 = \\text{N}$). Las 7 fundamentales son: longitud, masa, tiempo, temperatura, corriente eléctrica, cantidad de sustancia e intensidad luminosa."
+        }
+      ]
+    },
+    {
+      "tituloCapsula": "📖 Cápsula 2: Conversión de Unidades, Análisis Dimensional y Notación Científica",
+      "markdown": "### 📖 Cápsula 2: Conversión de Unidades, Análisis Dimensional y Notación Científica\n\n#### 1. Método de Factores de Conversión (Regla de Tres por Factores)\nPara convertir unidades se multiplican **factores de conversión** cuyo valor es igual a 1, de forma que la unidad original se cancela algebraicamente y queda la unidad deseada.\n\n**Ejemplo Naval:** Convertir la velocidad de un buque de $20\\text{ nudos}$ a $\\text{m/s}$.\n\nSabiendo que $1\\text{ nudo} = 1{,}852\\text{ km/h}$:\n\n$$20\\text{ nudos} = 20 \\times 1{,}852\\;\\frac{\\text{km}}{\\text{h}} = 37{,}04\\;\\frac{\\text{km}}{\\text{h}}$$\n\nAhora a $\\text{m/s}$:\n\n$$37{,}04\\;\\frac{\\text{km}}{\\text{h}} \\times \\frac{1\\,000\\text{ m}}{1\\text{ km}} \\times \\frac{1\\text{ h}}{3\\,600\\text{ s}} = 10{,}29\\;\\frac{\\text{m}}{\\text{s}}$$\n\n> **⚓ Atajo Naval:** Para convertir de $\\text{km/h}$ a $\\text{m/s}$, se divide entre $3{,}6$. Para el proceso inverso se multiplica por $3{,}6$.\n\n#### 2. Factores de Conversión Clave para el Examen ESSUNA\n\n| Conversión | Equivalencia |\n| :--- | :--- |\n| Longitud | $1\\text{ m} = 100\\text{ cm} = 1\\,000\\text{ mm}$ |\n| Longitud | $1\\text{ km} = 1\\,000\\text{ m}$ |\n| Longitud | $1\\text{ ft} = 0{,}3048\\text{ m} = 30{,}48\\text{ cm}$ |\n| Longitud | $1\\text{ in (pulgada)} = 2{,}54\\text{ cm}$ |\n| Longitud | $1\\text{ milla náutica (mn)} = 1\\,852\\text{ m}$ |\n| Masa | $1\\text{ kg} = 1\\,000\\text{ g}$ |\n| Masa | $1\\text{ lb} \\approx 0{,}4536\\text{ kg}$ |\n| Tiempo | $1\\text{ h} = 3\\,600\\text{ s}$ |\n| Velocidad | $1\\text{ nudo} = 1{,}852\\text{ km/h} \\approx 0{,}5144\\text{ m/s}$ |\n| Velocidad | Para pasar de $\\text{km/h}$ a $\\text{m/s}$: dividir entre $3{,}6$ |\n\n#### 3. Análisis Dimensional\nEs una herramienta poderosa que permite:\n- **Verificar** si una ecuación física es dimensionalmente correcta.\n- **Deducir** relaciones entre magnitudes.\n\n**Principio:** En toda ecuación física válida, las **dimensiones** (unidades fundamentales) del lado izquierdo deben ser **idénticas** a las del lado derecho.\n\nSe usan los símbolos dimensionales: $[L]$ para longitud, $[M]$ para masa y $[T]$ para tiempo.\n\n**Ejemplo:** Verificar la ecuación $v = v_0 + a \\cdot t$\n- Lado izquierdo: $[v] = [L][T]^{-1}$\n- Lado derecho: $[v_0] = [L][T]^{-1}$ y $[a \\cdot t] = [L][T]^{-2} \\cdot [T] = [L][T]^{-1}$\n- Ambos lados: $[L][T]^{-1}$ ✓ La ecuación es dimensionalmente homogénea.\n\n> **⚓ Ojo Naval:** Si al verificar una fórmula las dimensiones NO coinciden en ambos lados, la ecuación está **necesariamente mal**. Pero si coinciden, eso **no garantiza** que sea la fórmula correcta (podría faltar una constante adimensional).\n\n#### 4. Notación Científica\nPermite expresar números muy grandes o muy pequeños de forma compacta:\n\n$$N = a \\times 10^n \\quad \\text{donde } 1 \\leq |a| < 10$$\n\n**Ejemplos:**\n- Velocidad de la luz: $c = 3 \\times 10^8\\text{ m/s}$ (en vez de $300\\,000\\,000\\text{ m/s}$)\n- Masa del electrón: $m_e = 9{,}109 \\times 10^{-31}\\text{ kg}$\n- Distancia Guayaquil-Galápagos: $\\approx 1{,}1 \\times 10^6\\text{ m}$ ($1\\,100\\text{ km}$)\n\n#### 5. Conversión de Unidades de Área y Volumen\nCuidado con las potencias al convertir unidades cuadradas y cúbicas:\n- $1\\text{ m}^2 = (100\\text{ cm})^2 = 10\\,000\\text{ cm}^2 = 10^4\\text{ cm}^2$\n- $1\\text{ m}^3 = (100\\text{ cm})^3 = 1\\,000\\,000\\text{ cm}^3 = 10^6\\text{ cm}^3$\n\n> **⚓ Trampa de examen:** Muchos aspirantes olvidan elevar el factor de conversión a la potencia correspondiente. Al convertir $\\text{m}^2$ a $\\text{cm}^2$ se multiplica por $10^4$ (no por $100$), y al convertir $\\text{m}^3$ a $\\text{cm}^3$ se multiplica por $10^6$ (no por $100$).",
+      "videoUrl": null,
+      "tituloSimulador": "Simulador: Sistemas de Unidades 2",
+      "tituloLeccionSimulador": "🎯 Práctica 2: Conversiones, Análisis Dimensional y Notación Científica",
+      "preguntas": [
+        {
+          "enunciado": "Para convertir unidades se utiliza el método de factores de conversión. ¿Cuál es el principio fundamental de este método?",
+          "opciones": [
+            "Sumar la cantidad con el factor de conversión.",
+            "Multiplicar por fracciones equivalentes a 1, de modo que las unidades no deseadas se cancelen algebraicamente y queden las unidades deseadas.",
+            "Dividir siempre entre 1 000 sin importar las unidades involucradas.",
+            "Redondear el resultado al número entero más cercano."
+          ],
+          "respuesta": "b",
+          "explicacion": "Un factor de conversión es una fracción cuyo valor es 1 (ej. $1\\,000\\text{ m} / 1\\text{ km} = 1$). Al multiplicar, la unidad original se cancela y aparece la unidad deseada."
+        },
+        {
+          "enunciado": "Un buque de la Armada navega a $15\\text{ nudos}$. Sabiendo que $1\\text{ nudo} = 1{,}852\\text{ km/h}$, ¿cuál es su velocidad en km/h?",
+          "opciones": [
+            "$15{,}00\\text{ km/h}$",
+            "$27{,}78\\text{ km/h}$",
+            "$8{,}10\\text{ km/h}$",
+            "$55{,}56\\text{ km/h}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "$15\\text{ nudos} \\times 1{,}852\\text{ km/h por nudo} = 27{,}78\\text{ km/h}$."
+        },
+        {
+          "enunciado": "Para convertir una velocidad de $\\text{km/h}$ a $\\text{m/s}$, el atajo rápido es:",
+          "opciones": [
+            "Multiplicar por $3{,}6$",
+            "Dividir entre $3{,}6$",
+            "Multiplicar por $1\\,000$",
+            "Dividir entre $60$"
+          ],
+          "respuesta": "b",
+          "explicacion": "Como $1\\text{ km/h} = \\frac{1\\,000\\text{ m}}{3\\,600\\text{ s}} = \\frac{1}{3{,}6}\\text{ m/s}$, para ir de km/h a m/s se divide entre $3{,}6$."
+        },
+        {
+          "enunciado": "Un torpedo tiene una velocidad de $72\\text{ km/h}$. Convierta a $\\text{m/s}$.",
+          "opciones": [
+            "$7{,}2\\text{ m/s}$",
+            "$20\\text{ m/s}$",
+            "$720\\text{ m/s}$",
+            "$2\\text{ m/s}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "$72\\text{ km/h} \\div 3{,}6 = 20\\text{ m/s}$."
+        },
+        {
+          "enunciado": "¿Cuántos centímetros tiene un cabo (cuerda) de $4{,}5\\text{ m}$ de largo?",
+          "opciones": [
+            "$45\\text{ cm}$",
+            "$4\\,500\\text{ cm}$",
+            "$450\\text{ cm}$",
+            "$0{,}045\\text{ cm}$"
+          ],
+          "respuesta": "c",
+          "explicacion": "$4{,}5\\text{ m} \\times 100\\text{ cm/m} = 450\\text{ cm}$."
+        },
+        {
+          "enunciado": "¿Cuántos metros equivale una milla náutica?",
+          "opciones": [
+            "$1\\,000\\text{ m}$",
+            "$1\\,609\\text{ m}$",
+            "$1\\,852\\text{ m}$",
+            "$2\\,000\\text{ m}$"
+          ],
+          "respuesta": "c",
+          "explicacion": "Por definición, $1\\text{ milla náutica} = 1\\,852\\text{ m}$. Es diferente a la milla terrestre ($1\\,609\\text{ m}$)."
+        },
+        {
+          "enunciado": "Una pulgada (in) equivale exactamente a:",
+          "opciones": [
+            "$1{,}00\\text{ cm}$",
+            "$2{,}54\\text{ cm}$",
+            "$10{,}00\\text{ cm}$",
+            "$30{,}48\\text{ cm}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "Por definición, $1\\text{ in} = 2{,}54\\text{ cm}$ exactamente. Esta es una de las conversiones más pedidas en exámenes."
+        },
+        {
+          "enunciado": "Un marinero pesa $180\\text{ lb}$. Exprese su masa en kilogramos ($1\\text{ lb} \\approx 0{,}4536\\text{ kg}$).",
+          "opciones": [
+            "$396{,}8\\text{ kg}$",
+            "$18\\text{ kg}$",
+            "$81{,}6\\text{ kg}$",
+            "$180\\text{ kg}$"
+          ],
+          "respuesta": "c",
+          "explicacion": "$180\\text{ lb} \\times 0{,}4536\\text{ kg/lb} = 81{,}648\\text{ kg} \\approx 81{,}6\\text{ kg}$."
+        },
+        {
+          "enunciado": "¿Qué es el análisis dimensional y para qué sirve en Física?",
+          "opciones": [
+            "Es una técnica para medir ángulos con un transportador.",
+            "Es una herramienta que verifica si una ecuación física es correcta comprobando que las dimensiones (unidades fundamentales) sean iguales en ambos lados de la ecuación.",
+            "Es un método para fabricar instrumentos de medición.",
+            "Es la técnica para dibujar figuras en tres dimensiones."
+          ],
+          "respuesta": "b",
+          "explicacion": "El análisis dimensional verifica la homogeneidad de una ecuación: si las dimensiones no coinciden a ambos lados, la ecuación es incorrecta con certeza."
+        },
+        {
+          "enunciado": "¿Cuáles son los símbolos dimensionales para longitud, masa y tiempo, respectivamente?",
+          "opciones": [
+            "$[A]$, $[B]$, $[C]$",
+            "$[L]$, $[M]$, $[T]$",
+            "$[X]$, $[Y]$, $[Z]$",
+            "$[m]$, $[kg]$, $[s]$"
+          ],
+          "respuesta": "b",
+          "explicacion": "En análisis dimensional se usa $[L]$ para longitud, $[M]$ para masa y $[T]$ para tiempo. Estos símbolos representan las dimensiones, no las unidades específicas."
+        },
+        {
+          "enunciado": "¿Cuál es la dimensión de la velocidad en términos de $[L]$, $[M]$ y $[T]$?",
+          "opciones": [
+            "$[M][L][T]$",
+            "$[L][T]^{-1}$",
+            "$[L]^2[T]^{-2}$",
+            "$[M][L][T]^{-2}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "La velocidad se define como distancia/tiempo, por lo tanto $[v] = [L]/[T] = [L][T]^{-1}$."
+        },
+        {
+          "enunciado": "¿Cuál es la dimensión de la fuerza ($F = m \\cdot a$) en términos de $[L]$, $[M]$ y $[T]$?",
+          "opciones": [
+            "$[L][T]^{-1}$",
+            "$[M][L][T]^{-2}$",
+            "$[M][T]^{-1}$",
+            "$[L]^2[M][T]^{-3}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "$[F] = [m] \\cdot [a] = [M] \\cdot [L][T]^{-2} = [M][L][T]^{-2}$. En el SI, la unidad correspondiente es el newton (N = kg$\\cdot$m/s$^2$)."
+        },
+        {
+          "enunciado": "Un cadete propone la fórmula $d = v \\cdot t^2$ para la distancia recorrida con velocidad constante. Al verificar dimensionalmente, ¿es correcta?",
+          "opciones": [
+            "Sí, porque tiene las variables correctas.",
+            "No, porque el lado izquierdo tiene dimensión $[L]$ y el lado derecho tiene dimensión $[L][T]$, lo cual no es homogéneo.",
+            "No, porque la velocidad no existe.",
+            "Sí, porque todas las fórmulas con $v$ y $t$ son válidas."
+          ],
+          "respuesta": "b",
+          "explicacion": "$[d] = [L]$, pero $[v \\cdot t^2] = [L][T]^{-1} \\cdot [T]^2 = [L][T]$. Las dimensiones no coinciden ($[L] \\neq [L][T]$), por lo tanto la fórmula es incorrecta. La correcta es $d = v \\cdot t$."
+        },
+        {
+          "enunciado": "Si al verificar una ecuación las dimensiones SÍ coinciden en ambos lados, ¿podemos asegurar con certeza que la ecuación es la fórmula correcta?",
+          "opciones": [
+            "Sí, la homogeneidad dimensional garantiza al 100 % que la fórmula es correcta.",
+            "No necesariamente; la homogeneidad dimensional es condición necesaria pero no suficiente, ya que podría faltar una constante adimensional (como un factor $1/2$).",
+            "Sí, porque las dimensiones nunca mienten.",
+            "No, porque el análisis dimensional no sirve para nada."
+          ],
+          "respuesta": "b",
+          "explicacion": "El análisis dimensional detecta ecuaciones incorrectas, pero no puede detectar factores numéricos puros (ej. $d = \\frac{1}{2}at^2$ y $d = at^2$ tienen las mismas dimensiones, pero solo la primera es correcta)."
+        },
+        {
+          "enunciado": "La notación científica expresa un número como $a \\times 10^n$. ¿Qué condición debe cumplir el coeficiente $a$?",
+          "opciones": [
+            "$a$ puede ser cualquier número, incluso mayor que 100.",
+            "$1 \\leq |a| < 10$",
+            "$a$ debe ser siempre un número entero.",
+            "$a$ debe ser negativo."
+          ],
+          "respuesta": "b",
+          "explicacion": "En notación científica estándar, el coeficiente $a$ debe ser un número con valor absoluto mayor o igual a 1 y menor que 10."
+        },
+        {
+          "enunciado": "Exprese la velocidad de la luz $c = 300\\,000\\,000\\text{ m/s}$ en notación científica.",
+          "opciones": [
+            "$30 \\times 10^7\\text{ m/s}$",
+            "$3 \\times 10^8\\text{ m/s}$",
+            "$0{,}3 \\times 10^9\\text{ m/s}$",
+            "$300 \\times 10^6\\text{ m/s}$"
+          ],
+          "respuesta": "b",
+          "explicacion": "En notación científica correcta: $300\\,000\\,000 = 3 \\times 10^8\\text{ m/s}$, donde el coeficiente $3$ cumple $1 \\leq 3 < 10$."
+        },
+        {
+          "enunciado": "¿Cuántos centímetros cuadrados ($\\text{cm}^2$) hay en $1\\text{ m}^2$?",
+          "opciones": [
+            "$100\\text{ cm}^2$",
+            "$1\\,000\\text{ cm}^2$",
+            "$10\\,000\\text{ cm}^2$",
+            "$1\\,000\\,000\\text{ cm}^2$"
+          ],
+          "respuesta": "c",
+          "explicacion": "$1\\text{ m}^2 = (1\\text{ m})^2 = (100\\text{ cm})^2 = 100^2\\text{ cm}^2 = 10\\,000\\text{ cm}^2 = 10^4\\text{ cm}^2$. Se debe elevar el factor de conversión al cuadrado."
+        },
+        {
+          "enunciado": "¿Cuántos centímetros cúbicos ($\\text{cm}^3$) hay en $1\\text{ m}^3$?",
+          "opciones": [
+            "$100\\text{ cm}^3$",
+            "$10\\,000\\text{ cm}^3$",
+            "$100\\,000\\text{ cm}^3$",
+            "$1\\,000\\,000\\text{ cm}^3$"
+          ],
+          "respuesta": "d",
+          "explicacion": "$1\\text{ m}^3 = (100\\text{ cm})^3 = 10^6\\text{ cm}^3 = 1\\,000\\,000\\text{ cm}^3$. Recuerde elevar el factor de conversión al cubo."
+        },
+        {
+          "enunciado": "Convierta $5{,}2\\text{ m}^2$ a $\\text{cm}^2$.",
+          "opciones": [
+            "$520\\text{ cm}^2$",
+            "$5\\,200\\text{ cm}^2$",
+            "$52\\,000\\text{ cm}^2$",
+            "$5{,}2\\text{ cm}^2$"
+          ],
+          "respuesta": "c",
+          "explicacion": "$5{,}2\\text{ m}^2 \\times 10^4\\text{ cm}^2/\\text{m}^2 = 52\\,000\\text{ cm}^2$."
+        },
+        {
+          "enunciado": "Pregunta de Integración (Tema 1.2): Seleccione el enunciado que resume de forma 100 % correcta los conceptos de sistemas de unidades, conversiones y análisis dimensional:",
+          "opciones": [
+            "El SI tiene 10 magnitudes fundamentales, el CGS usa metros y el análisis dimensional solo sirve para sumar unidades.",
+            "El SI posee 7 magnitudes fundamentales (longitud, masa, tiempo, temperatura, corriente eléctrica, cantidad de sustancia e intensidad luminosa); las unidades se convierten multiplicando por factores equivalentes a 1; y el análisis dimensional verifica la homogeneidad de las ecuaciones exigiendo que ambos lados tengan las mismas dimensiones.",
+            "El sistema Inglés es obligatorio en toda publicación científica y el CGS usa kilogramos como unidad base.",
+            "La notación científica obliga a que el coeficiente sea mayor que 100 y las dimensiones de una ecuación nunca importan."
+          ],
+          "respuesta": "b",
+          "explicacion": "La opción B integra correctamente todos los conceptos clave del tema 1.2: las 7 magnitudes del SI, el método de conversión por factores, y el principio de homogeneidad dimensional."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,473 @@
+{
+  "cursoSlug": "curso-completo-essuna",
+  "moduloPadreId": "4e8a99ce-e311-40bc-ae94-0e2f3bc5c74f",
+  "materiaSlug": "fisica",
+  "institucion": "Armada",
+  "publico": true,
+  "tema": {
+    "nombre": "1.1 Introducción y naturaleza de la física",
+    "slug": "introduccion-naturaleza-fisica",
+    "orden": 1
+  },
+  "SubmoduloTitulo": "1.1 Introducción y naturaleza de la física",
+  "bloques": [
+    {
+      "tituloCapsula": "📖 Cápsula 1: Objeto de Estudio y Ramas de la Física (Clásica vs. Moderna)",
+      "markdown": "### 📖 Cápsula 1: Objeto de Estudio y Ramas de la Física\n\nLa **Física** (del griego *physis*, que significa «naturaleza») es la ciencia fundamental que estudia las propiedades de la **materia**, la **energía**, el **espacio** y el **tiempo**, así como las interacciones y leyes que gobiernan los fenómenos del universo.\n\n#### 1. ¿Fenómeno Físico o Fenómeno Químico? (¡Trampa de Examen!)\nEn las pruebas de admisión de la Armada es frecuente evaluar si sabes distinguir un cambio físico de uno químico:\n* **Fenómeno Físico:** Es un cambio **reversible** donde la sustancia **NO altera su composición interna ni su identidad molecular** (ej. hervir o congelar agua, estirar un resorte, el movimiento de un buque, la refracción de la luz).\n* **Fenómeno Químico:** Es una transformación **irreversible** donde cambia la estructura interna y se crean **nuevas sustancias** (ej. la oxidación del casco de hierro de un barco, la combustión del diésel en el motor, la digestión).\n\n#### 2. División de la Física: Clásica vs. Moderna\nEl punto de quiebre histórico ocurre en el año **1900** (con la teoría cuántica de Max Planck y la relatividad de Albert Einstein en 1905). El criterio físico que separa ambas ramas depende de la **velocidad ($v$)** frente a la velocidad de la luz ($c \\approx 3 \\times 10^8\\text{ m/s}$) y del **tamaño** del sistema:\n\n| Categoría | Condición de Estudio | Subramas Principales | Aplicaciones Navales y Cotidianas |\n| :--- | :--- | :--- | :--- |\n| **Física Clásica** *(Antes de 1900)* | Cuerpos **macroscópicos** que se mueven a velocidades bajas ($v \\ll c$). | • **Mecánica:** Cinemática, Dinámica y Estática.<br>• **Termodinámica:** Calor y temperatura.<br>• **Acústica:** Sonido y ondas mecánicas.<br>• **Óptica:** Luz como rayo/onda.<br>• **Electromagnetismo:** Electricidad y magnetismo. | Navegación de buques, balística de artillería, sonar submarino, motores diésel, radares y brújulas. |\n| **Física Moderna** *(Desde 1900)* | Partículas **subatómicas/atómicas** o velocidades cercanas a la luz ($v \\approx c$). | • **Mecánica Cuántica:** Comportamiento a escala atómica.<br>• **Relatividad (Especial y General):** Espacio-tiempo a altas velocidades y gravitación.<br>• **Física Nuclear y de Partículas:** Núcleo atómico. | Propulsión de submarinos nucleares, corrección relativista de relojes en satélites GPS, láseres y semiconductores. |\n\n> **⚓ Ojo Naval para el Examen:** Si una pregunta menciona el **sistema GPS**, recuerda que requiere correcciones de la **Física Moderna (Teoría de la Relatividad de Einstein)** porque los satélites viajan a gran velocidad y están bajo menor gravedad que en la superficie del mar.",
+      "videoUrl": null,
+      "tituloSimulador": "Simulador: Intro Física 1",
+      "tituloLeccionSimulador": "🎯 Práctica 1: Naturaleza y Ramas de la Física",
+      "preguntas": [
+        {
+          "enunciado": "Etimológicamente, la palabra «Física» proviene del término griego *physis*, cuyo significado es:",
+          "opciones": [
+            "Movimiento",
+            "Naturaleza",
+            "Medición exacta",
+            "Energía pura"
+          ],
+          "respuesta": "b",
+          "explicacion": "El vocablo griego 'physis' significa 'naturaleza', ya que la física nació como el estudio de todos los fenómenos naturales."
+        },
+        {
+          "enunciado": "¿Cuáles son los cuatro conceptos fundamentales cuyas propiedades e interacciones estudia la Física?",
+          "opciones": [
+            "Átomos, moléculas, células y tejidos",
+            "Materia, energía, espacio y tiempo",
+            "Fuerza, velocidad, aceleración y masa",
+            "Tierra, agua, aire y fuego"
+          ],
+          "respuesta": "b",
+          "explicacion": "Según OpenStax, la física es la ciencia que describe las interacciones fundamentales entre la materia, la energía, el espacio y el tiempo."
+        },
+        {
+          "enunciado": "¿Cuál es la diferencia fundamental entre un fenómeno físico y un fenómeno químico?",
+          "opciones": [
+            "El fenómeno físico solo ocurre en laboratorios y el químico en la naturaleza.",
+            "En el fenómeno físico la materia NO altera su composición molecular interna, mientras que en el químico se forman nuevas sustancias.",
+            "El fenómeno físico siempre libera fuego y el químico absorbe calor.",
+            "En el fenómeno físico desaparece la masa y en el químico se conserva."
+          ],
+          "respuesta": "b",
+          "explicacion": "Un cambio físico no modifica la identidad química de la sustancia (sigue siendo la misma molécula); un cambio químico transforma la sustancia en otra distinta."
+        },
+        {
+          "enunciado": "Durante una navegación de instrucción en el BAE *Guayas*, ocurren varios eventos. ¿Cuál de los siguientes corresponde exclusivamente a un FENÓMENO FÍSICO?",
+          "opciones": [
+            "La corrosión (oxidación) de una cadena de hierro por el contacto con el agua salada y el oxígeno.",
+            "La combustión del diésel dentro de los cilindros del motor auxiliar.",
+            "La reflexión de la luz solar sobre la superficie del océano y el desplazamiento del buque por el empuje del viento.",
+            "La digestión de los alimentos que consume la tripulación en el rancho."
+          ],
+          "respuesta": "c",
+          "explicacion": "La reflexión de la luz y el movimiento mecánico del buque no alteran la estructura molecular del agua, la luz ni el barco. La oxidación, combustión y digestión son reacciones químicas."
+        },
+        {
+          "enunciado": "Identifique cuál de los siguientes procesos cotidianos NO es un fenómeno físico:",
+          "opciones": [
+            "La fusión de un cubo de hielo al sacarlo del congelador.",
+            "El estiramiento de un cabo elástico al amarrar una lancha al muelle.",
+            "La fermentación del jugo de uva para transformarse en vino.",
+            "La propagación de una onda sonora de sonar bajo el agua."
+          ],
+          "respuesta": "c",
+          "explicacion": "La fermentación convierte los azúcares en alcohol etílico y dióxido de carbono (nuevas sustancias), por lo que es un fenómeno químico."
+        },
+        {
+          "enunciado": "¿Qué condiciones físicas determinan el límite de validez de la Física Clásica frente a la Física Moderna?",
+          "opciones": [
+            "La Física Clásica estudia cuerpos macroscópicos que se mueven a velocidades mucho menores que la velocidad de la luz ($v \\ll c$).",
+            "La Física Clásica estudia partículas subatómicas que viajan a la velocidad de la luz ($v \\approx c$).",
+            "La Física Clásica solo es válida en el espacio exterior sin gravedad.",
+            "La Física Clásica solo estudia líquidos y gases, mientras la Moderna estudia sólidos."
+          ],
+          "respuesta": "a",
+          "explicacion": "La Física Clásica describe con total precisión el mundo macroscópico siempre que las velocidades sean muy inferiores a la de la luz ($c \\approx 3 \\times 10^8\\text{ m/s}$)."
+        },
+        {
+          "enunciado": "¿Cuál de las siguientes disciplinas forma parte de la FÍSICA CLÁSICA?",
+          "opciones": [
+            "Mecánica cuántica",
+            "Termodinámica y electromagnetismo",
+            "Física de partículas subatómicas",
+            "Relatividad especial"
+          ],
+          "respuesta": "b",
+          "explicacion": "Las cinco grandes ramas de la Física Clásica son: Mecánica clásica, Termodinámica, Acústica, Óptica geométrica/ondulatoria y Electromagnetismo."
+        },
+        {
+          "enunciado": "¿Cuál de las siguientes áreas pertenece al campo de estudio de la FÍSICA MODERNA?",
+          "opciones": [
+            "La cinemática del movimiento parabólico de un proyectil naval.",
+            "La ley de enfriamiento y transferencia de calor en una caldera de vapor.",
+            "La mecánica cuántica y la teoría de la relatividad de Einstein.",
+            "El equilibrio estático de las fuerzas en los cables de un puente."
+          ],
+          "respuesta": "c",
+          "explicacion": "La Física Moderna (nacida a partir de 1900) comprende principalmente la Mecánica Cuántica, la Física Nuclear/Atómica y la Teoría de la Relatividad."
+        },
+        {
+          "enunciado": "¿Qué rama de la Física Clásica se encarga específicamente de estudiar el movimiento de los cuerpos, sus causas (fuerzas) y las condiciones de equilibrio?",
+          "opciones": [
+            "Termodinámica",
+            "Mecánica",
+            "Óptica",
+            "Acústica"
+          ],
+          "respuesta": "b",
+          "explicacion": "La Mecánica es la rama que estudia el movimiento y el reposo de los cuerpos, dividiéndose en Cinemática, Dinámica y Estática."
+        },
+        {
+          "enunciado": "Dentro de la Mecánica Clásica, ¿cuál es la diferencia exacta entre Cinemática y Dinámica?",
+          "opciones": [
+            "La Cinemática describe geométricamente el movimiento (posición, velocidad, aceleración) sin importar sus causas, mientras que la Dinámica analiza las fuerzas que producen dicho movimiento.",
+            "La Cinemática estudia cuerpos en reposo y la Dinámica estudia cuerpos a la velocidad de la luz.",
+            "La Dinámica no utiliza matemáticas y la Cinemática sí.",
+            "Son exactamente lo mismo."
+          ],
+          "respuesta": "a",
+          "explicacion": "La Cinemática responde al 'cómo se mueve' un objeto; la Dinámica responde al 'por qué se mueve' (mediante las Leyes de Newton y las fuerzas)."
+        },
+        {
+          "enunciado": "El sistema de sonar (*Sound Navigation and Ranging*) utilizado por las corbetas y submarinos de la Armada para detectar objetos bajo el mar se fundamenta directamente en los principios de la:",
+          "opciones": [
+            "Óptica geométrica",
+            "Acústica (propagación y reflexión de ondas mecánicas sonoras)",
+            "Física nuclear",
+            "Relatividad general"
+          ],
+          "respuesta": "b",
+          "explicacion": "El sonar emite pulsos de sonido (ondas acústicas/mecánicas) que viajan por el agua y rebotan en los objetos, siendo una aplicación directa de la Acústica."
+        },
+        {
+          "enunciado": "Por el contrario, el sistema de RADAR (*Radio Detection and Ranging*) de un buque detecta aeronaves y embarcaciones utilizando ondas de radio. ¿En qué rama de la Física se basa el radar?",
+          "opciones": [
+            "Acústica",
+            "Electromagnetismo",
+            "Termodinámica",
+            "Estática"
+          ],
+          "respuesta": "b",
+          "explicacion": "Las ondas de radio son ondas electromagnéticas (viajan a la velocidad de la luz y no necesitan medio material), estudiadas por el Electromagnetismo de Maxwell."
+        },
+        {
+          "enunciado": "El diseño de los periscopios de un submarino, los binoculares de puente y las lentes de cámaras térmicas es aplicación directa de la:",
+          "opciones": [
+            "Óptica",
+            "Acústica",
+            "Cinemática",
+            "Hidrostática"
+          ],
+          "respuesta": "a",
+          "explicacion": "La Óptica estudia el comportamiento de la luz y sus fenómenos como la reflexión en espejos y la refracción en lentes y prismas."
+        },
+        {
+          "enunciado": "¿Qué rama de la Física estudia la conversión de energía térmica (calor) en trabajo mecánico dentro de las turbinas y motores de propulsión de una fragata?",
+          "opciones": [
+            "Óptica física",
+            "Termodinámica",
+            "Acústica submarina",
+            "Cinemática lineal"
+          ],
+          "respuesta": "b",
+          "explicacion": "La Termodinámica analiza los intercambios de calor, la temperatura y la transformación de energía térmica en trabajo mecánico."
+        },
+        {
+          "enunciado": "El sistema de posicionamiento global (GPS) que usan los buques para conocer su latitud y longitud exactas requiere ajustar los relojes atómicos de los satélites debido a su alta velocidad orbital y menor campo gravitatorio. ¿Qué teoría física permite hacer este cálculo?",
+          "opciones": [
+            "La ley de Hooke de los resortes",
+            "La Teoría de la Relatividad (Especial y General) de Albert Einstein",
+            "El principio de Arquímedes de flotación",
+            "La primera ley de la termodinámica"
+          ],
+          "respuesta": "b",
+          "explicacion": "Sin las correcciones de dilatación temporal de la Relatividad Especial y General de Einstein, el GPS acumularía un error de unos 10 kilómetros por día."
+        },
+        {
+          "enunciado": "¿Por qué a la Física se la considera la «ciencia natural más fundamental»?",
+          "opciones": [
+            "Porque fue la única ciencia estudiada en la Edad Media.",
+            "Porque sus leyes universales sirven de base para explicar los principios de la Química, la Biología, la Oceanografía, la Astronomía y todas las ramas de la Ingeniería.",
+            "Porque no necesita experimentos para demostrar sus fórmulas.",
+            "Porque solo estudia objetos creados por el ser humano."
+          ],
+          "respuesta": "b",
+          "explicacion": "Según OpenStax, los enlaces químicos, las corrientes oceánicas, la bioelectricidad celular y las estructuras de ingeniería obedecen en última instancia a las leyes de la física."
+        },
+        {
+          "enunciado": "Cuando un submarino nuclear obtiene energía a partir de la fisión de átomos de Uranio-235 en su reactor, la relación entre la masa desaparecida ($m$) y la enorme energía liberada ($E$) se rige por la famosa ecuación relativista:",
+          "opciones": [
+            "$F = m \\cdot a$",
+            "$E = m \\cdot c^2$",
+            "$P = \\rho \\cdot g \\cdot h$",
+            "$V = I \\cdot R$"
+          ],
+          "respuesta": "b",
+          "explicacion": "La equivalencia entre masa y energía descubierta por Albert Einstein en la Física Moderna está dada por $E = m \\cdot c^2$, donde $c$ es la velocidad de la luz en el vacío."
+        },
+        {
+          "enunciado": "¿Qué científico formuló en el año 1900 la hipótesis de que la energía se emite en paquetes discretos llamados «cuantos» (*quanta*), dando nacimiento a la Física Moderna y la Mecánica Cuántica?",
+          "opciones": [
+            "Isaac Newton",
+            "Max Planck",
+            "Galileo Galilei",
+            "Arquímedes de Siracusa"
+          ],
+          "respuesta": "b",
+          "explicacion": "Max Planck propuso en 1900 la cuantización de la energía ($E = h \\cdot f$), marcando la frontera histórica entre la Física Clásica y la Física Moderna."
+        },
+        {
+          "enunciado": "¿Cuál de los siguientes científicos es considerado el pilar de la Mecánica Clásica y la gravitación universal en el siglo XVII?",
+          "opciones": [
+            "Niels Bohr",
+            "Isaac Newton",
+            "Werner Heisenberg",
+            "Erwin Schrödinger"
+          ],
+          "respuesta": "b",
+          "explicacion": "Isaac Newton publicó en 1687 sus *Principia Mathematica*, estableciendo las tres leyes del movimiento y la ley de gravitación universal, base de la Física Clásica."
+        },
+        {
+          "enunciado": "Si un ingeniero naval calcula la fuerza de empuje hidrostático que mantiene a flote un buque de 3 000 toneladas en reposo en el puerto de Guayaquil, ¿qué subrama de la Mecánica Clásica está aplicando?",
+          "opciones": [
+            "Cinemática relativista",
+            "Estática de fluidos (Hidrostática)",
+            "Electrodinámica cuántica",
+            "Termoquímica"
+          ],
+          "respuesta": "b",
+          "explicacion": "El estudio del equilibrio de cuerpos sumergidos o flotantes en fluidos en reposo (Principio de Arquímedes) corresponde a la Hidrostática, parte de la Mecánica de Fluidos Clásica."
+        }
+      ]
+    },
+    {
+      "tituloCapsula": "📖 Cápsula 2: El Método Científico, Modelos, Leyes y Teorías Físicas",
+      "markdown": "### 📖 Cápsula 2: Método Científico, Modelos, Leyes y Teorías\n\nLa Física es una **ciencia experimental y cuantitativa**: ninguna afirmación es válida si no puede comprobarse mediante mediciones y experimentos reproducibles.\n\n#### 1. Etapas del Método Científico\n1. **Observación:** Examinar atentamente un fenómeno natural y plantear una pregunta o problema.\n2. **Hipótesis:** Explicación provisional, lógica y **falseable/comprobable** que propone una relación causa-efecto (*«Si ocurre A, entonces sucederá B»*).\n3. **Experimentación:** Reproducir el fenómeno en condiciones controladas midiendo sus variables.\n4. **Análisis de datos y Conclusión:** Si los datos contradicen la hipótesis, esta **se descarta o modifica**; si la confirman repetidamente, se valida.\n\n#### 2. ¡Trampa Clásica de Examen! Modelo vs. Ley vs. Teoría\nEn el lenguaje cotidiano la gente dice *«es solo una teoría»* como si fuera una duda, pero en Física **Teoría** y **Ley** tienen el rango más alto de validez científica y cumplen funciones distintas:\n\n| Concepto | ¿Qué es exactamente en Física? | Ejemplo Clásico |\n| :--- | :--- | :--- |\n| **Modelo Físico** | Es una **representación simplificada o idealizada** de un sistema real complejo para facilitar su cálculo (ignora factores secundarios). | • **Partícula puntual:** Tratar un buque entero como un solo punto con masa.<br>• **Caída libre ideal:** Ignorar la resistencia del aire. |\n| **Ley Física** | Describe **QUÉ ocurre** en la naturaleza de forma concisa y universal, casi siempre mediante una **ecuación matemática** ($A = B \\cdot C$). No explica el mecanismo profundo, sino la relación exacta entre variables. | • Segunda Ley de Newton: $$\\vec{F}_{\\text{neta}} = m \\cdot \\vec{a}$$<br>• Ley de Ohm: $$V = I \\cdot R$$ |\n| **Teoría Científica** | Es un marco explicativo amplio, profundo y comprobado por miles de experimentos que explica **POR QUÉ y CÓMO ocurre** un conjunto de fenómenos de la naturaleza. | • **Teoría Cinético-Molecular:** Explica *por qué* los gases ejercen presión por el choque de sus moléculas.<br>• **Teoría de la Relatividad.** |\n\n> **⚓ Regla de Oro (OpenStax):** Una **Teoría** NUNCA «se gradúa» para convertirse en **Ley**. La **Ley** resume *qué pasa* matemáticamente; la **Teoría** explica *por qué pasa*. Ninguna ley ni teoría es un dogma absoluto: si un nuevo experimento demuestra una excepción fuera de su rango de validez, la teoría se amplía o perfecciona.",
+      "videoUrl": null,
+      "tituloSimulador": "Simulador: Intro Física 2",
+      "tituloLeccionSimulador": "🎯 Práctica 2: Método Científico, Modelos, Leyes y Teorías",
+      "preguntas": [
+        {
+          "enunciado": "¿Cuál es la primera etapa del método científico al investigar un fenómeno físico en la naturaleza?",
+          "opciones": [
+            "Publicar una ley matemática definitiva",
+            "La observación sistemática del fenómeno y el planteamiento del problema",
+            "Ocultar los datos que no coinciden con la opinión del investigador",
+            "Comprar instrumentos de medición sin saber qué se va a estudiar"
+          ],
+          "respuesta": "b",
+          "explicacion": "Todo proceso científico inicia con la observación cuidadosa de un fenómeno y la formulación de una pregunta de investigación."
+        },
+        {
+          "enunciado": "En el método científico, ¿qué es exactamente una «hipótesis»?",
+          "opciones": [
+            "Una verdad absoluta que no necesita ser comprobada con experimentos.",
+            "Una suposición o explicación tentativa y comprobable que se formula para responder al problema antes de experimentar.",
+            "El manual de usuario de un instrumento de laboratorio.",
+            "Un error cometido al leer la escala de una regla."
+          ],
+          "respuesta": "b",
+          "explicacion": "Una hipótesis es una conjetura educada y provisional que debe ponerse a prueba mediante la experimentación."
+        },
+        {
+          "enunciado": "Para que una hipótesis sea considerada «científica» en el campo de la Física, ¿qué requisito indispensable debe cumplir?",
+          "opciones": [
+            "Debe estar escrita en latín o griego antiguo.",
+            "Debe ser comprobable y refutable (falseable) mediante experimentos y mediciones.",
+            "Debe ser aprobada por votación popular.",
+            "No debe contener ninguna variable numérica."
+          ],
+          "respuesta": "b",
+          "explicacion": "Si una afirmación no se puede someter a prueba experimental para verificar si es verdadera o falsa, no es una hipótesis científica."
+        },
+        {
+          "enunciado": "¿Qué debe hacer un físico cuando los resultados de múltiples experimentos bien diseñados contradicen su hipótesis inicial?",
+          "opciones": [
+            "Alterar los números del experimento para que coincidan con su hipótesis.",
+            "Modificar o descartar la hipótesis y proponer una nueva que sea coherente con la evidencia experimental.",
+            "Declarar que las leyes de la naturaleza están equivocadas.",
+            "Ignorar el experimento y publicar la hipótesis como una ley."
+          ],
+          "respuesta": "b",
+          "explicacion": "En la ciencia experimental, el experimento es el juez supremo: si los datos refutan la hipótesis, la hipótesis debe corregirse o desecharse."
+        },
+        {
+          "enunciado": "En un experimento para comprobar cómo influye la temperatura del agua de mar en la velocidad del sonido, el investigador cambia intencionalmente la temperatura y mide la velocidad resultante. ¿Cómo se denomina a la variable que el investigador manipula a voluntad (la temperatura)?",
+          "opciones": [
+            "Variable dependiente",
+            "Variable independiente",
+            "Constante universal",
+            "Error aleatorio"
+          ],
+          "respuesta": "b",
+          "explicacion": "La variable independiente (causa) es la que el experimentador controla y modifica; la variable dependiente (efecto, aquí la velocidad del sonido) es la que cambia en respuesta."
+        },
+        {
+          "enunciado": "En el mismo experimento anterior, ¿qué nombre recibe la velocidad del sonido medida, cuyo valor cambia como consecuencia de haber variado la temperatura?",
+          "opciones": [
+            "Variable independiente",
+            "Variable dependiente",
+            "Variable de control constante",
+            "Hipótesis nula"
+          ],
+          "respuesta": "b",
+          "explicacion": "La variable dependiente es el resultado medido que depende de los cambios aplicados a la variable independiente."
+        },
+        {
+          "enunciado": "Según el texto oficial *Física Universitaria* de OpenStax, ¿qué es un «modelo físico»?",
+          "opciones": [
+            "Un científico famoso que recibe el Premio Nobel.",
+            "Una representación mental o matemática simplificada de un fenómeno complejo que conserva sus características esenciales e ignora detalles secundarios.",
+            "Una copia exacta al 100 % de la realidad sin ninguna simplificación.",
+            "Una ley que prohíbe usar ecuaciones."
+          ],
+          "respuesta": "b",
+          "explicacion": "Los modelos físicos simplifican sistemas complejos (como representar un objeto extenso como un punto o despreciar el roce del aire) para poder analizarlos matemáticamente."
+        },
+        {
+          "enunciado": "Cuando un guardiamarina calcula la trayectoria de un buque desde Salinas hasta Galápagos representándolo en la carta náutica como un «punto geométrico sin dimensiones» donde se concentra toda su masa, ¿qué modelo físico clásico está utilizando?",
+          "opciones": [
+            "El modelo atómico de Bohr",
+            "El modelo de partícula o punto material",
+            "El modelo de gas ideal",
+            "El modelo de cuerpo negro radiante"
+          ],
+          "respuesta": "b",
+          "explicacion": "El modelo de 'partícula' o 'punto material' idealiza un cuerpo real como un punto sin tamaño ni rotación cuando sus dimensiones son muy pequeñas comparadas con la distancia recorrida."
+        },
+        {
+          "enunciado": "Al resolver ejercicios básicos de caída libre, solemos asumir que una moneda y una pluma caen con la misma aceleración $g = 9,8\\text{ m/s}^2$ despreciando la resistencia del aire. Esto es un ejemplo de:",
+          "opciones": [
+            "Un error de cálculo matemático",
+            "Una idealización o modelo físico simplificado",
+            "Un fenómeno químico irreversible",
+            "Una hipótesis refutada"
+          ],
+          "respuesta": "b",
+          "explicacion": "Despreciar la fricción del aire o el rozamiento en una polea son idealizaciones propias de los modelos físicos para estudiar el fenómeno principal."
+        },
+        {
+          "enunciado": "¡Trampa de Examen! ¿Cuál es la diferencia exacta entre una «Ley Física» y una «Teoría Científica» según OpenStax?",
+          "opciones": [
+            "Una teoría es una simple sospecha sin pruebas, y cuando se comprueba pasa a llamarse ley.",
+            "Una Ley describe de forma concisa y matemática QUÉ ocurre en un fenómeno, mientras que una Teoría es un marco amplio que explica POR QUÉ y CÓMO ocurre ese conjunto de fenómenos.",
+            "Las leyes solo existen en Física y las teorías solo existen en Biología.",
+            "Las teorías usan ecuaciones y las leyes nunca usan fórmulas."
+          ],
+          "respuesta": "b",
+          "explicacion": "En física, tanto las Leyes como las Teorías están respaldadas por enorme evidencia experimental: la Ley sintetiza el 'qué' en una relación matemática (ej. $F = ma$), y la Teoría explica el 'por qué' completo."
+        },
+        {
+          "enunciado": "La expresión matemática $F = G \\frac{m_1 m_2}{r^2}$, que establece de manera concisa que dos masas se atraen en proporción directa al producto de sus masas e inversa al cuadrado de la distancia que las separa, corresponde a una:",
+          "opciones": [
+            "Hipótesis no comprobada",
+            "Ley física (Ley de Gravitación Universal de Newton)",
+            "Observación cualitativa sin números",
+            "Variable independiente"
+          ],
+          "respuesta": "b",
+          "explicacion": "Es un enunciado universal expresado mediante una ecuación matemática que describe exactamente cómo varía la fuerza gravitatoria: una Ley Física."
+        },
+        {
+          "enunciado": "¿Por qué es FALSO afirmar que «la Teoría de la Relatividad de Einstein es dudosa porque todavía es solo una teoría y no una ley»?",
+          "opciones": [
+            "Porque en ciencia la palabra «teoría» no significa 'adivinanza', sino una explicación profunda y rigurosamente demostrada por miles de experimentos.",
+            "Porque Einstein nunca usó matemáticas.",
+            "Porque la relatividad ya fue descartada en el siglo XIX.",
+            "Porque ninguna teoría puede aplicarse a la tecnología."
+          ],
+          "respuesta": "a",
+          "explicacion": "En el vocabulario científico riguroso, una Teoría es el grado más alto de comprensión explicativa de la naturaleza, verificada experimentalmente una y otra vez."
+        },
+        {
+          "enunciado": "¿Cuál es la diferencia entre una observación «cualitativa» y una observación «cuantitativa» en un laboratorio de física?",
+          "opciones": [
+            "La cualitativa describe características sin medir números (ej. 'el agua está caliente'), mientras que la cuantitativa asigna un valor numérico y una unidad de medida (ej. 'el agua está a $85\\text{ }^\\circ\\text{C}$').",
+            "La cualitativa es más precisa que la cuantitativa.",
+            "La cuantitativa no utiliza instrumentos de medición.",
+            "Ambas significan exactamente lo mismo."
+          ],
+          "respuesta": "a",
+          "explicacion": "La Física es una ciencia cuantitativa porque exige medir magnitudes con números y unidades estándar, superando las descripciones meramente cualitativas."
+        },
+        {
+          "enunciado": "¿Qué significa que un experimento físico debe ser «reproducible»?",
+          "opciones": [
+            "Que pueda grabarse en video para redes sociales.",
+            "Que cualquier otro científico en cualquier lugar del mundo, siguiendo las mismas condiciones y procedimiento, debe obtener resultados equivalentes.",
+            "Que el experimento solo funcione cuando lo realiza su creador original.",
+            "Que no requiera ningún instrumento de medición."
+          ],
+          "respuesta": "b",
+          "explicacion": "La reproducibilidad es la garantía de objetividad en la física: las leyes naturales son las mismas en Guayaquil, en Tokio o en alta mar."
+        },
+        {
+          "enunciado": "Cuando se descubrió que las leyes de Newton fallaban para electrones que se mueven al $99\\%$ de la velocidad de la luz, ¿se descartaron las leyes de Newton para construir edificios y barcos?",
+          "opciones": [
+            "Sí, hoy está prohibido usar las leyes de Newton en ingeniería.",
+            "No, porque las leyes de Newton siguen siendo un caso límite extraordinariamente exacto dentro de su rango de validez ($v \\ll c$).",
+            "Sí, ahora los barcos se diseñan con mecánica cuántica.",
+            "No, porque la velocidad de la luz no existe."
+          ],
+          "respuesta": "b",
+          "explicacion": "Las nuevas teorías no destruyen la utilidad práctica de las leyes clásicas dentro de su dominio de validez: para velocidades bajas ($v \\ll c$), las fórmulas de Einstein se reducen exactamente a las de Newton."
+        },
+        {
+          "enunciado": "Ordene cronológicamente los pasos lógicos de una investigación aplicando el método científico:\n1. Experimentación controlada\n2. Observación del fenómeno\n3. Formulación de la hipótesis\n4. Análisis de resultados y conclusión",
+          "opciones": [
+            "3, 1, 2, 4",
+            "2, 3, 1, 4",
+            "1, 2, 4, 3",
+            "4, 3, 2, 1"
+          ],
+          "respuesta": "b",
+          "explicacion": "El orden lógico es: 2. Observación -> 3. Hipótesis -> 1. Experimentación -> 4. Análisis y conclusión."
+        },
+        {
+          "enunciado": "Un cadete observa que el período de oscilación de un péndulo parece depender solo del largo de la cuerda y no del peso de la esfera. Entonces afirma: «Si duplico la masa de la esfera manteniendo el mismo largo de cuerda, el tiempo de oscilación no cambiará». Este enunciado previo a la prueba es:",
+          "opciones": [
+            "Una ley universal inmutable",
+            "Una hipótesis científica comprobable",
+            "Un fenómeno químico",
+            "Una unidad derivada"
+          ],
+          "respuesta": "b",
+          "explicacion": "Es una predicción lógica de tipo 'Si... entonces...' que relaciona variables y puede verificarse inmediatamente con un cronómetro en el laboratorio: una hipótesis."
+        },
+        {
+          "enunciado": "¿Qué papel juega la Matemática dentro de la Física?",
+          "opciones": [
+            "Es un adorno innecesario porque la física es solo descriptiva.",
+            "Es el lenguaje formal y la herramienta lógica que permite expresar leyes con exactitud y realizar predicciones cuantitativas.",
+            "Reemplaza por completo a los experimentos de laboratorio.",
+            "Solo se utiliza en la Física Moderna."
+          ],
+          "respuesta": "b",
+          "explicacion": "Como afirmó Galileo Galilei, 'el libro de la naturaleza está escrito en lenguaje matemático': las ecuaciones permiten modelar y predecir con precisión el comportamiento físico."
+        },
+        {
+          "enunciado": "Si una afirmación sobre el universo asegura que cierta «energía mística invisible» mueve los objetos, pero declara que es imposible medirla o detectarla con ningún instrumento ni experimento, ¿cómo la clasifica la Física?",
+          "opciones": [
+            "Como una teoría cuántica avanzada.",
+            "Como una afirmación no científica (pseudociencia), porque no es falseable ni verificable experimentalmente.",
+            "Como una ley fundamental de la termodinámica.",
+            "Como un modelo físico idealizado."
+          ],
+          "respuesta": "b",
+          "explicacion": "Todo aquello que por definición escapa a la medición y a la comprobación experimental queda fuera del ámbito de la ciencia física."
+        },
+        {
+          "enunciado": "Pregunta de Integración (Subtema 1.1): Seleccione el enunciado que integra de manera 100 % correcta la naturaleza de la física, sus ramas y el método científico:",
+          "opciones": [
+            "La física estudia fenómenos químicos irreversibles usando teorías que luego se convierten en hipótesis.",
+            "La física es una ciencia experimental que emplea modelos, leyes y teorías para describir la materia y la energía; se divide en Clásica ($v \\ll c$, macroscópica) y Moderna ($v \\approx c$ o escala subatómica).",
+            "La física clásica estudia el núcleo atómico desde 1900, mientras que la física moderna estudia el movimiento de los barcos a vela.",
+            "En física, una ley explica el porqué profundo sin matemáticas, y un modelo nunca simplifica la realidad."
+          ],
+          "respuesta": "b",
+          "explicacion": "La opción B resume con total rigor académico todos los conceptos clave del capítulo 1.1 de OpenStax."
+        }
+      ]
+    }
+  ]
+}
