@@ -1,0 +1,504 @@
+{
+    "cursoSlug": "curso-completo-essuna",
+    "moduloPadreId": "4e8a99ce-e311-40bc-ae94-0e2f3bc5c74f",
+    "materiaSlug": "fisica",
+    "institucion": "Armada",
+    "publico": true,
+    "tema": {
+      "nombre": "1.5 Prefijos para múltiplos y submúltiplos",
+      "slug": "prefijos-para-multiplos-y-submultiplos",
+      "orden": 5
+    },
+    "SubmoduloTitulo": "1.5 Prefijos para múltiplos y submúltiplos",
+    "bloques": [
+      {
+        "tituloCapsula": "📖 Cápsula 1: Escala de Prefijos del SI, Múltiplos, Submúltiplos y Reglas de Escritura",
+        "markdown": "### 📖 Cápsula 1: Escala de Prefijos del SI, Múltiplos, Submúltiplos y Reglas de Escritura\n\nEn Física e ingeniería naval trabajamos con magnitudes que abarcan desde el radio de un núcleo atómico ($10^{-15}\\text{ m}$) hasta la potencia de radares y turbinas ($10^{6}\\text{ W}$ a $10^{9}\\text{ W}$). Para evitar escribir números con largas filas de ceros, el **Sistema Internacional de Unidades (SI)** define una serie de **prefijos** que se anteponen al nombre o al símbolo de una unidad para formar **múltiplos** (potencias de $10$ con exponente positivo) y **submúltiplos** (potencias de $10$ con exponente negativo).\n\n#### 1. Tabla oficial de prefijos del Sistema Internacional\n\n| Múltiplos | Símbolo | Factor ($10^n$) | Equivalencia decimal | Submúltiplos | Símbolo | Factor ($10^{-n}$) | Equivalencia decimal |\n| :--- | :---: | :---: | :--- | :--- | :---: | :---: | :--- |\n| **quetta** | $\\text{Q}$ | $10^{30}$ | Quintillón | **quecto** | $\\text{q}$ | $10^{-30}$ | Quintillonésima |\n| **ronna** | $\\text{R}$ | $10^{27}$ | Mil cuatrillones | **ronto** | $\\text{r}$ | $10^{-27}$ | Milcuatrillonésima |\n| **yotta** | $\\text{Y}$ | $10^{24}$ | Cuatrillón | **yocto** | $\\text{y}$ | $10^{-24}$ | Cuatrillonésima |\n| **zetta** | $\\text{Z}$ | $10^{21}$ | Mil trillones | **zepto** | $\\text{z}$ | $10^{-21}$ | Miltrillonésima |\n| **exa** | $\\text{E}$ | $10^{18}$ | Trillón | **atto** | $\\text{a}$ | $10^{-18}$ | Trillonésima |\n| **peta** | $\\text{P}$ | $10^{15}$ | Mil billones | **femto** | $\\text{f}$ | $10^{-15}$ | Milbillonésima |\n| **tera** | $\\text{T}$ | $10^{12}$ | Billón | **pico** | $\\text{p}$ | $10^{-12}$ | Billonésima |\n| **giga** | $\\text{G}$ | $10^{9}$ | Mil millones | **nano** | $\\text{n}$ | $10^{-9}$ | Milmillonésima |\n| **mega** | $\\text{M}$ | $10^{6}$ | Millón | **micro** | $\\mu$ | $10^{-6}$ | Millonésima |\n| **kilo** | $\\text{k}$ | $10^{3}$ | Mil ($1\\,000$) | **mili** | $\\text{m}$ | $10^{-3}$ | Milésima ($0{,}001$) |\n| **hecto** | $\\text{h}$ | $10^{2}$ | Cien ($100$) | **centi** | $\\text{c}$ | $10^{-2}$ | Centésima ($0{,}01$) |\n| **deca** | $\\text{da}$ | $10^{1}$ | Diez ($10$) | **deci** | $\\text{d}$ | $10^{-1}$ | Décima ($0{,}1$) |\n\n#### 2. Reglas ortográficas y técnicas obligatorias del SI (BIPM)\n1. **Mayúsculas frente a minúsculas:** Todos los símbolos de **submúltiplos** y los tres primeros múltiplos ($\\text{da}$, $\\text{h}$, $\\text{k}$) se escriben estrictamente en **minúscula**. Los múltiplos a partir de $10^{6}$ ($\\text{M}$, $\\text{G}$, $\\text{T}$, $\\text{P}$, $\\text{E}$, $\\text{Z}$, $\\text{Y}$, $\\text{R}$, $\\text{Q}$) se escriben en **mayúscula**. Confundir $\\text{m}$ (mili, $10^{-3}$) con $\\text{M}$ (mega, $10^{6}$) introduce un error de $9$ órdenes de magnitud ($10^{9}$).\n2. **El símbolo de kilo es $\\text{k}$ minúscula:** Jamás se escribe $\\text{Km}$ ni $\\text{Kg}$, porque la $\\text{K}$ mayúscula está reservada exclusivamente para la unidad de temperatura termodinámica (**kelvin**).\n3. **Unión sin espacio:** El símbolo del prefijo se une directamente al símbolo de la unidad **sin espacio ni guion** intermedio ($\\text{km}$, $\\text{ms}$, $\\text{GHz}$). En cambio, entre el valor numérico y el símbolo compuesto sí debe ir un espacio ($50\\text{ km}$).\n4. **Prohibición de prefijos compuestos o aislados:** Nunca se combinan dos prefijos seguidos (es incorrecto escribir $\\text{m}\\mu\\text{m}$ o $\\mu\\mu\\text{F}$; debe escribirse $\\text{nm}$ o $\\text{pF}$). Tampoco se usan prefijos solos sin unidad (es incorrecto escribir \"$5\\text{ k}$\" por \"$5\\,000$\").\n\n#### 3. La excepción histórica del kilogramo ($\\text{kg}$)\nEl **kilogramo ($\\text{kg}$)** es la única unidad base del SI cuyo nombre y símbolo ya incluyen un prefijo ($\\text{kilo}$) por razones históricas. Para no violar la prohibición de prefijos dobles, los múltiplos y submúltiplos de la masa se forman anteponiendo el prefijo al **gramo ($\\text{g}$)** y **nunca** al kilogramo:\n\n$$10^{-6}\\text{ kg} = 1\\text{ mg}\\quad (\\text{correcto}) \\qquad \\neq \\qquad 1\\text{ }\\mu\\text{kg}\\quad (\\text{prohibido})$$\n\n$$10^{3}\\text{ kg} = 10^{6}\\text{ g} = 1\\text{ Mg} = 1\\text{ t (tonelada métrica)}$$\n\n> **⚓ Trampa de examen:** Fíjate siempre si hay punto o espacio entre las letras: $\\text{ms}$ significa **milisegundo** ($10^{-3}\\text{ s}$), mientras que $\\text{m}\\cdot\\text{s}$ (o $\\text{m s}$) representa el producto de **metro por segundo**.",
+        "videoUrl": null,
+        "tituloSimulador": "Simulador: Prefijos para Múltiplos y Submúltiplos 1",
+        "tituloLeccionSimulador": "🎯 Práctica 1: Escala de Prefijos del SI y Reglas de Escritura",
+        "preguntas": [
+          {
+            "enunciado": "¿Cuál de los siguientes pares de prefijos del Sistema Internacional corresponde exactamente a los factores $10^{9}$ y $10^{-9}$, respectivamente?",
+            "opciones": [
+              "giga ($\\text{G}$) y nano ($\\text{n}$)",
+              "mega ($\\text{M}$) y micro ($\\mu$)",
+              "tera ($\\text{T}$) y pico ($\\text{p}$)",
+              "giga ($\\text{G}$) y pico ($\\text{p}$)"
+            ],
+            "respuesta": "a",
+            "explicacion": "En el Sistema Internacional, el múltiplo giga ($\\text{G}$) equivale a $10^{9}$ (mil millones) y el submúltiplo nano ($\\text{n}$) equivale a $10^{-9}$ (una milmillonésima)."
+          },
+          {
+            "enunciado": "En una especificación técnica naval se compara la potencia del motor propulsor de una fragata ($1\\text{ MW}$) con la potencia del puntero láser de la sala de cartas ($1\\text{ mW}$). ¿Cuántas veces mayor es $1\\text{ MW}$ que $1\\text{ mW}$?",
+            "opciones": [
+              "$10^{3}$ veces mayor",
+              "$10^{9}$ veces mayor",
+              "$10^{6}$ veces mayor",
+              "$10^{12}$ veces mayor"
+            ],
+            "respuesta": "b",
+            "explicacion": "La letra $\\text{M}$ mayúscula representa mega ($10^{6}$) y la letra $\\text{m}$ minúscula representa mili ($10^{-3}$). El cociente entre ambas potencias es $\\frac{10^{6}\\text{ W}}{10^{-3}\\text{ W}} = 10^{6 - (-3)} = 10^{9}$ (mil millones de veces mayor)."
+          },
+          {
+            "enunciado": "El kilogramo ($\\text{kg}$) es la única unidad base del SI que ya contiene un prefijo en su nombre. Según las reglas oficiales del Sistema Internacional, ¿cómo debe expresarse correctamente una masa de $10^{-6}\\text{ kg}$?",
+            "opciones": [
+              "$1\\text{ }\\mu\\text{kg}$",
+              "$1\\text{ mkg}$",
+              "$1\\text{ mg}$",
+              "$1\\text{ }\\mu\\text{g}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "En el SI están prohibidos los prefijos dobles como $\\mu\\text{kg}$. Los prefijos de masa se anteponen siempre al gramo ($\\text{g}$). Como $1\\text{ kg} = 10^{3}\\text{ g}$, se tiene que $10^{-6}\\text{ kg} = 10^{-6} \\times 10^{3}\\text{ g} = 10^{-3}\\text{ g} = 1\\text{ mg}$ (un miligramo)."
+          },
+          {
+            "enunciado": "¿Cuál de las siguientes cantidades físicas está escrita cumpliendo rigurosamente todas las normas de simbología del Sistema Internacional?",
+            "opciones": [
+              "$25\\text{ Km}$",
+              "$500\\text{ grs.}$",
+              "$12\\text{ m}\\mu\\text{s}$",
+              "$150\\text{ kPa}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "La expresión $150\\text{ kPa}$ es la única correcta: usa $\\text{k}$ minúscula para kilo, une el prefijo a la unidad $\\text{Pa}$ sin espacio y deja un espacio entre el número y el símbolo. En las demás opciones, $\\text{Km}$ usa $\\text{K}$ mayúscula (kelvin), $\\text{grs.}$ inventa una abreviatura con plural y punto (el símbolo es $\\text{g}$), y $\\text{m}\\mu\\text{s}$ usa un prefijo compuesto prohibido."
+          },
+          {
+            "enunciado": "En la notación del Sistema Internacional, ¿qué diferencia fundamental existe entre escribir el símbolo $\\text{ms}$ y escribir la expresión $\\text{m}\\cdot\\text{s}$?",
+            "opciones": [
+              "$\\text{ms}$ representa el submúltiplo milisegundo ($10^{-3}\\text{ s}$), mientras que $\\text{m}\\cdot\\text{s}$ representa el producto de las unidades metro por segundo.",
+              "Ambas expresiones significan exactamente milisegundo.",
+              "$\\text{ms}$ significa metro por segundo y $\\text{m}\\cdot\\text{s}$ significa megasegundo.",
+              "Ambas expresiones representan rapidez en metros sobre segundo."
+            ],
+            "respuesta": "a",
+            "explicacion": "Cuando la letra $\\text{m}$ va pegada directamente a $\\text{s}$ sin espacio ni punto medio ($\\text{ms}$), actúa como el prefijo mili ($10^{-3}\\text{ s}$). Cuando se separa con un punto a media altura o un espacio ($\\text{m}\\cdot\\text{s}$), indica la multiplicación de la unidad metro ($\\text{m}$) por la unidad segundo ($\\text{s}$)."
+          },
+          {
+            "enunciado": "El radar de vigilancia aérea de una corbeta opera a una frecuencia de $9{,}5\\text{ GHz}$. ¿Cómo se expresa esta frecuencia en hertz ($\\text{Hz}$) utilizando notación científica?",
+            "opciones": [
+              "$9{,}5 \\times 10^{6}\\text{ Hz}$",
+              "$9{,}5 \\times 10^{9}\\text{ Hz}$",
+              "$9{,}5 \\times 10^{12}\\text{ Hz}$",
+              "$9{,}5 \\times 10^{-9}\\text{ Hz}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "El prefijo giga ($\\text{G}$) equivale al factor $10^{9}$. Por lo tanto, $9{,}5\\text{ GHz} = 9{,}5 \\times 10^{9}\\text{ Hz}$."
+          },
+          {
+            "enunciado": "En un manual antiguo de radiocomunicaciones navales aparece un capacitor marcado con el valor de $470\\text{ }\\mu\\mu\\text{F}$ (micromicrofaradios). Aplicando la regla del SI que prohíbe yuxtaponer prefijos, ¿cómo debe escribirse correctamente esta capacitancia?",
+            "opciones": [
+              "$470\\text{ nF}$",
+              "$470\\text{ fF}$",
+              "$470\\text{ pF}$",
+              "$4{,}7\\text{ }\\mu\\text{F}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "El producto de dos factores micro es $10^{-6} \\times 10^{-6} = 10^{-12}$, que corresponde exactamente al prefijo único pico ($\\text{p}$). Por consiguiente, debe escribirse $470\\text{ pF}$ (picofaradios)."
+          },
+          {
+            "enunciado": "La turbina de gas principal de un buque desarrolla una potencia de $24\\text{ MW}$ y su generador diésel auxiliar entrega $800\\text{ kW}$. ¿Cuál es la potencia combinada de ambos equipos expresada en watts ($\\text{W}$)?",
+            "opciones": [
+              "$2{,}48 \\times 10^{6}\\text{ W}$",
+              "$3{,}20 \\times 10^{7}\\text{ W}$",
+              "$8{,}24 \\times 10^{5}\\text{ W}$",
+              "$2{,}48 \\times 10^{7}\\text{ W}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "Expresando ambas potencias en watts: $24\\text{ MW} = 24 \\times 10^{6}\\text{ W}$ y $800\\text{ kW} = 800 \\times 10^{3}\\text{ W} = 0{,}8 \\times 10^{6}\\text{ W}$. Al sumar resulta $24{,}8 \\times 10^{6}\\text{ W} = 2{,}48 \\times 10^{7}\\text{ W}$."
+          },
+          {
+            "enunciado": "¿Cuál de las siguientes secuencias ordena los submúltiplos del Sistema Internacional de mayor a menor valor?",
+            "opciones": [
+              "mili, micro, nano, pico, femto",
+              "micro, mili, nano, femto, pico",
+              "femto, pico, nano, micro, mili",
+              "deci, mili, centi, micro, nano"
+            ],
+            "respuesta": "a",
+            "explicacion": "En potencias de diez decrecientes: mili ($10^{-3}$) > micro ($10^{-6}$) > nano ($10^{-9}$) > pico ($10^{-12}$) > femto ($10^{-15}$)."
+          },
+          {
+            "enunciado": "¿Por qué el símbolo del prefijo kilo se escribe con letra minúscula ($\\text{k}$) mientras que los prefijos mega ($\\text{M}$), giga ($\\text{G}$) y tera ($\\text{T}$) se escriben con mayúscula?",
+            "opciones": [
+              "Porque kilo es un submúltiplo inferior a la unidad.",
+              "Porque en el SI los múltiplos hasta $10^{3}$ ($\\text{da}$, $\\text{h}$, $\\text{k}$) llevan minúscula, y además la letra $\\text{K}$ mayúscula simboliza la unidad kelvin.",
+              "Porque la palabra kilo proviene del latín y las demás provienen del griego.",
+              "Es indiferente; el SI permite usar $\\text{k}$ o $\\text{K}$ para representar el factor $10^{3}$."
+            ],
+            "respuesta": "b",
+            "explicacion": "Por convención internacional de la BIPM, los primeros tres múltiplos ($10^{1}$, $10^{2}$ y $10^{3}$) se escriben en minúscula ($\\text{da}$, $\\text{h}$, $\\text{k}$). Escribir $\\text{K}$ mayúscula cambiaría el significado a kelvin."
+          },
+          {
+            "enunciado": "En física nuclear, el radio de un núcleo atómico medio es del orden de $5\\text{ fm}$ (femtómetros). ¿A cuántos metros equivale esta longitud?",
+            "opciones": [
+              "$5 \\times 10^{-12}\\text{ m}$",
+              "$5 \\times 10^{-9}\\text{ m}$",
+              "$5 \\times 10^{-15}\\text{ m}$",
+              "$5 \\times 10^{-18}\\text{ m}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "El prefijo femto ($\\text{f}$) representa el factor $10^{-15}$. Por lo tanto, $5\\text{ fm} = 5 \\times 10^{-15}\\text{ m}$."
+          },
+          {
+            "enunciado": "Una tonelada métrica ($1\\text{ t}$) equivale a $1\\,000\\text{ kg}$. Si se expresa esta misma masa empleando un prefijo del SI aplicado correctamente al gramo ($\\text{g}$), ¿cuál es su denominación y símbolo equivalentes?",
+            "opciones": [
+              "Un kilokilogramo ($1\\text{ kkg}$)",
+              "Un gigagramo ($1\\text{ Gg}$)",
+              "Un teragramo ($1\\text{ Tg}$)",
+              "Un megagramo ($1\\text{ Mg}$)"
+            ],
+            "respuesta": "d",
+            "explicacion": "Como $1\\text{ kg} = 10^{3}\\text{ g}$, una masa de $1\\,000\\text{ kg}$ equivale a $10^{3} \\times 10^{3}\\text{ g} = 10^{6}\\text{ g}$. El prefijo para $10^{6}$ es mega ($\\text{M}$), por lo que $1\\text{ t} = 1\\text{ Mg}$ (un megagramo)."
+          },
+          {
+            "enunciado": "Si en una ecuación dimensional se multiplica el factor numérico del prefijo tera ($\\text{T}$) por el factor numérico del prefijo micro ($\\mu$), ¿a qué prefijo del SI equivale el resultado?",
+            "opciones": [
+              "mega ($\\text{M}$)",
+              "kilo ($\\text{k}$)",
+              "giga ($\\text{G}$)",
+              "mili ($\\text{m}$)"
+            ],
+            "respuesta": "a",
+            "explicacion": "Dado que $\\text{T} = 10^{12}$ y $\\mu = 10^{-6}$, su producto es $10^{12} \\times 10^{-6} = 10^{12 - 6} = 10^{6}$, que corresponde exactamente al prefijo mega ($\\text{M}$)."
+          },
+          {
+            "enunciado": "La masa de la Tierra es de aproximadamente $6 \\times 10^{24}\\text{ kg}$, lo que equivale a $6 \\times 10^{27}\\text{ g}$. Según los prefijos extremos incorporados al SI, ¿cómo se denomina el prefijo de símbolo $\\text{R}$ que representa el factor $10^{27}$?",
+            "opciones": [
+              "yotta",
+              "zetta",
+              "ronna",
+              "quetta"
+            ],
+            "respuesta": "c",
+            "explicacion": "En la escala superior del SI, zetta ($\\text{Z}$) es $10^{21}$, yotta ($\\text{Y}$) es $10^{24}$, ronna ($\\text{R}$) es $10^{27}$ y quetta ($\\text{Q}$) es $10^{30}$. Por tanto, $6 \\times 10^{27}\\text{ g} = 6\\text{ Rg}$ (ronnagramos)."
+          }
+        ]
+      },
+      {
+        "tituloCapsula": "📖 Cápsula 2: Conversión Lineal entre Prefijos, Notación de Ingeniería y Saltos de Escala",
+        "markdown": "### 📖 Cápsula 2: Conversión Lineal entre Prefijos, Notación de Ingeniería y Saltos de Escala\n\nEn los exámenes de admisión no basta con memorizar la tabla de prefijos: debes ser capaz de pasar de un prefijo a otro en segundos sin equivocarte en el signo del exponente.\n\n#### 1. Método directo por diferencia de exponentes\nPara convertir una magnitud lineal desde un **prefijo de origen** ($10^{\\text{exp}_{\\text{origen}}}$) hacia un **prefijo de destino** ($10^{\\text{exp}_{\\text{destino}}}$), se multiplica el valor numérico por $10$ elevado a la **resta algebraica** de ambos exponentes:\n\n$$\\text{Valor}_{\\text{destino}} = \\text{Valor}_{\\text{origen}} \\times 10^{(\\text{exp}_{\\text{origen}} - \\text{exp}_{\\text{destino}})}$$\n\n* **Regla intuitiva:**\n  * Si pasas de un prefijo **grande a uno pequeño** (ej. de $\\text{G}$ a $\\text{k}$), el exponente resultante es **positivo** (el número crece).\n  * Si pasas de un prefijo **pequeño a uno grande** (ej. de $\\text{nm}$ a $\\text{mm}$), el exponente resultante es **negativo** (el número se reduce).\n\n**Ejemplo 1:** Convertir $450\\text{ nm}$ a micrómetros ($\\mu\\text{m}$).\n* Origen: $\\text{nano (n)} \\rightarrow \\text{exp}_{\\text{origen}} = -9$\n* Destino: $\\text{micro (}\\mu\\text{)} \\rightarrow \\text{exp}_{\\text{destino}} = -6$\n* Diferencia: $(-9) - (-6) = -9 + 6 = -3$\n\n$$450\\text{ nm} = 450 \\times 10^{-3}\\text{ }\\mu\\text{m} = 0{,}45\\text{ }\\mu\\text{m}$$\n\n**Ejemplo 2 (con masa):** Convertir $35\\text{ }\\mu\\text{g}$ a kilogramos ($\\text{kg}$).\n* Toma siempre el **gramo ($\\text{g}$)** como referencia: $\\mu\\text{g}$ tiene $\\text{exp}_{\\text{origen}} = -6$ y $\\text{kg}$ tiene $\\text{exp}_{\\text{destino}} = +3$.\n* Diferencia: $(-6) - (+3) = -9$.\n\n$$35\\text{ }\\mu\\text{g} = 35 \\times 10^{-9}\\text{ kg} = 3{,}5 \\times 10^{-8}\\text{ kg}$$\n\n#### 2. Notación Científica frente a Notación de Ingeniería\nEn instrumentación naval y electrónica se distingue entre dos formatos exponenciales:\n\n| Formato | Estructura matemática | Condición de la mantisa | Condición del exponente | Ejemplo para $0{,}000\\,082\\text{ m}$ |\n| :--- | :---: | :---: | :--- | :--- |\n| **Notación científica** | $a \\times 10^{n}$ | $1 \\le |a| < 10$ | Cualquier entero $n \\in \\mathbb{Z}$ | $8{,}2 \\times 10^{-5}\\text{ m}$ |\n| **Notación de ingeniería** | $b \\times 10^{3k}$ | $1 \\le |b| < 1\\,000$ | **Múltiplo de $3$** ($\\dots, -6, -3, 0, 3, 6, \\dots$) | $82 \\times 10^{-6}\\text{ m} = 82\\text{ }\\mu\\text{m}$ |\n\nLa ventaja de la **notación de ingeniería** es que la potencia $10^{3k}$ se reemplaza de forma inmediata por un prefijo estándar del SI ($\\text{n}, \\mu, \\text{m}, \\text{k}, \\text{M}, \\text{G}, \\text{T}$).\n\n#### 3. Unidades combinadas con prefijos en numerador y denominador\nCuando una unidad tiene prefijos arriba y abajo, se convierte cada uno a su potencia de $10$ y se dividen:\n\n$$1\\text{ }\\frac{\\text{mg}}{\\text{ms}} = \\frac{10^{-6}\\text{ kg}}{10^{-3}\\text{ s}} = 10^{-3}\\text{ kg/s}$$\n\n> **⚓ Trampa de examen:** En el Sistema Internacional, los prefijos aplicados a telecomunicaciones o frecuencias ($\\text{kbps}$, $\\text{MHz}$, $\\text{Gbit/s}$) son **estrictamente decimales** ($1\\text{ M} = 10^{6}$ y $1\\text{ k} = 10^{3}$, nunca $1\\,024$). Además, ten sumo cuidado con los signos al restar exponentes negativos: $(-9) - (-3) = -6$, ¡no $-12$!",
+        "videoUrl": null,
+        "tituloSimulador": "Simulador: Prefijos para Múltiplos y Submúltiplos 2",
+        "tituloLeccionSimulador": "🎯 Práctica 2: Conversión Lineal entre Prefijos y Notación de Ingeniería",
+        "preguntas": [
+          {
+            "enunciado": "Un sistema óptico submarino utiliza un láser azul cuya longitud de onda es de $450\\text{ nm}$. ¿Cuál es el valor de esta longitud de onda expresada en micrómetros ($\\mu\\text{m}$)?",
+            "opciones": [
+              "$0{,}45\\text{ }\\mu\\text{m}$",
+              "$4{,}5\\text{ }\\mu\\text{m}$",
+              "$4{,}5 \\times 10^{-5}\\text{ }\\mu\\text{m}$",
+              "$450\\,000\\text{ }\\mu\\text{m}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "Aplicando la diferencia de exponentes entre nano ($10^{-9}$) y micro ($10^{-6}$): $(-9) - (-6) = -3$. Por lo tanto, $450\\text{ nm} = 450 \\times 10^{-3}\\text{ }\\mu\\text{m} = 0{,}45\\text{ }\\mu\\text{m}$."
+          },
+          {
+            "enunciado": "Al medir el aislamiento eléctrico del generador de un buque con un megóhmetro, se obtiene una resistencia de $0{,}047\\text{ G}\\Omega$. ¿A cuántos kilohmios ($\\text{k}\\Omega$) equivale esta lectura?",
+            "opciones": [
+              "$4{,}7 \\times 10^{3}\\text{ k}\\Omega$",
+              "$4{,}7 \\times 10^{4}\\text{ k}\\Omega$",
+              "$4{,}7 \\times 10^{6}\\text{ k}\\Omega$",
+              "$470\\text{ k}\\Omega$"
+            ],
+            "respuesta": "b",
+            "explicacion": "El prefijo giga ($\\text{G}$) tiene exponente $9$ y kilo ($\\text{k}$) tiene exponente $3$. La diferencia es $9 - 3 = 6$, de modo que $0{,}047\\text{ G}\\Omega = 0{,}047 \\times 10^{6}\\text{ k}\\Omega = 4{,}7 \\times 10^{4}\\text{ k}\\Omega$ ($47\\,000\\text{ k}\\Omega$)."
+          },
+          {
+            "enunciado": "Se mide una holgura mecánica de $d = 0{,}000\\,082\\text{ m}$. ¿Cómo se expresa correctamente este valor en notación de ingeniería y con su prefijo del SI correspondiente?",
+            "opciones": [
+              "$8{,}2 \\times 10^{-5}\\text{ m} = 8{,}2\\text{ }\\mu\\text{m}$",
+              "$0{,}82 \\times 10^{-4}\\text{ m} = 0{,}82\\text{ mm}$",
+              "$82 \\times 10^{-6}\\text{ m} = 82\\text{ }\\mu\\text{m}$",
+              "$820 \\times 10^{-7}\\text{ m} = 820\\text{ nm}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "La notación de ingeniería exige un coeficiente entre $1$ y $1\\,000$ acompañado de una potencia de diez con exponente múltiplo de $3$. Así, $0{,}000\\,082\\text{ m} = 82 \\times 10^{-6}\\text{ m}$, donde $10^{-6}$ se sustituye directamente por el prefijo micro ($\\mu$): $82\\text{ }\\mu\\text{m}$."
+          },
+          {
+            "enunciado": "Un obturador electrónico de alta velocidad se abre durante un intervalo de $250\\text{ ns}$. ¿A cuántos milisegundos ($\\text{ms}$) equivale este tiempo?",
+            "opciones": [
+              "$2{,}5 \\times 10^{-6}\\text{ ms}$",
+              "$2{,}5 \\times 10^{-10}\\text{ ms}$",
+              "$0{,}25\\text{ ms}$",
+              "$2{,}5 \\times 10^{-4}\\text{ ms}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "Pasando de nano ($10^{-9}$) a mili ($10^{-3}$), la diferencia de exponentes es $(-9) - (-3) = -6$. Entonces, $250\\text{ ns} = 250 \\times 10^{-6}\\text{ ms} = 2{,}5 \\times 10^{-4}\\text{ ms}$."
+          },
+          {
+            "enunciado": "En el análisis químico del agua de una caldera naval se detectan $35\\text{ }\\mu\\text{g}$ de sales disueltas por cada muestra. ¿A cuántos kilogramos ($\\text{kg}$) equivale una masa de $35\\text{ }\\mu\\text{g}$?",
+            "opciones": [
+              "$3{,}5 \\times 10^{-5}\\text{ kg}$",
+              "$3{,}5 \\times 10^{-8}\\text{ kg}$",
+              "$3{,}5 \\times 10^{-9}\\text{ kg}$",
+              "$3{,}5 \\times 10^{-2}\\text{ kg}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Respecto al gramo ($\\text{g}$), micro ($\\mu\\text{g}$) tiene exponente $-6$ y kilo ($\\text{kg}$) tiene exponente $+3$. La diferencia es $(-6) - 3 = -9$, por lo que $35\\text{ }\\mu\\text{g} = 35 \\times 10^{-9}\\text{ kg} = 3{,}5 \\times 10^{-8}\\text{ kg}$."
+          },
+          {
+            "enunciado": "Una antena naval de muy baja frecuencia (VLF) para comunicación con submarinos sumergidos emite ondas de $15\\text{ km}$ de longitud de onda, mientras que una fibra óptica a bordo transmite luz infrarroja de $1{,}5\\text{ }\\mu\\text{m}$. ¿Cuántas veces mayor es la longitud de onda VLF que la infrarroja?",
+            "opciones": [
+              "$10^{10}$ veces",
+              "$10^{9}$ veces",
+              "$10^{8}$ veces",
+              "$10^{12}$ veces"
+            ],
+            "respuesta": "a",
+            "explicacion": "Dividiendo ambas longitudes expresadas en metros: $\\frac{15\\text{ km}}{1{,}5\\text{ }\\mu\\text{m}} = \\frac{15 \\times 10^{3}\\text{ m}}{1{,}5 \\times 10^{-6}\\text{ m}} = 10 \\times 10^{3 - (-6)} = 10 \\times 10^{9} = 10^{10}$."
+          },
+          {
+            "enunciado": "Un inyector dosificador suministra reactivo a razón de $12\\text{ mg/ms}$ (miligramos por milisegundo). ¿Cuál es este caudal másico expresado en unidades coherentes del Sistema Internacional ($\\text{kg/s}$)?",
+            "opciones": [
+              "$12\\text{ kg/s}$",
+              "$1{,}2 \\times 10^{-6}\\text{ kg/s}$",
+              "$0{,}012\\text{ kg/s}$",
+              "$0{,}12\\text{ kg/s}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "Como $1\\text{ mg} = 10^{-6}\\text{ kg}$ y $1\\text{ ms} = 10^{-3}\\text{ s}$, al sustituir en el cociente se obtiene $12\\text{ }\\frac{\\text{mg}}{\\text{ms}} = 12 \\times \\frac{10^{-6}\\text{ kg}}{10^{-3}\\text{ s}} = 12 \\times 10^{-3}\\text{ kg/s} = 0{,}012\\text{ kg/s}$."
+          },
+          {
+            "enunciado": "Un enlace de telemetría entre un dron naval y un patrullero transmite datos a una tasa constante de $25\\text{ Mbit/s}$ (megabits por segundo). De acuerdo con el valor del prefijo mega en el Sistema Internacional, ¿cuántos bits se transmiten en $4\\text{ s}$?",
+            "opciones": [
+              "$1{,}0 \\times 10^{6}\\text{ bits}$",
+              "$2{,}5 \\times 10^{7}\\text{ bits}$",
+              "$1{,}0 \\times 10^{9}\\text{ bits}$",
+              "$1{,}0 \\times 10^{8}\\text{ bits}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "En el SI el prefijo mega ($\\text{M}$) equivale estrictamente a $10^{6}$. En $4\\text{ s}$ la cantidad de información transmitida es $25 \\times 10^{6}\\text{ bit/s} \\times 4\\text{ s} = 100 \\times 10^{6}\\text{ bits} = 1{,}0 \\times 10^{8}\\text{ bits}$."
+          },
+          {
+            "enunciado": "La energía térmica liberada en una prueba energética es de $0{,}06\\text{ TJ}$ (terajulios). ¿A cuántos megajulios ($\\text{MJ}$) equivale esta cantidad de energía?",
+            "opciones": [
+              "$6 \\times 10^{4}\\text{ MJ}$",
+              "$6 \\times 10^{5}\\text{ MJ}$",
+              "$600\\text{ MJ}$",
+              "$6 \\times 10^{7}\\text{ MJ}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "El prefijo tera ($\\text{T}$) es $10^{12}$ y mega ($\\text{M}$) es $10^{6}$. La diferencia de exponentes es $12 - 6 = 6$, por lo que $0{,}06\\text{ TJ} = 0{,}06 \\times 10^{6}\\text{ MJ} = 6 \\times 10^{4}\\text{ MJ}$ ($60\\,000\\text{ MJ}$)."
+          },
+          {
+            "enunciado": "Un sensor piezoeléctrico de un hidrófono genera una carga eléctrica de $4\\,500\\text{ pC}$ (picocoulombs). ¿Cómo se expresa esta carga en nanocoulombs ($\\text{nC}$) y en microcoulombs ($\\mu\\text{C}$)?",
+            "opciones": [
+              "$45\\text{ nC}$ y $0{,}045\\text{ }\\mu\\text{C}$",
+              "$4{,}5\\text{ nC}$ y $0{,}0045\\text{ }\\mu\\text{C}$",
+              "$0{,}45\\text{ nC}$ y $4{,}5 \\times 10^{-4}\\text{ }\\mu\\text{C}$",
+              "$4{,}5 \\times 10^{6}\\text{ nC}$ y $4{,}5 \\times 10^{9}\\text{ }\\mu\\text{C}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Como pico ($\\text{p}$) es $10^{-12}$ y nano ($\\text{n}$) es $10^{-9}$, al pasar de $\\text{pC}$ a $\\text{nC}$ se multiplica por $10^{-12 - (-9)} = 10^{-3}$, dando $4\\,500 \\times 10^{-3}\\text{ nC} = 4{,}5\\text{ nC}$. Al pasar de $\\text{nC}$ a $\\mu\\text{C}$ ($10^{-6}$) se vuelve a multiplicar por $10^{-3}$, resultando $0{,}0045\\text{ }\\mu\\text{C}$."
+          },
+          {
+            "enunciado": "¿Cuál de las siguientes cantidades NO está expresada en notación de ingeniería?",
+            "opciones": [
+              "$340 \\times 10^{6}\\text{ W}$",
+              "$12{,}5 \\times 10^{-9}\\text{ s}$",
+              "$4{,}8 \\times 10^{-4}\\text{ m}$",
+              "$1{,}05 \\times 10^{3}\\text{ Pa}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "En $4{,}8 \\times 10^{-4}\\text{ m}$ el exponente es $-4$, que no es múltiplo de $3$ (está en notación científica, pero no en notación de ingeniería). En notación de ingeniería debe escribirse $480 \\times 10^{-6}\\text{ m}$ ($480\\text{ }\\mu\\text{m}$) o $0{,}48 \\times 10^{-3}\\text{ m}$ si se pasa a $\\text{mm}$."
+          },
+          {
+            "enunciado": "Durante una prueba de fatiga térmica, un eje metálico se dilata a razón de $18\\text{ }\\mu\\text{m/min}$. ¿Cuál es esta rapidez de dilatación expresada en milímetros por hora ($\\text{mm/h}$)?",
+            "opciones": [
+              "$0{,}30\\text{ mm/h}$",
+              "$10{,}8\\text{ mm/h}$",
+              "$0{,}108\\text{ mm/h}$",
+              "$1{,}08\\text{ mm/h}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "Convirtiendo micrómetros a milímetros ($1\\text{ }\\mu\\text{m} = 10^{-3}\\text{ mm}$) y minutos a horas ($60\\text{ min} = 1\\text{ h}$): $v = 18 \\times 10^{-3}\\text{ mm/min} \\times 60\\text{ min/h} = 1\\,080 \\times 10^{-3}\\text{ mm/h} = 1{,}08\\text{ mm/h}$."
+          },
+          {
+            "enunciado": "Calcule el resultado de la siguiente suma algebraica de longitudes expresado en milímetros ($\\text{mm}$): $L = 0{,}04\\text{ m} + 3{,}5\\text{ cm} - 120\\text{ }\\mu\\text{m}$.",
+            "opciones": [
+              "$73{,}80\\text{ mm}$",
+              "$74{,}88\\text{ mm}$",
+              "$38{,}88\\text{ mm}$",
+              "$74{,}988\\text{ mm}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Pasando cada término a milímetros ($\\text{mm}$): $0{,}04\\text{ m} = 40\\text{ mm}$, $3{,}5\\text{ cm} = 35\\text{ mm}$ y $120\\text{ }\\mu\\text{m} = 120 \\times 10^{-3}\\text{ mm} = 0{,}12\\text{ mm}$. Por lo tanto, $L = 40\\text{ mm} + 35\\text{ mm} - 0{,}12\\text{ mm} = 74{,}88\\text{ mm}$."
+          },
+          {
+            "enunciado": "En meteorología marítima la presión atmosférica suele reportarse en hectopascals ($\\text{hPa}$). Si la presión al nivel del mar es de $1\\,013{,}25\\text{ hPa}$, ¿a cuántos kilopascals ($\\text{kPa}$) equivale?",
+            "opciones": [
+              "$10{,}1325\\text{ kPa}$",
+              "$10\\,132{,}5\\text{ kPa}$",
+              "$101{,}325\\text{ kPa}$",
+              "$1{,}01325\\text{ kPa}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "El prefijo hecto ($\\text{h}$) es $10^{2}$ y kilo ($\\text{k}$) es $10^{3}$. Al pasar de $\\text{hPa}$ a $\\text{kPa}$ se multiplica por $10^{2 - 3} = 10^{-1} = 0{,}1$, obteniéndose $1\\,013{,}25 \\times 0{,}1\\text{ kPa} = 101{,}325\\text{ kPa}$."
+          }
+        ]
+      },
+      {
+        "tituloCapsula": "📖 Cápsula 3: Prefijos con Exponentes (Áreas, Volúmenes), Capacidad y Unidades Compuestas",
+        "markdown": "### 📖 Cápsula 3: Prefijos con Exponentes (Áreas, Volúmenes), Capacidad y Unidades Compuestas\n\nUno de los errores más frecuentes en los exámenes de Física ocurre al convertir unidades de **superficie ($\\text{m}^2$)** o de **volumen ($\\text{m}^3$)** que tienen prefijos.\n\n#### 1. Regla de oro de los exponentes en símbolos con prefijo\nEn el Sistema Internacional, el símbolo de un prefijo unido al símbolo de una unidad forma **un nuevo símbolo indivisible**. Por lo tanto, cualquier exponente $p$ afecta **tanto al prefijo como a la unidad**:\n\n$$1\\text{ cm}^2 = (1\\text{ cm})^2 = (10^{-2}\\text{ m})^2 = 10^{-4}\\text{ m}^2$$\n\n$$1\\text{ mm}^3 = (1\\text{ mm})^3 = (10^{-3}\\text{ m})^3 = 10^{-9}\\text{ m}^3$$\n\nDe forma general, si la unidad está elevada a una potencia $p$ ($p = 2$ para áreas, $p = 3$ para volúmenes), la diferencia de exponentes entre los prefijos queda multiplicada por $p$:\n\n$$\\text{Valor}_{\\text{destino}} = \\text{Valor}_{\\text{origen}} \\times 10^{p \\cdot (\\text{exp}_{\\text{origen}} - \\text{exp}_{\\text{destino}})}$$\n\n* **En áreas ($p = 2$):** cada salto de $10^{1}$ en longitud equivale a $10^{2} = 100$ en superficie.\n* **En volúmenes ($p = 3$):** cada salto de $10^{1}$ en longitud equivale a $10^{3} = 1\\,000$ en volumen.\n\n#### 2. Tabla de equivalencias de Área, Volumen y Capacidad (Litros)\n\n| Unidad con prefijo | Desarrollo exponencial | Equivalencia en el SI | Equivalencia práctica (Agraria o Capacidad) |\n| :--- | :---: | :---: | :--- |\n| $1\\text{ km}^2$ | $(10^{3}\\text{ m})^2$ | $10^{6}\\text{ m}^2$ | $100\\text{ ha}$ (hectáreas) |\n| $1\\text{ hm}^2$ | $(10^{2}\\text{ m})^2$ | $10^{4}\\text{ m}^2 = 10\\,000\\text{ m}^2$ | $1\\text{ ha}$ (hectárea) |\n| $1\\text{ dam}^2$ | $(10^{1}\\text{ m})^2$ | $10^{2}\\text{ m}^2 = 100\\text{ m}^2$ | $1\\text{ a}$ (área) |\n| $1\\text{ dm}^2$ | $(10^{-1}\\text{ m})^2$ | $10^{-2}\\text{ m}^2$ | $100\\text{ cm}^2$ |\n| $1\\text{ cm}^2$ | $(10^{-2}\\text{ m})^2$ | $10^{-4}\\text{ m}^2$ | $100\\text{ mm}^2$ |\n| $1\\text{ mm}^2$ | $(10^{-3}\\text{ m})^2$ | $10^{-6}\\text{ m}^2$ | $10^{6}\\text{ }\\mu\\text{m}^2$ |\n| $1\\text{ m}^3$ | $(1\\text{ m})^3$ | $1\\text{ m}^3$ | $1\\,000\\text{ L} = 10\\text{ hL}$ |\n| $1\\text{ dm}^3$ | $(10^{-1}\\text{ m})^3$ | $10^{-3}\\text{ m}^3$ | $1\\text{ L}$ (litro exacto) |\n| $1\\text{ cm}^3$ | $(10^{-2}\\text{ m})^3$ | $10^{-6}\\text{ m}^3$ | $1\\text{ mL}$ (mililitro) |\n| $1\\text{ mm}^3$ | $(10^{-3}\\text{ m})^3$ | $10^{-9}\\text{ m}^3$ | $1\\text{ }\\mu\\text{L}$ (microlitro) |\n\n#### 3. Atajos de ingeniería para Densidad y Esfuerzo Mecánico (Presión)\nEn problemas de hidrostática naval y resistencia de materiales, estas dos identidades ahorran mucho tiempo:\n\n1. **Densidad:**\n\n$$1\\text{ }\\frac{\\text{g}}{\\text{cm}^3} = \\frac{10^{-3}\\text{ kg}}{10^{-6}\\text{ m}^3} = 1\\,000\\text{ }\\frac{\\text{kg}}{\\text{m}^3} = 1\\text{ }\\frac{\\text{kg}}{\\text{L}} = 1\\text{ }\\frac{\\text{t}}{\\text{m}^3}$$\n\n2. **Esfuerzo mecánico y presión:**\n\n$$1\\text{ }\\frac{\\text{N}}{\\text{mm}^2} = \\frac{1\\text{ N}}{10^{-6}\\text{ m}^2} = 10^{6}\\text{ Pa} = 1\\text{ MPa}$$\n\n> **⚓ Trampa de examen:** Nunca digas que $1\\text{ m}^2 = 100\\text{ cm}^2$ ni que $1\\text{ m}^3 = 100\\text{ cm}^3$. Como $1\\text{ m} = 10^{2}\\text{ cm}$, al elevar al cuadrado resulta $1\\text{ m}^2 = (10^{2})^2\\text{ cm}^2 = 10^{4}\\text{ cm}^2 = 10\\,000\\text{ cm}^2$, y al elevar al cubo resulta $1\\text{ m}^3 = (10^{2})^3\\text{ cm}^3 = 10^{6}\\text{ cm}^3 = 1\\,000\\,000\\text{ cm}^3$.",
+        "videoUrl": null,
+        "tituloSimulador": "Simulador: Prefijos para Múltiplos y Submúltiplos 3",
+        "tituloLeccionSimulador": "🎯 Práctica 3: Prefijos en Áreas, Volúmenes, Capacidad y Unidades Compuestas",
+        "preguntas": [
+          {
+            "enunciado": "Según las reglas del Sistema Internacional para símbolos con exponentes, ¿por qué $1\\text{ cm}^2$ equivale a $10^{-4}\\text{ m}^2$ y no a $10^{-2}\\text{ m}^2$?",
+            "opciones": [
+              "Porque el exponente afecta tanto al prefijo centi ($10^{-2}$) como a la unidad metro: $1\\text{ cm}^2 = (10^{-2}\\text{ m})^2 = 10^{-4}\\text{ m}^2$.",
+              "Porque el prefijo centi cambia su valor a $10^{-4}$ cuando se usa en geometría plana.",
+              "Porque un metro lineal tiene diez mil centímetros.",
+              "Porque el símbolo $\\text{cm}^2$ representa una centésima de kilómetro cuadrado."
+            ],
+            "respuesta": "a",
+            "explicacion": "El prefijo y la unidad forman un único símbolo inseparable, de modo que $1\\text{ cm}^2 = (1\\text{ cm})^2 = (10^{-2}\\text{ m})^2 = (10^{-2})^2\\text{ m}^2 = 10^{-4}\\text{ m}^2$."
+          },
+          {
+            "enunciado": "Un cable de acero de la grúa de cubierta de un buque tiene una sección transversal de $250\\text{ mm}^2$. ¿Cuál es el valor de esta área expresada en metros cuadrados ($\\text{m}^2$)?",
+            "opciones": [
+              "$2{,}5 \\times 10^{-1}\\text{ m}^2$",
+              "$2{,}5 \\times 10^{-4}\\text{ m}^2$",
+              "$2{,}5 \\times 10^{-5}\\text{ m}^2$",
+              "$2{,}5 \\times 10^{-6}\\text{ m}^2$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Dado que $1\\text{ mm}^2 = (10^{-3}\\text{ m})^2 = 10^{-6}\\text{ m}^2$, se tiene que $250\\text{ mm}^2 = 250 \\times 10^{-6}\\text{ m}^2 = 2{,}5 \\times 10^{-4}\\text{ m}^2$."
+          },
+          {
+            "enunciado": "¿Cuántos milímetros cúbicos ($\\text{mm}^3$) hay exactamente en un centímetro cúbico ($1\\text{ cm}^3$)?",
+            "opciones": [
+              "$10\\text{ mm}^3$",
+              "$100\\text{ mm}^3$",
+              "$1\\,000\\text{ mm}^3$",
+              "$1\\,000\\,000\\text{ mm}^3$"
+            ],
+            "respuesta": "c",
+            "explicacion": "En longitud, $1\\text{ cm} = 10\\text{ mm}$. Al elevar ambos miembros al cubo ($p = 3$), resulta $1\\text{ cm}^3 = (10\\text{ mm})^3 = 10^{3}\\text{ mm}^3 = 1\\,000\\text{ mm}^3$."
+          },
+          {
+            "enunciado": "El inyector de un motor marino pulveriza $40\\text{ mm}^3$ de combustible diésel en cada ciclo. ¿Cómo se expresa este volumen en metros cúbicos ($\\text{m}^3$) y en microlitros ($\\mu\\text{L}$)?",
+            "opciones": [
+              "$4{,}0 \\times 10^{-5}\\text{ m}^3$ y $40\\text{ }\\mu\\text{L}$",
+              "$4{,}0 \\times 10^{-8}\\text{ m}^3$ y $0{,}04\\text{ }\\mu\\text{L}$",
+              "$4{,}0 \\times 10^{-9}\\text{ m}^3$ y $400\\text{ }\\mu\\text{L}$",
+              "$4{,}0 \\times 10^{-8}\\text{ m}^3$ y $40\\text{ }\\mu\\text{L}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "Como $1\\text{ mm}^3 = (10^{-3}\\text{ m})^3 = 10^{-9}\\text{ m}^3$, el volumen es $40 \\times 10^{-9}\\text{ m}^3 = 4{,}0 \\times 10^{-8}\\text{ m}^3$. Además, dado que $1\\text{ m}^3 = 10^{3}\\text{ L} = 10^{9}\\text{ }\\mu\\text{L}$, se cumple la identidad directa $1\\text{ mm}^3 = 1\\text{ }\\mu\\text{L}$, por lo que equivale a $40\\text{ }\\mu\\text{L}$."
+          },
+          {
+            "enunciado": "Un avión de exploración aeromarítima patrulla un sector rectangular del océano de $3{,}6\\text{ km}^2$. ¿A cuántos metros cuadrados ($\\text{m}^2$) y a cuántas hectáreas ($\\text{ha}$, sabiendo que $1\\text{ ha} = 1\\text{ hm}^2$) equivale dicha área?",
+            "opciones": [
+              "$3{,}6 \\times 10^{6}\\text{ m}^2$ y $360\\text{ ha}$",
+              "$3{,}6 \\times 10^{3}\\text{ m}^2$ y $36\\text{ ha}$",
+              "$3{,}6 \\times 10^{6}\\text{ m}^2$ y $3\\,600\\text{ ha}$",
+              "$3{,}6 \\times 10^{5}\\text{ m}^2$ y $360\\text{ ha}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "Dado que $1\\text{ km}^2 = (10^{3}\\text{ m})^2 = 10^{6}\\text{ m}^2$, el área es $3{,}6 \\times 10^{6}\\text{ m}^2$. Respecto al hectómetro cuadrado ($1\\text{ hm}^2 = 10^{4}\\text{ m}^2 = 1\\text{ ha}$), se tiene $1\\text{ km}^2 = 100\\text{ hm}^2 = 100\\text{ ha}$, resultando $3{,}6 \\times 100\\text{ ha} = 360\\text{ ha}$."
+          },
+          {
+            "enunciado": "En un ensayo de tracción, un perno de acero naval soporta un esfuerzo mecánico de $450\\text{ N/mm}^2$. ¿A cuántos megapascals ($\\text{MPa}$) equivale este esfuerzo?",
+            "opciones": [
+              "$45\\text{ MPa}$",
+              "$450\\text{ MPa}$",
+              "$0{,}45\\text{ MPa}$",
+              "$4\\,500\\text{ MPa}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Sustituyendo $1\\text{ mm}^2 = 10^{-6}\\text{ m}^2$ en el denominador: $1\\text{ }\\frac{\\text{N}}{\\text{mm}^2} = \\frac{1\\text{ N}}{10^{-6}\\text{ m}^2} = 10^{6}\\text{ N/m}^2 = 10^{6}\\text{ Pa} = 1\\text{ MPa}$. Por lo tanto, $450\\text{ N/mm}^2 = 450\\text{ MPa}$."
+          },
+          {
+            "enunciado": "El mercurio empleado en los barómetros marinos clásicos tiene una densidad de $13{,}6\\text{ g/cm}^3$. ¿Cuál es su densidad expresada en la unidad coherente del Sistema Internacional ($\\text{kg/m}^3$)?",
+            "opciones": [
+              "$13{,}6\\text{ kg/m}^3$",
+              "$1\\,360\\text{ kg/m}^3$",
+              "$13\\,600\\text{ kg/m}^3$",
+              "$1{,}36 \\times 10^{5}\\text{ kg/m}^3$"
+            ],
+            "respuesta": "c",
+            "explicacion": "Como $1\\text{ g} = 10^{-3}\\text{ kg}$ y $1\\text{ cm}^3 = 10^{-6}\\text{ m}^3$, el cociente es $1\\text{ }\\frac{\\text{g}}{\\text{cm}^3} = \\frac{10^{-3}\\text{ kg}}{10^{-6}\\text{ m}^3} = 10^{3}\\text{ kg/m}^3$. Así, $13{,}6\\text{ g/cm}^3 = 13{,}6 \\times 1\\,000\\text{ kg/m}^3 = 13\\,600\\text{ kg/m}^3$."
+          },
+          {
+            "enunciado": "El tanque de agua potable de un buque logístico almacena $150\\text{ hL}$ (hectolitros). ¿Cuál es el volumen de este tanque expresado en metros cúbicos ($\\text{m}^3$) y en decímetros cúbicos ($\\text{dm}^3$)?",
+            "opciones": [
+              "$1{,}5\\text{ m}^3$ y $1\\,500\\text{ dm}^3$",
+              "$150\\text{ m}^3$ y $15\\,000\\text{ dm}^3$",
+              "$15\\text{ m}^3$ y $1\\,500\\text{ dm}^3$",
+              "$15\\text{ m}^3$ y $15\\,000\\text{ dm}^3$"
+            ],
+            "respuesta": "d",
+            "explicacion": "Como el prefijo hecto ($\\text{h}$) es $10^{2}$, $150\\text{ hL} = 150 \\times 10^{2}\\text{ L} = 15\\,000\\text{ L}$. Sabiendo que $1\\text{ L} = 1\\text{ dm}^3$ y que $1\\text{ m}^3 = 1\\,000\\text{ L}$, el volumen equivale a $15\\,000\\text{ dm}^3$ y a $15\\text{ m}^3$."
+          },
+          {
+            "enunciado": "Una bomba hidráulica de alta presión impulsa aceite a razón de $25\\text{ cm}^3\\text{/ms}$. ¿Cuál es el valor de este caudal volumétrico en litros por segundo ($\\text{L/s}$) y en metros cúbicos por segundo ($\\text{m}^3\\text{/s}$)?",
+            "opciones": [
+              "$25\\text{ L/s}$ y $0{,}025\\text{ m}^3\\text{/s}$",
+              "$2{,}5\\text{ L/s}$ y $0{,}0025\\text{ m}^3\\text{/s}$",
+              "$250\\text{ L/s}$ y $0{,}25\\text{ m}^3\\text{/s}$",
+              "$0{,}025\\text{ L/s}$ y $2{,}5 \\times 10^{-5}\\text{ m}^3\\text{/s}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "Dado que $1\\text{ cm}^3 = 1\\text{ mL} = 10^{-3}\\text{ L}$ y $1\\text{ ms} = 10^{-3}\\text{ s}$, los factores $10^{-3}$ del numerador y del denominador se cancelan: $25\\text{ }\\frac{\\text{cm}^3}{\\text{ms}} = 25 \\times \\frac{10^{-3}\\text{ L}}{10^{-3}\\text{ s}} = 25\\text{ L/s}$. Dividiendo para $1\\,000\\text{ L/m}^3$ se obtiene $0{,}025\\text{ m}^3\\text{/s}$."
+          },
+          {
+            "enunciado": "Una membrana de ultrafiltración por ósmosis inversa posee poros con una superficie media de $8 \\times 10^{4}\\text{ nm}^2$. ¿A cuántos micrómetros cuadrados ($\\mu\\text{m}^2$) equivale el área de cada poro?",
+            "opciones": [
+              "$80\\text{ }\\mu\\text{m}^2$",
+              "$0{,}08\\text{ }\\mu\\text{m}^2$",
+              "$8 \\times 10^{-5}\\text{ }\\mu\\text{m}^2$",
+              "$0{,}8\\text{ }\\mu\\text{m}^2$"
+            ],
+            "respuesta": "b",
+            "explicacion": "La diferencia lineal de exponentes entre nano ($10^{-9}$) y micro ($10^{-6}$) es $(-9) - (-6) = -3$. Al tratarse de un área ($p = 2$), el factor de conversión es $(10^{-3})^2 = 10^{-6}$. Por tanto, $8 \\times 10^{4}\\text{ nm}^2 = 8 \\times 10^{4} \\times 10^{-6}\\text{ }\\mu\\text{m}^2 = 8 \\times 10^{-2}\\text{ }\\mu\\text{m}^2 = 0{,}08\\text{ }\\mu\\text{m}^2$."
+          },
+          {
+            "enunciado": "Se aplica $1\\text{ L}$ ($1\\text{ dm}^3$) de pintura epóxica anticorrosiva de manera uniforme sobre una plancha del casco de $5\\text{ m}^2$ de área. Sin considerar pérdidas por evaporación, ¿cuál es el espesor de la película de pintura expresado en micrómetros ($\\mu\\text{m}$)?",
+            "opciones": [
+              "$20\\text{ }\\mu\\text{m}$",
+              "$500\\text{ }\\mu\\text{m}$",
+              "$200\\text{ }\\mu\\text{m}$",
+              "$2\\,000\\text{ }\\mu\\text{m}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "Expresando el volumen en metros cúbicos ($1\\text{ L} = 1\\text{ dm}^3 = 10^{-3}\\text{ m}^3$), el espesor de la capa es $e = \\frac{V}{A} = \\frac{10^{-3}\\text{ m}^3}{5\\text{ m}^2} = 0{,}2 \\times 10^{-3}\\text{ m} = 200 \\times 10^{-6}\\text{ m} = 200\\text{ }\\mu\\text{m}$."
+          },
+          {
+            "enunciado": "El pistón de un sistema de gobierno hidráulico ejerce una presión de $2{,}5\\text{ kN/cm}^2$. ¿Cuál es el valor de esta presión expresada en pascals ($\\text{Pa}$) y en megapascals ($\\text{MPa}$)?",
+            "opciones": [
+              "$2{,}5 \\times 10^{5}\\text{ Pa}$ y $0{,}25\\text{ MPa}$",
+              "$2{,}5 \\times 10^{6}\\text{ Pa}$ y $2{,}5\\text{ MPa}$",
+              "$2{,}5 \\times 10^{8}\\text{ Pa}$ y $250\\text{ MPa}$",
+              "$2{,}5 \\times 10^{7}\\text{ Pa}$ y $25\\text{ MPa}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "Reemplazando $1\\text{ kN} = 10^{3}\\text{ N}$ y $1\\text{ cm}^2 = 10^{-4}\\text{ m}^2$: $P = 2{,}5 \\times \\frac{10^{3}\\text{ N}}{10^{-4}\\text{ m}^2} = 2{,}5 \\times 10^{7}\\text{ Pa} = 25 \\times 10^{6}\\text{ Pa} = 25\\text{ MPa}$."
+          },
+          {
+            "enunciado": "¿A cuántos centímetros cúbicos ($\\text{cm}^3$) equivale un volumen de $0{,}004\\text{ dam}^3$ (decámetros cúbicos)?",
+            "opciones": [
+              "$4 \\times 10^{3}\\text{ cm}^3$",
+              "$4 \\times 10^{6}\\text{ cm}^3$",
+              "$4 \\times 10^{9}\\text{ cm}^3$",
+              "$4 \\times 10^{4}\\text{ cm}^3$"
+            ],
+            "respuesta": "b",
+            "explicacion": "La diferencia lineal de exponentes entre deca ($10^{1}$) y centi ($10^{-2}$) es $1 - (-2) = 3$. Como el volumen está elevado al cubo ($p = 3$), el factor es $(10^{3})^3 = 10^{9}$. Multiplicando resulta $0{,}004 \\times 10^{9}\\text{ cm}^3 = 4 \\times 10^{-3} \\times 10^{9}\\text{ cm}^3 = 4 \\times 10^{6}\\text{ cm}^3$."
+          },
+          {
+            "enunciado": "¿Cuál de las siguientes equivalencias entre unidades de volumen y de capacidad es INCORRECTA?",
+            "opciones": [
+              "$1\\text{ m}^3 = 1\\,000\\text{ L}$",
+              "$1\\text{ cm}^3 = 1\\text{ mL}$",
+              "$1\\text{ mm}^3 = 1\\text{ }\\mu\\text{L}$",
+              "$1\\text{ dm}^3 = 100\\text{ mL}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "La igualdad $1\\text{ dm}^3 = 100\\text{ mL}$ es falsa: dado que $1\\text{ dm}^3 = 1\\text{ L}$ y $1\\text{ L} = 10^{3}\\text{ mL} = 1\\,000\\text{ mL}$, un decímetro cúbico equivale a $1\\,000\\text{ mL}$ (o a $100\\text{ cL}$)."
+          }
+        ]
+      }
+    ]
+  }

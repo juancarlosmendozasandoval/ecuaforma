@@ -1,0 +1,493 @@
+{
+    "cursoSlug": "curso-completo-essuna",
+    "moduloPadreId": "4e8a99ce-e311-40bc-ae94-0e2f3bc5c74f",
+    "materiaSlug": "fisica",
+    "institucion": "Armada",
+    "publico": true,
+    "tema": {
+      "nombre": "1.7 Cifras significativas",
+      "slug": "cifras-significativas",
+      "orden": 7
+    },
+    "SubmoduloTitulo": "1.7 Cifras significativas",
+    "bloques": [
+      {
+        "tituloCapsula": "📖 Cápsula 1: Origen Físico, Reglas de Identificación y Números Exactos",
+        "markdown": "### 📖 Cápsula 1: Origen Físico, Reglas de Identificación y Números Exactos\n\nEn matemáticas puras, los números $12\\text{ m}$, $12{,}0\\text{ m}$ y $12{,}00\\text{ m}$ valen exactamente lo mismo. En **Física e ingeniería naval**, en cambio, representan tres mediciones distintas hechas con instrumentos de diferente precisión. Las **cifras significativas (CS)** de una medida son todos los dígitos que se conocen con certeza **más un último dígito estimado (o dudoso)**.\n\n#### 1. ¿De dónde salen las cifras significativas al medir?\nCuando mides el largo de un perno con una regla graduada en milímetros ($1\\text{ mm} = 0{,}1\\text{ cm}$) y el extremo cae entre $4{,}2\\text{ cm}$ y $4{,}3\\text{ cm}$, lees con total seguridad los dígitos $4$ y $2$, y estimas visualmente la siguiente fracción, por ejemplo $4{,}25\\text{ cm}$:\n* **Dígitos seguros (ciertos):** el $4$ y el $2$ (dados por las marcas del instrumento).\n* **Dígito dudoso o estimado:** el $5$ (sujeto a una incertidumbre típica de $\\pm 0{,}05\\text{ cm}$).\n* **Total:** $3$ cifras significativas. Escribir más dígitos sería inventar precisión; escribir menos sería desperdiciar información.\n\n#### 2. Las 5 reglas para contar cifras significativas\n\n| Regla | Ejemplo | N.º de CS | Explicación |\n| :--- | :--- | :--- | :--- |\n| **1. Dígitos distintos de cero** ($1$ al $9$) | $38{,}45\\text{ s}$ | $4\\text{ CS}$ | Todos son significativos siempre |\n| **2. Ceros cautivos** (entre dígitos no nulos) | $20{,}08\\text{ kg}$ | $4\\text{ CS}$ | Siempre son significativos |\n| **3. Ceros a la izquierda** del primer dígito no nulo | $0{,}0047\\text{ m}$ | $2\\text{ CS}$ | **Nunca** son significativos; solo ubican la coma ($4{,}7 \\times 10^{-3}\\text{ m}$) |\n| **4. Ceros finales después de la coma decimal** | $6{,}300\\text{ A}$ | $4\\text{ CS}$ | **Siempre** son significativos; indican que se midió hasta la milésima |\n| **5. Ceros finales en un entero sin coma decimal** | $4\\,500\\text{ m}$ | Ambiguo ($2$, $3$ o $4$) | Sin contexto se toman como no significativos ($2\\text{ CS}$); debe usarse notación científica |\n\n> **⚓ Regla de oro del cambio de unidades:** Cambiar de unidad o de prefijo **NUNCA** altera el número de cifras significativas de una medición, porque el instrumento con que se midió sigue siendo el mismo:\n> $$24{,}0\\text{ mm} \\; (3\\text{ CS}) = 2{,}40\\text{ cm} \\; (3\\text{ CS}) = 0{,}0240\\text{ m} \\; (3\\text{ CS}) = 2{,}40 \\times 10^{-5}\\text{ km} \\; (3\\text{ CS})$$\n\n#### 3. Números exactos: infinitas cifras significativas\nNo todos los números de una ecuación provienen de una medición con incertidumbre. Tienen **infinitas cifras significativas** (y por tanto **no limitan** el resultado de un cálculo):\n1. **Conteos discretos de objetos:** $4\\text{ motores}$, $12\\text{ cadetes}$, $30\\text{ oscilaciones}$.\n2. **Coeficientes numéricos de fórmulas teóricas:** el $\\frac{1}{2}$ en $E_c = \\frac{1}{2}mv^2$, el $2$ en $d = \\frac{v \\cdot t}{2}$ o en $P = 2(b + h)$, y constantes matemáticas como $\\pi$.\n3. **Factores de conversión definidos exactamente dentro de un sistema:** $1\\text{ m} = 100\\text{ cm}$, $1\\text{ min} = 60\\text{ s}$, $1\\text{ M} = 1\\,852\\text{ m}$, $1\\text{ in} = 2{,}54\\text{ cm}$.",
+        "videoUrl": null,
+        "tituloSimulador": "Simulador: Cifras Significativas 1",
+        "tituloLeccionSimulador": "🎯 Práctica 1: Lectura de Instrumentos, Reglas de los Ceros y Números Exactos",
+        "preguntas": [
+          {
+            "enunciado": "En metrología física, ¿qué constituyen exactamente las cifras significativas de una medición directa?",
+            "opciones": [
+              "Únicamente los dígitos que están después de la coma decimal.",
+              "Todos los dígitos que se leen con certeza en la escala del instrumento más un último dígito estimado o incierto.",
+              "Solamente los dígitos distintos de cero que aparecen en la lectura.",
+              "Todos los dígitos que muestra la pantalla de una calculadora tras efectuar una operación."
+            ],
+            "respuesta": "b",
+            "explicacion": "Por definición experimental, las cifras significativas comprenden todas las cifras seguras o ciertas (dadas por las divisiones del instrumento) más la primera cifra incierta o estimada. No debe confundirse el número de cifras significativas con el número de decimales."
+          },
+          {
+            "enunciado": "Un cadete mide la longitud de un pasador metálico y registra $L = 6{,}48\\text{ cm}$. En esta lectura, ¿cuáles son las cifras ciertas y cuál es la cifra dudosa (incierta)?",
+            "opciones": [
+              "El 6 es la única cifra cierta; el 4 y el 8 son cifras dudosas.",
+              "El 6, el 4 y el 8 son cifras ciertas; no existe cifra dudosa.",
+              "El 6 y el 4 son las cifras ciertas, mientras que el 8 es la cifra dudosa o estimada.",
+              "El 4 y el 8 son las cifras ciertas y el 6 es la cifra dudosa."
+            ],
+            "respuesta": "c",
+            "explicacion": "En toda medida expresada correctamente con cifras significativas, todos los dígitos excepto el último son seguros (el 6 y el 4), y únicamente el último dígito de la derecha (el 8, en la posición de las centésimas de centímetro) es el dígito incierto o estimado."
+          },
+          {
+            "enunciado": "¿Cuántas cifras significativas tiene la medición de espesor $e = 0{,}003\\,050\\text{ m}$ realizada en el casco de una embarcación?",
+            "opciones": [
+              "7 cifras significativas",
+              "6 cifras significativas",
+              "3 cifras significativas",
+              "4 cifras significativas"
+            ],
+            "respuesta": "d",
+            "explicacion": "Los ceros a la izquierda ($0{,}00$) nunca son significativos. Cuentan el 3, el 0 cautivo intermedio, el 5 y el 0 final a la derecha de la coma decimal ($3$, $0$, $5$, $0$): en total 4 cifras significativas ($3{,}050 \\times 10^{-3}\\text{ m}$)."
+          },
+          {
+            "enunciado": "¿En cuál de los siguientes números TODOS los ceros que aparecen son significativos?",
+            "opciones": [
+              "$0{,}0405\\text{ kg}$",
+              "$20{,}050\\text{ s}$",
+              "$0{,}500\\text{ A}$",
+              "$0{,}0010\\text{ m}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "En $20{,}050\\text{ s}$ no hay ceros a la izquierda: los dos primeros ceros son cautivos (entre el 2 y el 5) y el último cero está a la derecha después de la coma decimal, por lo que sus 5 dígitos son significativos. En las demás opciones hay al menos un cero a la izquierda que no es significativo."
+          },
+          {
+            "enunciado": "Un voltímetro digital en el puente de mando marca sucesivamente tres lecturas: $V_1 = 0{,}080\\text{ V}$, $V_2 = 8{,}00\\text{ V}$ y $V_3 = 80{,}08\\text{ V}$. ¿Cuántas cifras significativas tiene cada lectura, en ese orden?",
+            "opciones": [
+              "2, 3 y 4",
+              "3, 3 y 4",
+              "4, 1 y 4",
+              "2, 1 y 3"
+            ],
+            "respuesta": "a",
+            "explicacion": "En $0{,}080\\text{ V}$ cuentan el 8 y el 0 final (2 CS). En $8{,}00\\text{ V}$ cuentan el 8 y los dos ceros tras la coma (3 CS). En $80{,}08\\text{ V}$ los dos ceros son cautivos entre los ochos (4 CS)."
+          },
+          {
+            "enunciado": "En el taller naval se mide el diámetro de una tubería obteniendo $d = 45{,}0\\text{ mm}$ (3 cifras significativas). Si se desea expresar esta misma medición en metros sin alterar ni perder su precisión experimental, ¿cuál es la escritura correcta?",
+            "opciones": [
+              "$0{,}045\\text{ m}$",
+              "$0{,}0450\\text{ m}$",
+              "$0{,}045\\,00\\text{ m}$",
+              "$4{,}5 \\times 10^{-2}\\text{ m}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "El cambio de unidades debe conservar las 3 cifras significativas originales. En $0{,}0450\\text{ m}$ los dos ceros a la izquierda solo posicionan la coma y los dígitos significativos siguen siendo tres ($4$, $5$ y $0$). Escribir $0{,}045\\text{ m}$ reduciría indebidamente la precisión a 2 cifras significativas."
+          },
+          {
+            "enunciado": "¿Qué diferencia física existe entre reportar la masa de una muestra química como $m_1 = 5{,}0\\text{ g}$ frente a reportarla como $m_2 = 5{,}000\\text{ g}$?",
+            "opciones": [
+              "Ninguna; ambos valores representan exactamente la misma información experimental.",
+              "Que $m_2$ tiene una masa ligeramente mayor que $m_1$.",
+              "Que $m_1$ se midió con una balanza de resolución de décimas de gramo ($2\\text{ CS}$), mientras que $m_2$ se midió con una balanza analítica de resolución de miligramos ($4\\text{ CS}$).",
+              "Que $m_1$ está expresada en el sistema CGS y $m_2$ en el Sistema Internacional."
+            ],
+            "respuesta": "c",
+            "explicacion": "Los ceros a la derecha después de la coma informan la resolución del instrumento empleado: $5{,}0\\text{ g}$ tiene incertidumbre en las décimas de gramo ($\\pm 0{,}1\\text{ g}$, 2 CS), mientras que $5{,}000\\text{ g}$ garantiza que las décimas y centésimas son cero y la incertidumbre recién aparece en las milésimas ($\\pm 0{,}001\\text{ g}$, 4 CS)."
+          },
+          {
+            "enunciado": "Para determinar el alcance de un proyectil, la distancia de $18\\,000\\text{ m}$ se midió con un radar cuya incertidumbre está en las decenas de metros (es decir, la medida posee 4 cifras significativas). ¿Cómo debe escribirse esta cantidad en notación científica para eliminar toda ambigüedad?",
+            "opciones": [
+              "$1{,}800 \\times 10^{4}\\text{ m}$",
+              "$1{,}8 \\times 10^{4}\\text{ m}$",
+              "$1{,}80 \\times 10^{4}\\text{ m}$",
+              "$1{,}8000 \\times 10^{4}\\text{ m}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "En notación científica todas las cifras de la mantisa son significativas. Como la incertidumbre está en las decenas de metros (el segundo cero de $18\\,000$), hay 4 cifras significativas y la mantisa debe llevar cuatro dígitos: $1{,}800 \\times 10^{4}\\text{ m}$."
+          },
+          {
+            "enunciado": "Al calcular el perímetro de la cubierta rectangular de una gabarra mediante $P = 2L + 2a$, o al convertir minutos a segundos con la definición $1\\text{ min} = 60\\text{ s}$, ¿cuántas cifras significativas tienen el coeficiente $2$ y el factor $60$?",
+            "opciones": [
+              "1 y 2 cifras significativas, respectivamente",
+              "1 y 1 cifra significativa, respectivamente",
+              "Infinitas cifras significativas, porque son números exactos por definición",
+              "Depende del instrumento con que se haya medido el largo $L$"
+            ],
+            "respuesta": "c",
+            "explicacion": "Los coeficientes de fórmulas geométricas o físicas ($2$) y las relaciones definidas exactamente dentro de un sistema de unidades ($60\\text{ s/min}$) no provienen de una medición con error: son números exactos y poseen infinitas cifras significativas ($2{,}000\\dots$ y $60{,}000\\dots$)."
+          },
+          {
+            "enunciado": "Una probeta graduada del laboratorio de control de combustibles tiene divisiones marcadas cada $1\\text{ mL}$. Al leer el nivel del menisco de diésel, ¿cómo debe registrarse correctamente la lectura para incluir el dígito estimado?",
+            "opciones": [
+              "$34\\text{ mL}$ (2 cifras significativas)",
+              "$34{,}5\\text{ mL}$ (3 cifras significativas)",
+              "$34{,}500\\text{ mL}$ (5 cifras significativas)",
+              "$30\\text{ mL}$ (1 cifra significativa)"
+            ],
+            "respuesta": "b",
+            "explicacion": "Si las divisiones del instrumento son de $1\\text{ mL}$, las decenas y las unidades ($34\\text{ mL}$) se leen con certeza y el observador debe estimar visualmente una fracción de la menor división (las décimas de mililitro), registrando por ejemplo $34{,}5\\text{ mL}$ (3 CS)."
+          },
+          {
+            "enunciado": "¿Cuál de las siguientes cuatro mediciones posee exactamente 3 cifras significativas?",
+            "opciones": [
+              "$0{,}025\\text{ s}$",
+              "$205{,}0\\text{ m}$",
+              "$0{,}205\\text{ kg}$",
+              "$2{,}050 \\times 10^{3}\\text{ N}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "En $0{,}205\\text{ kg}$, el cero a la izquierda no cuenta y son significativos el 2, el 0 cautivo y el 5 (3 CS). En cambio, $0{,}025\\text{ s}$ tiene 2 CS, mientras que $205{,}0\\text{ m}$ y $2{,}050 \\times 10^{3}\\text{ N}$ tienen 4 CS."
+          },
+          {
+            "enunciado": "El número de Avogadro aproximado a cuatro cifras significativas es $6{,}022 \\times 10^{23}\\text{ mol}^{-1}$ y la constante de gravitación universal es $6{,}67 \\times 10^{-11}\\text{ N}\\cdot\\text{m}^2/\\text{kg}^2$. ¿Cuántas cifras significativas tiene esta última constante tal como está escrita?",
+            "opciones": [
+              "11 cifras significativas",
+              "13 cifras significativas",
+              "2 cifras significativas",
+              "3 cifras significativas"
+            ],
+            "respuesta": "d",
+            "explicacion": "La potencia de diez ($10^{-11}$) solo indica el orden de magnitud y la posición de la coma; las cifras significativas se cuentan exclusivamente en la mantisa $6{,}67$, que tiene 3 cifras significativas."
+          },
+          {
+            "enunciado": "En una práctica de péndulo simple, un guardiamarina cuenta exactamente 25 oscilaciones completas en un tiempo medido con cronómetro de $37{,}52\\text{ s}$. ¿Cuántas cifras significativas tienen el número de oscilaciones ($25$) y el tiempo ($37{,}52\\text{ s}$), respectivamente?",
+            "opciones": [
+              "Infinitas y 4 cifras significativas",
+              "2 y 4 cifras significativas",
+              "2 y 2 cifras significativas",
+              "4 y 4 cifras significativas"
+            ],
+            "respuesta": "a",
+            "explicacion": "El número de oscilaciones es un conteo discreto de eventos enteros (no existe fracción de incertidumbre al contar 25 ciclos), por lo que es un número exacto con infinitas cifras significativas. El tiempo medido con el cronómetro ($37{,}52\\text{ s}$) sí es una medición continua y tiene 4 cifras significativas."
+          },
+          {
+            "enunciado": "Si una presión manométrica de $300\\,000\\text{ Pa}$ se reescribe usando un prefijo del SI como $300{,}0\\text{ kPa}$, ¿cuántas cifras significativas indica esta nueva expresión?",
+            "opciones": [
+              "1 cifra significativa",
+              "3 cifras significativas",
+              "4 cifras significativas",
+              "6 cifras significativas"
+            ],
+            "respuesta": "c",
+            "explicacion": "Al escribir la coma decimal en $300{,}0\\text{ kPa}$, el último cero queda a la derecha de la coma (es significativo), y los dos ceros anteriores quedan encerrados entre el 3 y ese último cero significativo; por lo tanto, los 4 dígitos ($3$, $0$, $0$ y $0$) son significativos."
+          }
+        ]
+      },
+      {
+        "tituloCapsula": "📖 Cápsula 2: Reglas de Redondeo, Adición y Sustracción",
+        "markdown": "### 📖 Cápsula 2: Reglas de Redondeo, Adición y Sustracción\n\nCuando operamos mediciones experimentales, la calculadora suele devolver muchas más cifras de las que están físicamente justificadas. Para reportar honestamente el resultado debemos aplicar las **reglas de redondeo** y el criterio propio de la **suma y resta**.\n\n#### 1. Reglas de redondeo científico\nObserva el **primer dígito que vas a descartar** (el que está inmediatamente a la derecha de la última cifra que conservarás):\n\n1. **Menor que 5 ($0, 1, 2, 3, 4$):** la última cifra que se conserva **queda igual**.\n   * Ejemplo a $3\\text{ CS}$: $7{,}8349 \\rightarrow 7{,}83$ (porque el primer dígito descartado es $4 < 5$).\n2. **Mayor que 5 ($6, 7, 8, 9$) o $5$ seguido de dígitos no nulos:** la última cifra que se conserva **aumenta en 1**.\n   * Ejemplo a $3\\text{ CS}$: $7{,}8352 \\rightarrow 7{,}84$ (porque $52 > 50$).\n3. **Exactamente 5 (o $5$ seguido solo de ceros):**\n   * **Criterio escolar o comercial:** se sube siempre al número inmediato superior.\n   * **Criterio científico simétrico (regla del par o de Gauss):** se redondea de modo que la última cifra conservada quede **PAR** (si ya es par, se deja igual; si es impar, se sube en $1$). Así se evita acumular un sesgo sistemático hacia arriba al promediar muchos datos.\n     * Ejemplo a $3\\text{ CS}$: $4{,}265 \\rightarrow 4{,}26$ ($6$ ya es par); en cambio, $4{,}275 \\rightarrow 4{,}28$ ($7$ es impar y sube a $8$).\n\n> **⚓ Prohibido el redondeo en cadena o prematuro:** Nunca redondees dígito por dígito desde el final (por ejemplo, pasar de $2{,}448$ a $2{,}45$ y luego a $2{,}5$ es **incorrecto**; como el dígito tras el $4$ es un $4$, redondeado a $2\\text{ CS}$ es **$2{,}4$**). Del mismo modo, en cálculos de varios pasos conserva al menos una o dos cifras extra en los pasos intermedios y **redondea únicamente el resultado final**.\n\n#### 2. Regla para la Adición y la Sustracción: mandan las posiciones decimales\nEn la suma y en la resta **NO se cuenta el número total de cifras significativas** de cada término. La regla es:\n\n> El resultado de una suma o resta debe redondearse a la **misma cantidad de posiciones decimales** (es decir, a la misma columna posicional: unidades, décimas, centésimas, etc.) que el sumando que tenga **menos posiciones decimales** (el menos preciso).\n\n**Ejemplo 1 (con decimales):** sumar las longitudes $125{,}4\\text{ m}$ ($1$ decimal), $3{,}28\\text{ m}$ ($2$ decimales) y $0{,}516\\text{ m}$ ($3$ decimales).\n* Suma exacta: $125{,}4 + 3{,}28 + 0{,}516 = 129{,}196\\text{ m}$.\n* Como $125{,}4\\text{ m}$ solo llega hasta las **décimas** ($1$ decimal), redondeamos a $1$ decimal: **$129{,}2\\text{ m}$** (nota que el resultado final tiene $4\\text{ CS}$ aunque el último sumando tenía $3\\text{ CS}$).\n\n**Ejemplo 2 (en notación científica):** antes de aplicar la regla, **iguala primero ambos términos a la misma potencia de 10**, suma o resta las mantisas y redondea al menor número de decimales de las mantisas ya igualadas:\n\n$$4{,}52 \\times 10^{4}\\text{ N} + 3{,}1 \\times 10^{3}\\text{ N} = 4{,}52 \\times 10^{4}\\text{ N} + 0{,}31 \\times 10^{4}\\text{ N} = 4{,}83 \\times 10^{4}\\text{ N}$$",
+        "videoUrl": null,
+        "tituloSimulador": "Simulador: Cifras Significativas 2",
+        "tituloLeccionSimulador": "🎯 Práctica 2: Redondeo Científico, Adición y Sustracción de Medidas",
+        "preguntas": [
+          {
+            "enunciado": "Al redondear la medición de tiempo $t = 14{,}648\\text{ s}$ a 3 cifras significativas, ¿cuál es el resultado correcto y por qué?",
+            "opciones": [
+              "$14{,}7\\text{ s}$, porque el 8 redondea al 4 en 5, y luego el 5 redondea al 6 en 7.",
+              "$14{,}6\\text{ s}$, porque el primer dígito que se descarta es 4 (menor que 5) y no se debe redondear en cadena.",
+              "$14{,}65\\text{ s}$, porque siempre deben dejarse dos decimales.",
+              "$15{,}0\\text{ s}$, porque 648 es mayor que 500."
+            ],
+            "respuesta": "b",
+            "explicacion": "Para redondear a 3 cifras significativas ($14{,}6$), se mira únicamente el primer dígito a descartar (el 4 de las centésimas). Como $4 < 5$ (o $48 < 50$), la tercera cifra queda en 6: $14{,}6\\text{ s}$. Redondear de derecha a izquierda en cadena es un error metodológico grave."
+          },
+          {
+            "enunciado": "Aplicando la regla científica de redondeo al número par (criterio de Gauss) para evitar sesgos estadísticos, ¿cómo se redondean los valores $6{,}345\\text{ m}$ y $6{,}375\\text{ m}$ a 3 cifras significativas?",
+            "opciones": [
+              "$6{,}35\\text{ m}$ y $6{,}38\\text{ m}$",
+              "$6{,}34\\text{ m}$ y $6{,}37\\text{ m}$",
+              "$6{,}34\\text{ m}$ y $6{,}38\\text{ m}$",
+              "$6{,}35\\text{ m}$ y $6{,}37\\text{ m}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "Cuando el dígito descartado es un 5 exacto (sin más dígitos no nulos detrás), la última cifra retenida se deja par: en $6{,}345\\text{ m}$ el 4 ya es par y se mantiene ($6{,}34\\text{ m}$); en $6{,}375\\text{ m}$ el 7 es impar y sube al par siguiente ($6{,}38\\text{ m}$)."
+          },
+          {
+            "enunciado": "Si se redondea la medida $0{,}099\\,62\\text{ kg}$ para que quede expresada con 2 cifras significativas, ¿qué resultado se obtiene?",
+            "opciones": [
+              "$0{,}10\\text{ kg}$",
+              "$0{,}1\\text{ kg}$",
+              "$0{,}099\\text{ kg}$",
+              "$0{,}010\\text{ kg}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "Las dos primeras cifras significativas son los dos nueves ($99$). Como el siguiente dígito es $6 > 5$, el $99$ sube a $100$ en esa posición decimal, dando $0{,}10\\text{ kg}$ (donde el 1 y el 0 final son las 2 cifras significativas). Si se escribiera $0{,}1\\text{ kg}$, solo tendría 1 cifra significativa."
+          },
+          {
+            "enunciado": "¿Cuál es el criterio correcto que determina el redondeo del resultado en una adición o sustracción de mediciones físicas?",
+            "opciones": [
+              "El resultado debe tener el mismo número total de cifras significativas que el término con menos cifras significativas.",
+              "El resultado debe conservar tantas posiciones decimales como el término que tenga MÁS posiciones decimales.",
+              "El resultado debe redondearse a la misma posición decimal (menor número de decimales) que el sumando menos preciso.",
+              "El resultado siempre debe escribirse con dos decimales sin importar los datos."
+            ],
+            "respuesta": "c",
+            "explicacion": "En sumas y restas las incertidumbres se alinean por columnas posicionales (unidades, décimas, centésimas). Por ello manda el término con menor número de posiciones decimales, no el que tiene menos cifras significativas totales."
+          },
+          {
+            "enunciado": "En la bodega de una corbeta se estiban tres cajas cuyas masas medidas son $m_1 = 142{,}3\\text{ kg}$, $m_2 = 8{,}45\\text{ kg}$ y $m_3 = 0{,}624\\text{ kg}$. ¿Cuál es la masa total expresada correctamente según las reglas de cifras significativas?",
+            "opciones": [
+              "$151{,}374\\text{ kg}$",
+              "$151{,}37\\text{ kg}$",
+              "$151\\text{ kg}$",
+              "$151{,}4\\text{ kg}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "La suma aritmética exacta es $142{,}3 + 8{,}45 + 0{,}624 = 151{,}374\\text{ kg}$. Como el sumando con menos decimales es $142{,}3\\text{ kg}$ (solo 1 posición decimal, hasta las décimas), el resultado se redondea a 1 decimal: $151{,}4\\text{ kg}$."
+          },
+          {
+            "enunciado": "Un buque mide la profundidad de un canal en marea alta obteniendo $h_1 = 18{,}5\\text{ m}$, y en marea baja mide con una sonda de mayor resolución $h_2 = 15{,}24\\text{ m}$. ¿Cuál es la diferencia de nivel $\\Delta h = h_1 - h_2$ expresada con el número correcto de cifras significativas?",
+            "opciones": [
+              "$3{,}3\\text{ m}$",
+              "$3{,}26\\text{ m}$",
+              "$3\\text{ m}$",
+              "$3{,}260\\text{ m}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "La resta exacta es $18{,}5 - 15{,}24 = 3{,}26\\text{ m}$. Dado que $18{,}5\\text{ m}$ solo tiene 1 posición decimal (décimas) y $15{,}24\\text{ m}$ tiene 2 (centésimas), el resultado debe limitarse a 1 posición decimal: al redondear $3{,}26\\text{ m}$ a las décimas se obtiene $3{,}3\\text{ m}$."
+          },
+          {
+            "enunciado": "Observe la resta de dos longitudes muy cercanas medidas con alta precisión: $L_1 = 85{,}46\\text{ cm}$ (4 CS) y $L_2 = 85{,}39\\text{ cm}$ (4 CS). ¿Cuál es el resultado $\\Delta L = L_1 - L_2$ y cuántas cifras significativas posee?",
+            "opciones": [
+              "$0{,}0700\\text{ cm}$ (3 cifras significativas)",
+              "$0{,}07\\text{ cm}$ (1 cifra significativa)",
+              "$0{,}070\\text{ cm}$ (2 cifras significativas)",
+              "$0{,}1\\text{ cm}$ (1 cifra significativa)"
+            ],
+            "respuesta": "b",
+            "explicacion": "Ambos datos están medidos hasta las centésimas (2 decimales), por lo que la resta $85{,}46 - 85{,}39 = 0{,}07\\text{ cm}$ también debe expresarse hasta las centésimas. Como los ceros a la izquierda no cuentan, el resultado pasa legítimamente de 4 cifras significativas a solo 1 cifra significativa (fenómeno conocido como pérdida de cifras por cancelación sustractiva)."
+          },
+          {
+            "enunciado": "Un submarino se encuentra a una profundidad de $124\\text{ m}$ (medida al metro entero más cercano) y desciende un tramo adicional medido con un sensor fino de $3{,}85\\text{ m}$. ¿Cuál es su nueva profundidad total expresada correctamente?",
+            "opciones": [
+              "$127{,}85\\text{ m}$",
+              "$127{,}8\\text{ m}$",
+              "$128\\text{ m}$",
+              "$130\\text{ m}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "La suma exacta es $124 + 3{,}85 = 127{,}85\\text{ m}$. Como $124\\text{ m}$ no tiene posiciones decimales (su incertidumbre ya está en la columna de las unidades de metro), el resultado debe redondearse a las unidades enteras: $128\\text{ m}$."
+          },
+          {
+            "enunciado": "Se desea sumar los tramos de tubería $L_1 = 2{,}45\\text{ m}$ y $L_2 = 36{,}0\\text{ cm}$. Expresando el resultado en metros y respetando las cifras significativas, ¿cuál es la longitud total?",
+            "opciones": [
+              "$2{,}81\\text{ m}$",
+              "$2{,}810\\text{ m}$",
+              "$2{,}8\\text{ m}$",
+              "$38{,}45\\text{ m}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "Primero se unifican las unidades a metros conservando las 3 cifras significativas de $L_2$: $36{,}0\\text{ cm} = 0{,}360\\text{ m}$ (3 decimales). Luego se suma: $2{,}45\\text{ m} \\text{ (2 decimales)} + 0{,}360\\text{ m} \\text{ (3 decimales)} = 2{,}810\\text{ m}$. Redondeando al menor número de decimales (2 decimales) queda $2{,}81\\text{ m}$."
+          },
+          {
+            "enunciado": "Efectúe la suma en notación científica $5{,}42 \\times 10^{4}\\text{ Pa} + 3{,}5 \\times 10^{3}\\text{ Pa}$ aplicando correctamente las reglas de cifras significativas:",
+            "opciones": [
+              "$5{,}8 \\times 10^{4}\\text{ Pa}$",
+              "$5{,}77 \\times 10^{4}\\text{ Pa}$",
+              "$8{,}9 \\times 10^{7}\\text{ Pa}$",
+              "$5{,}770 \\times 10^{4}\\text{ Pa}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Igualando ambos términos a la potencia $10^{4}$: $3{,}5 \\times 10^{3}\\text{ Pa} = 0{,}35 \\times 10^{4}\\text{ Pa}$. Ahora ambas mantisas ($5{,}42$ y $0{,}35$) tienen exactamente 2 posiciones decimales, por lo que su suma conserva las 2 posiciones decimales: $(5{,}42 + 0{,}35) \\times 10^{4}\\text{ Pa} = 5{,}77 \\times 10^{4}\\text{ Pa}$."
+          },
+          {
+            "enunciado": "Calcule la suma $6{,}3 \\times 10^{5}\\text{ J} + 4{,}28 \\times 10^{4}\\text{ J}$ respetando las reglas de cifras significativas en la adición:",
+            "opciones": [
+              "$6{,}73 \\times 10^{5}\\text{ J}$",
+              "$6{,}728 \\times 10^{5}\\text{ J}$",
+              "$6{,}7 \\times 10^{5}\\text{ J}$",
+              "$1{,}06 \\times 10^{6}\\text{ J}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "Expresando ambos en base $10^{5}$: $6{,}3 \\times 10^{5}\\text{ J} + 0{,}428 \\times 10^{5}\\text{ J} = 6{,}728 \\times 10^{5}\\text{ J}$. Como la primera mantisa ($6{,}3$) solo llega hasta las décimas (1 decimal), se redondea la mantisa resultante a 1 decimal: $6{,}7 \\times 10^{5}\\text{ J}$."
+          },
+          {
+            "enunciado": "Un guardiamarina debe calcular el valor de una expresión de dos pasos. Si redondea drásticamente el resultado del primer paso antes de sustituirlo en el segundo paso, ¿qué tipo de error introduce en la respuesta final?",
+            "opciones": [
+              "Error de paralaje",
+              "Error de cero del instrumento",
+              "Error de propagación por redondeo prematuro",
+              "Ningún error, porque siempre es obligatorio redondear en cada línea de cálculo"
+            ],
+            "respuesta": "c",
+            "explicacion": "Redondear los resultados parciales en cada paso intermedio acumula desviaciones numéricas conocidas como error de redondeo prematuro. La buena práctica científica exige conservar al menos uno o dos dígitos adicionales de guarda durante el proceso y redondear únicamente el resultado final."
+          },
+          {
+            "enunciado": "Redondee la masa $m = 48\\,760\\text{ kg}$ a 2 cifras significativas y exprésela sin ambigüedad en notación científica:",
+            "opciones": [
+              "$4{,}8 \\times 10^{4}\\text{ kg}$",
+              "$4{,}9 \\times 10^{4}\\text{ kg}$",
+              "$49 \\times 10^{3}\\text{ kg}$",
+              "$4{,}90 \\times 10^{4}\\text{ kg}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "En notación científica, $48\\,760\\text{ kg} = 4{,}876 \\times 10^{4}\\text{ kg}$. Al conservar solo 2 cifras significativas, se mira el tercer dígito ($7 > 5$), por lo que el $8$ sube a $9$: $4{,}9 \\times 10^{4}\\text{ kg}$."
+          }
+        ]
+      },
+      {
+        "tituloCapsula": "📖 Cápsula 3: Multiplicación, División, Potencias, Raíces y Operaciones Combinadas",
+        "markdown": "### 📖 Cápsula 3: Multiplicación, División, Potencias, Raíces y Operaciones Combinadas\n\nA diferencia de la suma y la resta, en los productos, cocientes, potencias y raíces la incertidumbre relativa depende del **número total de cifras significativas** de cada factor.\n\n#### 1. Regla para la Multiplicación y la División\n\n> El resultado de una multiplicación o división debe redondearse para que tenga el **mismo número total de cifras significativas** que el factor medido que tenga **MENOS cifras significativas**.\n\n**Ejemplo naval:** un patrullero recorre una distancia $d = 128{,}4\\text{ m}$ ($4\\text{ CS}$) en un tiempo $t = 12\\text{ s}$ ($2\\text{ CS}$). Su rapidez media es:\n\n$$v = \\frac{d}{t} = \\frac{128{,}4\\text{ m}}{12\\text{ s}} = 10{,}7\\text{ m/s} \\xrightarrow{\\text{redondeo a 2 CS}} 11\\text{ m/s}$$\n\n> **⚓ Trampa de examen cuando la calculadora \"borra\" ceros:** Si multiplicas $F = m \\cdot a = (2{,}50\\text{ kg}) \\times (4{,}00\\text{ m/s}^2)$, ambos factores tienen **$3\\text{ CS}$**. La calculadora mostrará simplemente `10`, pero tú **debes agregar el cero decimal** y escribir **$10{,}0\\text{ N}$** para mantener las $3\\text{ CS}$ que exige la precisión de los datos.\n\n#### 2. Potenciación, radicación y constantes exactas en fórmulas\n* **Potencias y raíces:** al elevar una medida al cuadrado o al cubo, o al extraer su raíz cuadrada, el resultado conserva el **mismo número de cifras significativas** que tenía la medida original.\n  * Ejemplo: si el lado de una escotilla cuadrada es $L = 1{,}20\\text{ m}$ ($3\\text{ CS}$), su área es $A = L^2 = 1{,}44\\text{ m}^2$ ($3\\text{ CS}$).\n* **Fórmulas con números exactos:** en ecuaciones como $d = \\frac{v \\cdot t}{2}$, $E_c = \\frac{1}{2}mv^2$ o $L_c = 2\\pi R$, los números puros ($2$, $\\frac{1}{2}$) tienen **infinitas CS** y jamás limitan el resultado. Si usas $\\pi$, debes tomarlo con al menos una cifra significativa más que el dato medido más preciso.\n\n| Operación realizada | Datos de entrada y sus CS | Resultado de calculadora | Resultado físico correcto |\n| :--- | :--- | :--- | :--- |\n| Producto: $2{,}50\\text{ m} \\times 4{,}00\\text{ m}$ | $3\\text{ CS}$ y $3\\text{ CS}$ | $10$ | **$10{,}0\\text{ m}^2$** ($3\\text{ CS}$) |\n| Cociente: $\\dfrac{8{,}40\\text{ km}}{2{,}0\\text{ h}}$ | $3\\text{ CS}$ y $2\\text{ CS}$ | $4{,}2$ | **$4{,}2\\text{ km/h}$** ($2\\text{ CS}$) |\n| Raíz: $\\sqrt{4{,}00\\text{ m}^2}$ | $3\\text{ CS}$ | $2$ | **$2{,}00\\text{ m}$** ($3\\text{ CS}$) |\n| Sonar: $d = \\dfrac{1\\,500{,}0\\text{ m/s} \\times 0{,}400\\text{ s}}{2}$ | $5\\text{ CS}$, $3\\text{ CS}$ y $2$ (exacto) | $300$ | **$3{,}00 \\times 10^{2}\\text{ m}$** ($3\\text{ CS}$) |\n\n#### 3. Operaciones combinadas (jerarquía paso a paso)\nCuando una fórmula combina sumas/restas con multiplicaciones/divisiones, por ejemplo la aceleración media $a = \\dfrac{v_f - v_0}{t}$:\n1. Evalúa primero el paréntesis o numerador ($v_f - v_0$) e identifica **cuántas cifras significativas válidas** deja la regla de la resta (según sus decimales), pero conserva un dígito extra para no cometer error de redondeo prematuro.\n2. Ejecuta la división final y redondea según el menor número de **cifras significativas** entre el numerador ya evaluado y el denominador $t$.",
+        "videoUrl": null,
+        "tituloSimulador": "Simulador: Cifras Significativas 3",
+        "tituloLeccionSimulador": "🎯 Práctica 3: Productos, Cocientes, Raíces y Operaciones Combinadas",
+        "preguntas": [
+          {
+            "enunciado": "Una plancha de acero del casco tiene un largo $L = 4{,}52\\text{ m}$ y un ancho $a = 1{,}1\\text{ m}$. ¿Cuál es el área $A = L \\cdot a$ de la plancha expresada con el número correcto de cifras significativas?",
+            "opciones": [
+              "$4{,}972\\text{ m}^2$",
+              "$4{,}97\\text{ m}^2$",
+              "$5{,}0\\text{ m}^2$",
+              "$5\\text{ m}^2$"
+            ],
+            "respuesta": "c",
+            "explicacion": "El largo tiene 3 cifras significativas ($4{,}52$) y el ancho tiene 2 cifras significativas ($1{,}1$). En la multiplicación manda el factor con menor número de cifras significativas (2 CS): el producto exacto $4{,}972\\text{ m}^2$ redondeado a 2 cifras significativas es $5{,}0\\text{ m}^2$."
+          },
+          {
+            "enunciado": "Sobre un bloque de masa $m = 2{,}50\\text{ kg}$ actúa una fuerza neta que le produce una aceleración $a = 4{,}00\\text{ m/s}^2$. Al calcular la fuerza con $F = m \\cdot a$, la pantalla de la calculadora muestra simplemente \"10\". ¿Cómo debe reportarse correctamente el resultado?",
+            "opciones": [
+              "$10\\text{ N}$",
+              "$10{,}0\\text{ N}$",
+              "$10{,}00\\text{ N}$",
+              "$1{,}0 \\times 10^{1}\\text{ N}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Tanto la masa ($2{,}50\\text{ kg}$) como la aceleración ($4{,}00\\text{ m/s}^2$) tienen 3 cifras significativas. Por lo tanto, el producto debe expresarse obligatoriamente con 3 cifras significativas añadiendo el cero después de la coma: $10{,}0\\text{ N}$."
+          },
+          {
+            "enunciado": "Una muestra de bronce naval tiene una masa $m = 72{,}90\\text{ g}$ y ocupa un volumen $V = 9{,}0\\text{ cm}^3$. ¿Cuál es su densidad $\\rho = m / V$ escrita correctamente?",
+            "opciones": [
+              "$8{,}1\\text{ g/cm}^3$",
+              "$8{,}10\\text{ g/cm}^3$",
+              "$8{,}100\\text{ g/cm}^3$",
+              "$8\\text{ g/cm}^3$"
+            ],
+            "respuesta": "a",
+            "explicacion": "El numerador tiene 4 cifras significativas ($72{,}90$) y el denominador tiene 2 cifras significativas ($9{,}0$). Al dividir resulta $8{,}1$, que ya cuenta con las 2 cifras significativas requeridas por el factor menos preciso: $8{,}1\\text{ g/cm}^3$."
+          },
+          {
+            "enunciado": "La ecosonda de un buque mide la profundidad mediante $h = \\dfrac{v \\cdot t}{2}$. Si la rapidez del sonido en esa zona se determinó como $v = 1{,}500 \\times 10^{3}\\text{ m/s}$ y el eco tardó $t = 0{,}600\\text{ s}$, ¿con cuántas cifras significativas debe escribirse la profundidad $h$ y cuál es su valor en notación científica?",
+            "opciones": [
+              "Con 1 cifra significativa ($5 \\times 10^{2}\\text{ m}$), porque el número 2 del denominador solo tiene una cifra.",
+              "Con 4 cifras significativas ($4{,}500 \\times 10^{2}\\text{ m}$), porque manda la velocidad.",
+              "Con 3 cifras significativas ($4{,}50 \\times 10^{2}\\text{ m}$), porque el 2 es un coeficiente exacto y el dato con menos cifras es $0{,}600\\text{ s}$ (3 CS).",
+              "Con 2 cifras significativas ($4{,}5 \\times 10^{2}\\text{ m}$), porque los ceros finales no cuentan."
+            ],
+            "respuesta": "c",
+            "explicacion": "El divisor 2 proviene de que el pulso recorre exactamente dos veces la profundidad (ida y vuelta), por lo que tiene infinitas cifras significativas. Entre $v$ (4 CS) y $t$ (3 CS), manda el menor (3 CS): $h = \\frac{1\\,500 \\times 0{,}600}{2} = 450\\text{ m} = 4{,}50 \\times 10^{2}\\text{ m}$."
+          },
+          {
+            "enunciado": "Un proyectil de masa $m = 2{,}00\\text{ kg}$ se mueve con una rapidez $v = 3{,}00\\text{ m/s}$. Al calcular su energía cinética $E_c = \\frac{1}{2} m v^2$, ¿cuál es el resultado expresado con el número correcto de cifras significativas?",
+            "opciones": [
+              "$9\\text{ J}$",
+              "$9{,}0\\text{ J}$",
+              "$9{,}00\\text{ J}$",
+              "$9{,}000\\text{ J}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "El factor $\\frac{1}{2}$ es un coeficiente teórico exacto (infinitas CS). Tanto la masa ($2{,}00\\text{ kg}$) como la rapidez ($3{,}00\\text{ m/s}$) tienen 3 cifras significativas, por lo que el resultado $E_c = \\frac{1}{2}(2{,}00)(3{,}00)^2 = 9\\text{ J}$ debe reportarse con 3 cifras significativas: $9{,}00\\text{ J}$."
+          },
+          {
+            "enunciado": "Para calcular la longitud de la circunferencia de una boya cilíndrica ($L = 2\\pi R$) cuyo radio se midió con calibrador como $R = 12{,}45\\text{ cm}$ (4 CS), ¿qué aproximación de $\\pi$ es necesario utilizar como mínimo para no degradar la precisión del dato?",
+            "opciones": [
+              "$\\pi \\approx 3$",
+              "$\\pi \\approx 3{,}1$",
+              "$\\pi \\approx 3{,}14$",
+              "$\\pi \\approx 3{,}1416$ (al menos 4 o 5 cifras significativas)"
+            ],
+            "respuesta": "d",
+            "explicacion": "Si se usara $\\pi \\approx 3{,}14$ (3 CS), se limitaría artificialmente el resultado a 3 cifras significativas a pesar de haber medido el radio con 4 cifras significativas. Las constantes irracionales como $\\pi$ deben tomarse siempre con al menos tantas cifras significativas (idealmente una más) como el dato medido."
+          },
+          {
+            "enunciado": "Un compartimento cúbico de almacenamiento tiene una arista medida de $L = 2{,}00\\text{ m}$. ¿Cuál es su volumen $V = L^3$ expresado correctamente?",
+            "opciones": [
+              "$8{,}00\\text{ m}^3$",
+              "$8\\text{ m}^3$",
+              "$8{,}0\\text{ m}^3$",
+              "$8{,}000\\text{ m}^3$"
+            ],
+            "respuesta": "a",
+            "explicacion": "Elevar al cubo equivale a multiplicar $2{,}00\\text{ m} \\times 2{,}00\\text{ m} \\times 2{,}00\\text{ m}$. Como la medida base tiene 3 cifras significativas, la potencia conserva las 3 cifras significativas: $8{,}00\\text{ m}^3$."
+          },
+          {
+            "enunciado": "Se mide el área de una cubierta cuadrada obteniendo $A = 9{,}00\\text{ m}^2$. Al calcular la longitud de su lado mediante la raíz cuadrada $L = \\sqrt{A}$, ¿cómo debe expresarse el resultado?",
+            "opciones": [
+              "$3\\text{ m}$",
+              "$3{,}00\\text{ m}$",
+              "$3{,}0\\text{ m}$",
+              "$3{,}000\\text{ m}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "La extracción de una raíz conserva el mismo número de cifras significativas del radicando. Como $9{,}00\\text{ m}^2$ posee 3 cifras significativas, su raíz cuadrada debe escribirse con 3 cifras significativas: $3{,}00\\text{ m}$."
+          },
+          {
+            "enunciado": "Una lancha rápida aumenta su velocidad de $v_0 = 12{,}4\\text{ m/s}$ a $v_f = 18{,}8\\text{ m/s}$ en un intervalo de tiempo $t = 2{,}00\\text{ s}$. Al calcular la aceleración media $a = \\dfrac{v_f - v_0}{t}$, ¿cuál es el resultado correcto?",
+            "opciones": [
+              "$3{,}20\\text{ m/s}^2$",
+              "$3{,}2\\text{ m/s}^2$",
+              "$3\\text{ m/s}^2$",
+              "$3{,}200\\text{ m/s}^2$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Primero se efectúa la resta del numerador aplicando la regla de los decimales: $18{,}8\\text{ m/s} - 12{,}4\\text{ m/s} = 6{,}4\\text{ m/s}$ (1 decimal, lo que deja 2 cifras significativas en el numerador). Luego se divide para el tiempo ($2{,}00\\text{ s}$, que tiene 3 CS): $\\frac{6{,}4\\text{ m/s}}{2{,}00\\text{ s}} = 3{,}2\\text{ m/s}^2$ (limitado a 2 CS por el numerador)."
+          },
+          {
+            "enunciado": "En un ensayo de materiales, la temperatura inicial de una barra es $T_1 = 21{,}2\\text{ °C}$ y la final es $T_2 = 145{,}8\\text{ °C}$. Si se divide el incremento $\\Delta T = T_2 - T_1$ para un tiempo $t = 2{,}00\\text{ s}$, ¿cuántas cifras significativas debe tener el cociente $\\Delta T / t$?",
+            "opciones": [
+              "4 cifras significativas",
+              "2 cifras significativas",
+              "3 cifras significativas",
+              "1 cifra significativa"
+            ],
+            "respuesta": "c",
+            "explicacion": "En el numerador, la resta $145{,}8\\text{ °C} - 21{,}2\\text{ °C} = 124{,}6\\text{ °C}$ conserva 1 posición decimal y tiene 4 cifras significativas. Al dividir esa cantidad de 4 CS para el tiempo $t = 2{,}00\\text{ s}$ (que tiene 3 CS), el cociente queda limitado por el menor de ambos: 3 cifras significativas ($62{,}3\\text{ °C/s}$)."
+          },
+          {
+            "enunciado": "Efectúe la operación combinada $(3{,}20 \\times 2{,}0) + 1{,}456$ aplicando las reglas de cifras significativas en el orden jerárquico correspondiente:",
+            "opciones": [
+              "$7{,}856$",
+              "$7{,}86$",
+              "$7{,}9$",
+              "$8$"
+            ],
+            "respuesta": "c",
+            "explicacion": "Primero la multiplicación: $3{,}20 \\text{ (3 CS)} \\times 2{,}0 \\text{ (2 CS)} = 6{,}4$ (tiene 2 CS, por lo que su incertidumbre ya está en la primera posición decimal, las décimas). Luego la suma: $6{,}4 \\text{ (1 decimal)} + 1{,}456 \\text{ (3 decimales)} = 7{,}856$, que debe redondearse a 1 posición decimal (décimas): $7{,}9$."
+          },
+          {
+            "enunciado": "El consumo de combustible de cuatro motores idénticos de una embarcación es exactamente igual, siendo el consumo medido de uno de ellos $c = 15{,}25\\text{ L/h}$. ¿Cuál es el consumo total de los 4 motores ($C_{\\text{total}} = 4 \\cdot c$) expresado correctamente?",
+            "opciones": [
+              "$60\\text{ L/h}$",
+              "$61\\text{ L/h}$",
+              "$61{,}0\\text{ L/h}$",
+              "$61{,}00\\text{ L/h}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "El número 4 proviene del conteo de motores (número exacto con infinitas cifras significativas), mientras que $15{,}25\\text{ L/h}$ tiene 4 cifras significativas. Por lo tanto, el producto $4 \\times 15{,}25 = 61$ debe mantener las 4 cifras significativas: $61{,}00\\text{ L/h}$."
+          },
+          {
+            "enunciado": "Calcule el cociente en notación científica $\\dfrac{9{,}60 \\times 10^{5}\\text{ N}}{3{,}0 \\times 10^{2}\\text{ m}^2}$ respetando las cifras significativas:",
+            "opciones": [
+              "$3{,}2 \\times 10^{3}\\text{ Pa}$",
+              "$3{,}20 \\times 10^{3}\\text{ Pa}$",
+              "$3 \\times 10^{3}\\text{ Pa}$",
+              "$3{,}200 \\times 10^{3}\\text{ Pa}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "El numerador tiene 3 cifras significativas ($9{,}60$) y el denominador tiene 2 cifras significativas ($3{,}0$). En la división manda el menor número de cifras significativas (2 CS): $3{,}2 \\times 10^{3}\\text{ Pa}$."
+          },
+          {
+            "enunciado": "Al medir el tiempo de caída de una esfera con tres instrumentos distintos se reportan los valores $t_A = 2{,}4\\text{ s}$, $t_B = 2{,}40\\text{ s}$ y $t_C = 2{,}400\\text{ s}$. ¿Cuál de las tres mediciones tiene la MENOR incertidumbre relativa (es decir, la mayor precisión experimental)?",
+            "opciones": [
+              "$t_A = 2{,}4\\text{ s}$, porque tiene menos dígitos que puedan estar equivocados.",
+              "$t_B = 2{,}40\\text{ s}$, porque las centésimas de segundo son el estándar del SI.",
+              "$t_C = 2{,}400\\text{ s}$, porque cuenta con 4 cifras significativas y su incertidumbre está en las milésimas de segundo ($\\pm 0{,}001\\text{ s}$).",
+              "Las tres tienen exactamente la misma incertidumbre relativa porque valen $2{,}4\\text{ s}$."
+            ],
+            "respuesta": "c",
+            "explicacion": "A mayor número de cifras significativas, menor es la incertidumbre relativa de la medición. La medida $t_C = 2{,}400\\text{ s}$ (4 CS) fue tomada con un cronómetro electrónico de resolución de milisegundos ($\\pm 0{,}001\\text{ s}$), diez veces más preciso que $t_B$ ($\\pm 0{,}01\\text{ s}$) y cien veces más preciso que $t_A$ ($\\pm 0{,}1\\text{ s}$)."
+          }
+        ]
+      }
+    ]
+  }

@@ -1,0 +1,482 @@
+{
+    "cursoSlug": "curso-completo-essuna",
+    "moduloPadreId": "4e8a99ce-e311-40bc-ae94-0e2f3bc5c74f",
+    "materiaSlug": "fisica",
+    "institucion": "Armada",
+    "publico": true,
+    "tema": {
+      "nombre": "1.4 Mediciones de longitud, masa y tiempo",
+      "slug": "mediciones-de-longitud-masa-y-tiempo",
+      "orden": 4
+    },
+    "SubmoduloTitulo": "1.4 Mediciones de longitud, masa y tiempo",
+    "bloques": [
+      {
+        "tituloCapsula": "📖 Cápsula 1: Medición de la Longitud, Instrumentos de Precisión y Métodos Navales",
+        "markdown": "### 📖 Cápsula 1: Medición de la Longitud, Instrumentos de Precisión y Métodos Navales\n\nLa **longitud** es la magnitud fundamental que cuantifica la distancia de separación entre dos puntos del espacio. Según el tamaño del objeto o la distancia operativa en el mar, la Física emplea instrumentos de contacto directo o métodos indirectos por reflexión de ondas.\n\n#### 1. Medición directa e instrumentos mecánicos de precisión\nLa **apreciación** (o lectura mínima) de un instrumento es la menor medida que puede detectar sin estimación visual.\n\n* **Cinta métrica y regla graduada:** tienen una apreciación típica de $1\\text{ mm}$ ($10^{-3}\\text{ m}$).\n* **Calibrador Vernier (pie de rey):** mide exteriores, interiores y profundidades. Consta de una regla fija graduada en milímetros y una escala móvil llamada **nonio** con $N$ divisiones. Su apreciación es:\n\n$$a = \\frac{\\text{Menor división de la regla fija}}{N}$$\n\nLa lectura total se obtiene sumando la marca en milímetros que superó el cero del nonio más la división $k$ del nonio que coincide exactamente con una línea de la regla:\n\n$$L = L_{\\text{fija}} + k \\cdot a$$\n\n* **Tornillo micrométrico (palmer):** usa un tornillo de paso muy fino ($p = 0{,}5\\text{ mm}$ por vuelta) y un tambor circular con $50$ divisiones, alcanzando una apreciación de $0{,}01\\text{ mm}$ ($10\\text{ }\\mu\\text{m}$). Se emplea en los talleres de máquinas navales para medir el desgaste de ejes, válvulas e inyectores.\n\n| Instrumento | Escala móvil ($N$) | Apreciación típica ($a$) | Aplicación naval típica |\n| :--- | :--- | :--- | :--- |\n| Regla graduada | Sin nonio | $1\\text{ mm}$ | Carpintería y trazado en cartas |\n| Calibrador Vernier ($10$ div.) | $10$ divisiones | $0{,}1\\text{ mm}$ | Pernos y tuberías de cubierta |\n| Calibrador Vernier ($20$ div.) | $20$ divisiones | $0{,}05\\text{ mm}$ | Diámetros internos de boquillas |\n| Calibrador Vernier ($50$ div.) | $50$ divisiones | $0{,}02\\text{ mm}$ | Piezas de ajuste mecánico |\n| Micrómetro (paso $0{,}5\\text{ mm}$) | $50$ divisiones | $0{,}01\\text{ mm}$ | Espesor de láminas y ejes de motores |\n\n#### 2. Unidades marítimas, microscópicas y astronómicas de longitud\nAdemás del metro, en navegación y ciencia se emplean múltiplos y unidades históricas aceptadas o de referencia:\n\n| Unidad | Símbolo | Equivalencia en el SI | Contexto de uso |\n| :--- | :--- | :--- | :--- |\n| Milla náutica | M (o NM) | $1\\text{ M} = 1\\,852\\text{ m}$ (equivale a $1'$ de arco de meridiano) | Navegación marítima y aérea |\n| Cable | cable | $1\\text{ cable} = 0{,}1\\text{ M} = 185{,}2\\text{ m}$ | Maniobras de fondeo y distancias cortas en el mar |\n| Braza | fm | $1\\text{ braza} = 6\\text{ ft} = 1{,}8288\\text{ m} \\approx 1{,}83\\text{ m}$ | Sondeo tradicional de profundidades |\n| Ángstrom | $\\text{\\AA}$ | $1\\text{ \\AA} = 10^{-10}\\text{ m} = 0{,}1\\text{ nm}$ | Diámetros atómicos y enlaces químicos |\n| Año luz | al | $1\\text{ al} \\approx 9{,}46 \\times 10^{15}\\text{ m}$ | Distancias estelares (distancia, no tiempo) |\n\n#### 3. Medición indirecta en el mar: Ecosonda (Sonar) y Radar\nPara medir grandes distancias sin contacto físico se emite un pulso y se mide el tiempo total $t$ que tarda en ir hasta el blanco, reflejarse y regresar al buque. Como la onda recorre el trayecto **dos veces** (ida y vuelta):\n\n$$d = \\frac{v \\cdot t}{2}$$\n\n* **Ecosonda y Sonar:** usan ondas acústicas (ultrasonido) en el agua de mar, donde la rapidez del sonido es $v \\approx 1\\,500\\text{ m/s}$.\n* **Radar y Telémetro láser:** usan ondas electromagnéticas en el aire, que viajan a la velocidad de la luz ($c \\approx 3{,}0 \\times 10^{8}\\text{ m/s}$).\n\n> **⚓ Trampa de examen:** El error más frecuente en problemas de sonar o radar es olvidar dividir para $2$. Si multiplicas $v \\cdot t$ directamente, estás calculando el recorrido total de ida y vuelta, es decir, el doble de la distancia real al blanco o al fondo marino.",
+        "videoUrl": null,
+        "tituloSimulador": "Simulador: Mediciones de Longitud, Masa y Tiempo 1",
+        "tituloLeccionSimulador": "🎯 Práctica 1: Medición de la Longitud, Vernier, Micrómetro y Sonar",
+        "preguntas": [
+          {
+            "enunciado": "Un calibrador Vernier (pie de rey) tiene una regla principal graduada en milímetros ($1\\text{ mm}$) y un nonio con 20 divisiones. ¿Cuál es la apreciación o lectura mínima del instrumento?",
+            "opciones": [
+              "$0{,}05\\text{ mm}$",
+              "$0{,}02\\text{ mm}$",
+              "$0{,}1\\text{ mm}$",
+              "$0{,}5\\text{ mm}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "La apreciación se calcula dividiendo la menor división de la escala fija para el número de divisiones del nonio: $a = \\frac{1\\text{ mm}}{20} = 0{,}05\\text{ mm}$."
+          },
+          {
+            "enunciado": "En el taller mecánico de una corbeta se mide el diámetro de un perno con un calibrador Vernier de apreciación $0{,}05\\text{ mm}$. Si el cero del nonio supera la marca de $18\\text{ mm}$ y la séptima división del nonio coincide exactamente con una línea de la regla fija, ¿cuál es el diámetro del perno?",
+            "opciones": [
+              "$18{,}70\\text{ mm}$",
+              "$18{,}35\\text{ mm}$",
+              "$18{,}07\\text{ mm}$",
+              "$25{,}05\\text{ mm}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "La lectura total es $L = L_{\\text{fija}} + k \\cdot a = 18\\text{ mm} + 7 \\times 0{,}05\\text{ mm} = 18\\text{ mm} + 0{,}35\\text{ mm} = 18{,}35\\text{ mm}$."
+          },
+          {
+            "enunciado": "Un tornillo micrométrico tiene un paso de rosca de $0{,}5\\text{ mm}$ y su tambor circular está dividido en 50 partes iguales. Cuando se mide el espesor de una lámina de acero naval, el cilindro fijo muestra $6{,}5\\text{ mm}$ y la línea 32 del tambor coincide con la línea de referencia. ¿Cuál es el espesor de la lámina?",
+            "opciones": [
+              "$6{,}32\\text{ mm}$",
+              "$9{,}70\\text{ mm}$",
+              "$6{,}82\\text{ mm}$",
+              "$6{,}66\\text{ mm}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "La apreciación del micrómetro es $a = \\frac{0{,}5\\text{ mm}}{50} = 0{,}01\\text{ mm}$. Sumando la lectura del cilindro fijo y la del tambor resulta $L = 6{,}5\\text{ mm} + 32 \\times 0{,}01\\text{ mm} = 6{,}5\\text{ mm} + 0{,}32\\text{ mm} = 6{,}82\\text{ mm}$."
+          },
+          {
+            "enunciado": "La ecosonda de un buque hidrográfico de la Armada emite un pulso ultrasónico hacia el fondo marino y recibe el eco $0{,}6\\text{ s}$ después. Si la rapidez del sonido en el agua de mar es de $1\\,500\\text{ m/s}$, ¿qué profundidad tiene el mar en ese punto?",
+            "opciones": [
+              "$900\\text{ m}$",
+              "$2\\,500\\text{ m}$",
+              "$300\\text{ m}$",
+              "$450\\text{ m}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "El pulso recorre la profundidad dos veces (bajada y subida), por lo que $h = \\frac{v \\cdot t}{2} = \\frac{1\\,500\\text{ m/s} \\times 0{,}6\\text{ s}}{2} = 450\\text{ m}$. El valor de $900\\text{ m}$ es el error clásico de no dividir para 2."
+          },
+          {
+            "enunciado": "El radar de superficie de una fragata detecta el eco de una embarcación $40\\text{ }\\mu\\text{s}$ después de haber emitido el pulso electromagnético. Considerando que las ondas de radar viajan a $c = 3{,}0 \\times 10^{8}\\text{ m/s}$, ¿a qué distancia se encuentra la embarcación?",
+            "opciones": [
+              "$12\\text{ km}$",
+              "$6\\text{ km}$",
+              "$600\\text{ m}$",
+              "$1{,}2\\text{ km}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Como $40\\text{ }\\mu\\text{s} = 40 \\times 10^{-6}\\text{ s}$, la distancia al blanco es la mitad del recorrido total de la onda: $d = \\frac{c \\cdot t}{2} = \\frac{3{,}0 \\times 10^{8}\\text{ m/s} \\times 40 \\times 10^{-6}\\text{ s}}{2} = 6\\,000\\text{ m} = 6\\text{ km}$."
+          },
+          {
+            "enunciado": "En terminología marinera, un cable equivale a la décima parte de una milla náutica ($0{,}1\\text{ M}$). Si un buque fondea a $3\\text{ cables}$ de la costa, ¿a cuántos metros equivale exactamente esa distancia?",
+            "opciones": [
+              "$555{,}6\\text{ m}$",
+              "$185{,}2\\text{ m}$",
+              "$300\\text{ m}$",
+              "$1\\,852\\text{ m}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "Dado que $1\\text{ M} = 1\\,852\\text{ m}$, un cable equivale a $185{,}2\\text{ m}$. Por lo tanto, $3\\text{ cables} = 3 \\times 185{,}2\\text{ m} = 555{,}6\\text{ m}$."
+          },
+          {
+            "enunciado": "¿Cuál es el origen geométrico e histórico de la milla náutica ($1\\,852\\text{ m}$)?",
+            "opciones": [
+              "Es la distancia que recorre el sonido en el agua durante un segundo.",
+              "Es igual a mil brazas inglesas medidas en el ecuador.",
+              "Corresponde a la longitud media de un minuto de arco ($1'$) de meridiano terrestre.",
+              "Es la diezmillonésima parte del radio polar de la Tierra."
+            ],
+            "respuesta": "c",
+            "explicacion": "Un meridiano terrestre tiene $360^\\circ$, y cada grado se divide en $60$ minutos de arco ($1^\\circ = 60'$). La longitud de $1'$ de latitud sobre un meridiano terrestre es aproximadamente $1\\,852\\text{ m}$, lo que permite medir distancias directamente sobre la escala de latitud de una carta náutica."
+          },
+          {
+            "enunciado": "Una carta náutica antigua indica que un bajo rocoso se encuentra a una profundidad de 5 brazas. Sabiendo que una braza equivale exactamente a 6 pies y que $1\\text{ ft} = 0{,}3048\\text{ m}$, ¿cuál es la profundidad del bajo en metros?",
+            "opciones": [
+              "$15{,}24\\text{ m}$",
+              "$5{,}49\\text{ m}$",
+              "$10{,}97\\text{ m}$",
+              "$9{,}14\\text{ m}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "Cinco brazas equivalen a $5 \\times 6\\text{ ft} = 30\\text{ ft}$. Multiplicando por $0{,}3048\\text{ m/ft}$ se obtiene $30 \\times 0{,}3048\\text{ m} = 9{,}144\\text{ m} \\approx 9{,}14\\text{ m}$."
+          },
+          {
+            "enunciado": "¿Qué magnitud física mide el año luz y cuál es su valor aproximado en el Sistema Internacional?",
+            "opciones": [
+              "Tiempo; equivale a $3{,}15 \\times 10^{7}\\text{ s}$.",
+              "Longitud; equivale a unos $9{,}46 \\times 10^{15}\\text{ m}$.",
+              "Velocidad; equivale a $3{,}0 \\times 10^{8}\\text{ m/s}$.",
+              "Intensidad luminosa; equivale a $10^{12}\\text{ cd}$."
+            ],
+            "respuesta": "b",
+            "explicacion": "A pesar de incluir la palabra \"año\", el año luz es una unidad de longitud: es la distancia que recorre la luz en el vacío durante un año juliano ($365{,}25\\text{ días} = 31\\,557\\,600\\text{ s}$), resultando $d = c \\cdot t \\approx 9{,}46 \\times 10^{15}\\text{ m}$."
+          },
+          {
+            "enunciado": "Para medir el diámetro externo de un pistón de $85\\text{ mm}$ con una precisión de centésimas de milímetro ($0{,}01\\text{ mm}$), ¿cuál es el instrumento más adecuado?",
+            "opciones": [
+              "Una cinta métrica metálica",
+              "Una regla graduada en milímetros",
+              "Un micrómetro de exteriores",
+              "Un odómetro"
+            ],
+            "respuesta": "c",
+            "explicacion": "El micrómetro de exteriores ofrece una apreciación estándar de $0{,}01\\text{ mm}$, ideal para verificar tolerancias mecánicas de centésimas de milímetro que una regla o cinta ($1\\text{ mm}$) no pueden resolver."
+          },
+          {
+            "enunciado": "El ángstrom ($\\text{\\AA}$) es una unidad empleada en física atómica para expresar radios atómicos y longitudes de onda de rayos X. Si $1\\text{ \\AA} = 10^{-10}\\text{ m}$, ¿a cuántos nanómetros equivale 1 ángstrom?",
+            "opciones": [
+              "$0{,}1\\text{ nm}$",
+              "$10\\text{ nm}$",
+              "$0{,}01\\text{ nm}$",
+              "$100\\text{ nm}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "Como $1\\text{ nm} = 10^{-9}\\text{ m}$, al dividir resulta $\\frac{10^{-10}\\text{ m}}{10^{-9}\\text{ m/nm}} = 10^{-1}\\text{ nm} = 0{,}1\\text{ nm}$. Por lo tanto, $10\\text{ \\AA} = 1\\text{ nm}$."
+          },
+          {
+            "enunciado": "Un submarino navega sumergido y su sonar activo de proa detecta un obstáculo submarino a $1\\,125\\text{ m}$ de distancia. Si la rapidez del sonido en el agua es de $1\\,500\\text{ m/s}$, ¿cuánto tiempo transcurre entre la emisión del pulso y la recepción del eco?",
+            "opciones": [
+              "$0{,}75\\text{ s}$",
+              "$3{,}00\\text{ s}$",
+              "$1{,}33\\text{ s}$",
+              "$1{,}50\\text{ s}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "De la ecuación del eco $d = \\frac{v \\cdot t}{2}$, se despeja el tiempo total de ida y vuelta: $t = \\frac{2 \\cdot d}{v} = \\frac{2 \\times 1\\,125\\text{ m}}{1\\,500\\text{ m/s}} = \\frac{2\\,250}{1\\,500}\\text{ s} = 1{,}50\\text{ s}$."
+          },
+          {
+            "enunciado": "Si se construye un calibrador Vernier especial cuya regla fija está dividida en milímetros y cuyo nonio tiene 50 divisiones, ¿cuál será su apreciación?",
+            "opciones": [
+              "$0{,}05\\text{ mm}$",
+              "$0{,}02\\text{ mm}$",
+              "$0{,}01\\text{ mm}$",
+              "$0{,}20\\text{ mm}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Aplicando la relación de apreciación del nonio: $a = \\frac{1\\text{ mm}}{50} = 0{,}02\\text{ mm}$."
+          },
+          {
+            "enunciado": "¿Cuántos órdenes de magnitud (potencias de 10) de diferencia existen entre el diámetro típico de un núcleo atómico ($10^{-14}\\text{ m}$) y la eslora de un buque escuela de $100\\text{ m}$ ($10^{2}\\text{ m}$)?",
+            "opciones": [
+              "12 órdenes de magnitud",
+              "14 órdenes de magnitud",
+              "16 órdenes de magnitud",
+              "28 órdenes de magnitud"
+            ],
+            "respuesta": "c",
+            "explicacion": "El cociente entre ambas longitudes es $\\frac{10^{2}\\text{ m}}{10^{-14}\\text{ m}} = 10^{2 - (-14)} = 10^{16}$, lo que representa 16 órdenes de magnitud de diferencia."
+          }
+        ]
+      },
+      {
+        "tituloCapsula": "📖 Cápsula 2: Medición de la Masa, Diferencia con el Peso y Desplazamiento Naval",
+        "markdown": "### 📖 Cápsula 2: Medición de la Masa, Diferencia con el Peso y Desplazamiento Naval\n\nEn el lenguaje cotidiano se suelen confundir masa y peso, pero en Física y en ingeniería naval representan propiedades distintas que se miden con instrumentos diferentes.\n\n#### 1. Masa inercial, masa gravitatoria y peso\n* **Masa inercial ($m$):** es la medida cuantitativa de la **inercia** de un cuerpo, es decir, su oposición a cambiar de velocidad cuando actúa una fuerza neta ($m = F / a$). Es una magnitud **escalar** e intrínseca: no cambia aunque el cuerpo viaje al espacio o al fondo del mar.\n* **Masa gravitatoria:** es la propiedad por la cual un cuerpo interactúa gravitacionalmente con otros. Los experimentos demuestran que la masa inercial y la masa gravitatoria son equivalentes.\n* **Peso ($\\vec{W}$ o $\\vec{P}$):** es la **fuerza gravitacional** con que la Tierra (u otro astro) atrae al cuerpo. Es una magnitud **vectorial**, su unidad SI es el **newton (N)** y su módulo es:\n\n$$W = m \\cdot g$$\n\n#### 2. Instrumentos: Balanza de brazos iguales frente a Dinamómetro\n\n| Característica | Balanza de brazos iguales (platillos) | Dinamómetro (o báscula de resorte) |\n| :--- | :--- | :--- |\n| **Qué hace físicamente** | Compara el momento de una masa desconocida con el de masas patrón ($m_1 \\cdot g = m_2 \\cdot g$) | Mide el alargamiento de un resorte causado por una fuerza ($F = k \\cdot x$) |\n| **Magnitud que determina** | **Masa ($m$)** en kilogramos o gramos | **Peso o fuerza ($W$)** en newtons |\n| **¿Depende del valor local de $g$?** | **No** (mientras exista gravedad, $g$ se cancela en ambos lados) | **Sí** (su lectura varía con la latitud, la altitud o si cambia de planeta) |\n| **¿Funciona en caída libre ($g_{\\text{aparente}} = 0$)?** | No (los platillos no ejercen fuerza sobre el fiel) | No para medir peso (marca cero); la masa debe medirse por oscilación ($T = 2\\pi\\sqrt{m/k}$) |\n\n> **⚓ Trampa de examen:** Como la Tierra está achatada en los polos y rota sobre su eje, la aceleración de la gravedad al nivel del mar aumenta desde el ecuador (en Guayaquil o Salinas, $g \\approx 9{,}78\\text{ m/s}^2$) hacia los polos ($g \\approx 9{,}83\\text{ m/s}^2$). Un lingote de plomo trasladado de Guayaquil al polo norte conserva **exactamente la misma masa** en una balanza de platillos, pero marca un **mayor peso** en un dinamómetro.\n\n#### 3. Escalas de masa: desde el átomo hasta el buque de guerra\n* **Unidad de masa atómica ($\\text{u}$ o dalton, $\\text{Da}$):** se define como exactamente $\\frac{1}{12}$ de la masa de un átomo neutro de carbono-12 ($^{12}\\text{C}$):\n\n$$1\\text{ u} \\approx 1{,}660\\,54 \\times 10^{-27}\\text{ kg}$$\n\n* **Desplazamiento naval ($\\Delta$):** la masa de un buque no se mide subiéndolo a una báscula, sino aplicando el **principio de Arquímedes**. Todo buque a flote en equilibrio desplaza un volumen de agua cuya masa es exactamente igual a la masa total del buque. Leyendo el **calado** (profundidad sumergida del casco en las marcas de proa, popa y medio buque), las curvas hidrostáticas dan el volumen sumergido $V_{\\text{sum}}$ y se calcula la masa en toneladas ($1\\text{ t} = 1\\,000\\text{ kg}$):\n\n$$m_{\\text{buque}} = \\rho_{\\text{agua}} \\cdot V_{\\text{sum}}$$",
+        "videoUrl": null,
+        "tituloSimulador": "Simulador: Mediciones de Longitud, Masa y Tiempo 2",
+        "tituloLeccionSimulador": "🎯 Práctica 2: Masa, Peso, Balanzas y Desplazamiento Naval",
+        "preguntas": [
+          {
+            "enunciado": "¿Cuál de las siguientes afirmaciones distingue correctamente la masa del peso de un cuerpo?",
+            "opciones": [
+              "La masa es una magnitud escalar e invariable que mide la inercia en kilogramos, mientras que el peso es una fuerza vectorial que depende de la gravedad local y se mide en newtons.",
+              "La masa es una fuerza vectorial medida en newtons y el peso es una propiedad escalar medida en kilogramos.",
+              "Tanto la masa como el peso disminuyen a la sexta parte cuando un objeto se traslada de la Tierra a la Luna.",
+              "La masa se mide con un dinamómetro y el peso se mide con una balanza de brazos iguales."
+            ],
+            "respuesta": "a",
+            "explicacion": "La masa cuantifica la cantidad de materia y la inercia del cuerpo (escalar, en kg, invariable con la posición), mientras que el peso $\\vec{W} = m \\cdot \\vec{g}$ es la fuerza de atracción gravitatoria (vectorial, en N)."
+          },
+          {
+            "enunciado": "En la Base Naval de Guayaquil (cerca del ecuador terrestre, donde $g \\approx 9{,}78\\text{ m/s}^2$) se calibra una carga de $100\\text{ kg}$ usando una balanza de brazos iguales y un dinamómetro de alta precisión. Si el buque traslada ambos instrumentos y la carga hasta una estación cercana al polo sur ($g \\approx 9{,}83\\text{ m/s}^2$), ¿qué ocurrirá con las lecturas?",
+            "opciones": [
+              "Tanto la balanza de brazos iguales como el dinamómetro marcarán valores mayores en el polo sur.",
+              "La balanza de brazos iguales seguirá equilibrándose con las mismas pesas de $100\\text{ kg}$, pero el dinamómetro registrará una fuerza mayor.",
+              "La balanza de brazos iguales marcará más masa y el dinamómetro marcará la misma fuerza.",
+              "Ninguno de los dos instrumentos cambiará su lectura porque la gravedad terrestre es constante en todo el planeta."
+            ],
+            "respuesta": "b",
+            "explicacion": "En la balanza de dos platillos la gravedad actúa por igual en ambos brazos ($m_1 g = m_2 g$), por lo que $g$ se cancela y mide masa pura ($100\\text{ kg}$). En cambio, el dinamómetro mide el peso $W = m \\cdot g$: pasa de $978\\text{ N}$ en Guayaquil a $983\\text{ N}$ cerca del polo."
+          },
+          {
+            "enunciado": "Un buque patrullero flota en equilibrio en el mar ($\\rho = 1\\,025\\text{ kg/m}^3$). Si por la lectura de sus marcas de calado se determina que el volumen sumergido del casco es de $600\\text{ m}^3$, ¿cuál es el desplazamiento (masa total) del buque en toneladas métricas?",
+            "opciones": [
+              "$600\\text{ t}$",
+              "$585{,}4\\text{ t}$",
+              "$615\\text{ t}$",
+              "$6\\,150\\text{ t}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "Por el principio de Arquímedes, la masa del buque es igual a la masa del agua de mar desalojada: $m = \\rho \\cdot V = 1\\,025\\text{ kg/m}^3 \\times 600\\text{ m}^3 = 615\\,000\\text{ kg}$. Como $1\\text{ t} = 1\\,000\\text{ kg}$, su desplazamiento es de $615\\text{ t}$."
+          },
+          {
+            "enunciado": "¿Cómo se define la unidad de masa atómica unificada ($\\text{u}$ o dalton)?",
+            "opciones": [
+              "Como la masa exacta de un átomo de hidrógeno en reposo.",
+              "Como la milésima parte de un miligramo ($10^{-6}\\text{ g}$).",
+              "Como la masa de un electrón multiplicada por el número de Avogadro.",
+              "Como la doceava parte ($\\frac{1}{12}$) de la masa de un átomo neutro de carbono-12 ($^{12}\\text{C}$)."
+            ],
+            "respuesta": "d",
+            "explicacion": "Por convenio internacional, al átomo de carbono-12 se le asigna una masa de exactamente $12\\text{ u}$, por lo que $1\\text{ u} = \\frac{1}{12}\\,m(^{12}\\text{C}) \\approx 1{,}660\\,54 \\times 10^{-27}\\text{ kg}$."
+          },
+          {
+            "enunciado": "En el interior de una estación espacial en órbita (en condición de microgravedad o caída libre continua), ¿cómo se mide experimentalmente la masa de un astronauta?",
+            "opciones": [
+              "Subiéndolo a una báscula de baño convencional de resortes.",
+              "Usando una balanza tradicional de platillos y pesas de bronce.",
+              "Haciéndolo oscilar sujeto a un resorte de constante elástica $k$ conocida y midiendo el periodo de oscilación ($T = 2\\pi\\sqrt{m/k}$).",
+              "No es posible medir la masa en el espacio porque los cuerpos pierden su inercia."
+            ],
+            "respuesta": "c",
+            "explicacion": "En caída libre el peso aparente es nulo, por lo que las balanzas gravitatorias y las básculas de resorte estáticas no funcionan. Sin embargo, el cuerpo conserva intacta su masa inercial $m$, que se determina midiendo el periodo de oscilación de un sistema masa-resorte: $m = \\frac{k \\cdot T^2}{4\\pi^2}$."
+          },
+          {
+            "enunciado": "Un buzo de la Armada lleva un cinturón de lastre con piezas de plomo cuya masa total es de $12\\text{ kg}$. Si la aceleración de la gravedad es $g = 9{,}8\\text{ m/s}^2$, ¿cuáles son la masa y el peso del cinturón fuera del agua?",
+            "opciones": [
+              "Masa de $12\\text{ kg}$ y peso de $117{,}6\\text{ N}$",
+              "Masa de $117{,}6\\text{ kg}$ y peso de $12\\text{ N}$",
+              "Masa de $12\\text{ N}$ y peso de $1{,}22\\text{ kg}$",
+              "Masa de $12\\text{ kg}$ y peso de $12\\text{ N}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "La masa es $m = 12\\text{ kg}$ y el peso es la fuerza gravitatoria $W = m \\cdot g = 12\\text{ kg} \\times 9{,}8\\text{ m/s}^2 = 117{,}6\\text{ N}$."
+          },
+          {
+            "enunciado": "Un bloque de carga cuelga de un dinamómetro que marca $490\\text{ N}$ en un puerto donde $g = 9{,}8\\text{ m/s}^2$. ¿Cuál es la masa del bloque?",
+            "opciones": [
+              "$4\\,802\\text{ kg}$",
+              "$50\\text{ kg}$",
+              "$49\\text{ kg}$",
+              "$500\\text{ kg}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Despejando la masa de la relación $W = m \\cdot g$, se obtiene $m = \\frac{W}{g} = \\frac{490\\text{ N}}{9{,}8\\text{ m/s}^2} = 50\\text{ kg}$."
+          },
+          {
+            "enunciado": "En una balanza de brazos desiguales (como una romana), un objeto de masa desconocida $m$ colocado a $15\\text{ cm}$ del punto de apoyo se equilibra con un pilón patrón de $3\\text{ kg}$ situado a $45\\text{ cm}$ al otro lado del apoyo. ¿Cuál es la masa $m$ del objeto?",
+            "opciones": [
+              "$1\\text{ kg}$",
+              "$6\\text{ kg}$",
+              "$13{,}5\\text{ kg}$",
+              "$9\\text{ kg}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "Por equilibrio de momentos respecto al fulcro ($m \\cdot g \\cdot d_1 = m_p \\cdot g \\cdot d_2$), se cancela $g$ y queda $m = m_p \\cdot \\frac{d_2}{d_1} = 3\\text{ kg} \\times \\frac{45\\text{ cm}}{15\\text{ cm}} = 3\\text{ kg} \\times 3 = 9\\text{ kg}$."
+          },
+          {
+            "enunciado": "Cuando un buque navega desde el río Guayas (agua dulce, $\\rho \\approx 1\\,000\\text{ kg/m}^3$) hacia mar abierto (agua salada, $\\rho \\approx 1\\,025\\text{ kg/m}^3$) sin consumir combustible ni variar su carga, ¿qué ocurre con su masa y con el volumen sumergido de su casco?",
+            "opciones": [
+              "Su masa permanece constante, pero el volumen sumergido disminuye ligeramente en el mar (el buque emerge un poco).",
+              "Su masa aumenta en el mar y el volumen sumergido permanece igual.",
+              "Su masa disminuye y el buque se hunde más en el agua salada.",
+              "Tanto la masa del buque como su calado permanecen exactamente iguales."
+            ],
+            "respuesta": "a",
+            "explicacion": "La masa del buque no cambia. Como $m = \\rho \\cdot V_{\\text{sum}}$ es constante y la densidad del agua salada $\\rho$ es mayor que la del agua dulce, el volumen sumergido $V_{\\text{sum}} = m / \\rho$ disminuye, haciendo que el calado sea menor en el mar."
+          },
+          {
+            "enunciado": "Sabiendo que $1\\text{ u} \\approx 1{,}66 \\times 10^{-27}\\text{ kg}$, ¿cuál es la masa aproximada en kilogramos de una molécula de agua ($\\text{H}_2\\text{O}$), cuya masa molecular es de $18\\text{ u}$?",
+            "opciones": [
+              "$9{,}22 \\times 10^{-29}\\text{ kg}$",
+              "$1{,}80 \\times 10^{-26}\\text{ kg}$",
+              "$2{,}99 \\times 10^{-26}\\text{ kg}$",
+              "$2{,}99 \\times 10^{-23}\\text{ kg}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "Multiplicando por el factor de conversión: $m = 18\\text{ u} \\times 1{,}66 \\times 10^{-27}\\text{ kg/u} = 29{,}88 \\times 10^{-27}\\text{ kg} \\approx 2{,}99 \\times 10^{-26}\\text{ kg}$."
+          },
+          {
+            "enunciado": "Una balanza analítica de laboratorio naval tiene una resolución de $0{,}1\\text{ mg}$. ¿A cuántos kilogramos equivale esa lectura mínima?",
+            "opciones": [
+              "$10^{-4}\\text{ kg}$",
+              "$10^{-7}\\text{ kg}$",
+              "$10^{-5}\\text{ kg}$",
+              "$10^{-6}\\text{ kg}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Como $1\\text{ mg} = 10^{-3}\\text{ g} = 10^{-6}\\text{ kg}$, una décima de miligramo es $0{,}1\\text{ mg} = 10^{-1} \\times 10^{-6}\\text{ kg} = 10^{-7}\\text{ kg}$."
+          },
+          {
+            "enunciado": "Sobre una mesa horizontal sin fricción se aplica una misma fuerza neta a dos carros, A y B. Si el carro A adquiere una aceleración tres veces menor que la del carro B ($a_A = a_B / 3$), ¿qué relación existe entre sus masas inerciales?",
+            "opciones": [
+              "$m_A = m_B / 3$",
+              "$m_A = 9\\,m_B$",
+              "$m_A = m_B$",
+              "$m_A = 3\\,m_B$"
+            ],
+            "respuesta": "d",
+            "explicacion": "La masa inercial mide la resistencia a acelerarse bajo una misma fuerza ($F = m_A \\cdot a_A = m_B \\cdot a_B$). Si la aceleración de A es la tercera parte de la de B, su masa inercial es el triple: $m_A = 3\\,m_B$."
+          },
+          {
+            "enunciado": "En la Luna, la aceleración de la gravedad es aproximadamente la sexta parte de la terrestre ($g_{\\text{Luna}} \\approx 1{,}63\\text{ m/s}^2$). Si un equipo científico tiene una masa de $60\\text{ kg}$ en la Tierra, ¿cuáles serán su masa y su peso aproximado en la superficie lunar?",
+            "opciones": [
+              "Masa de $10\\text{ kg}$ y peso de $97{,}8\\text{ N}$",
+              "Masa de $60\\text{ kg}$ y peso de $97{,}8\\text{ N}$",
+              "Masa de $60\\text{ kg}$ y peso de $588\\text{ N}$",
+              "Masa de $10\\text{ kg}$ y peso de $16{,}3\\text{ N}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "La masa es intrínseca y sigue siendo $60\\text{ kg}$. El peso en la Luna disminuye a $W_{\\text{Luna}} = m \\cdot g_{\\text{Luna}} = 60\\text{ kg} \\times 1{,}63\\text{ m/s}^2 = 97{,}8\\text{ N}$."
+          }
+        ]
+      },
+      {
+        "tituloCapsula": "📖 Cápsula 3: Medición del Tiempo, Fenómenos Periódicos y Cronometraje de Navegación",
+        "markdown": "### 📖 Cápsula 3: Medición del Tiempo, Fenómenos Periódicos y Cronometraje de Navegación\n\nPara medir el **tiempo** se requiere un **fenómeno periódico**, es decir, un proceso físico que se repita a intervalos iguales y cuyas oscilaciones puedan contarse con precisión.\n\n#### 1. Periodo ($T$) y Frecuencia ($f$)\n* **Periodo ($T$):** es el tiempo que tarda en completarse un ciclo u oscilación completa. Su unidad SI es el **segundo (s)**.\n* **Frecuencia ($f$):** es el número de ciclos completados en cada segundo. Su unidad SI es el **hertz (Hz)**, donde $1\\text{ Hz} = 1\\text{ s}^{-1}$.\n\nAmbas magnitudes son recíprocas entre sí:\n\n$$T = \\frac{1}{f} \\qquad \\text{y} \\qquad f = \\frac{1}{T}$$\n\n#### 2. El péndulo simple como patrón mecánico de tiempo\nGalileo Galilei descubrió el **isocronismo** de las pequeñas oscilaciones de un péndulo, y Christiaan Huygens lo aplicó para construir los primeros relojes de precisión. Para ángulos pequeños ($\\theta < 10^\\circ$), el periodo de un péndulo simple de longitud $L$ en un lugar con gravedad $g$ es:\n\n$$T = 2\\pi \\sqrt{\\frac{L}{g}}$$\n\n**Leyes fundamentales del péndulo simple:**\n1. **Independencia de la masa:** el periodo **no depende** de la masa colgada.\n2. **Dependencia con la longitud:** el periodo es directamente proporcional a la raíz cuadrada de su longitud ($T \\propto \\sqrt{L}$). Para duplicar el periodo ($2T$), hay que **cuadruplicar** la longitud ($4L$).\n3. **Dependencia con la gravedad:** el periodo es inversamente proporcional a $\\sqrt{g}$. Si $g$ disminuye (por ejemplo, al subir una montaña o ir de los polos al ecuador), el periodo $T$ aumenta: el péndulo oscila más lento y el reloj **se atrasa**.\n\n#### 3. Evolución de los relojes y el problema de la longitud en el mar\nUn reloj de péndulo no funciona a bordo de un buque porque el balanceo de las olas y los cambios de latitud alteran su marcha. En el siglo XVIII, John Harrison resolvió el problema inventando el **cronómetro marino** (basado en un volante con resorte espiral compensado térmicamente).\n\n| Tipo de reloj | Oscilador físico | Incertidumbre típica | Uso principal |\n| :--- | :--- | :--- | :--- |\n| Reloj de sol / clepsidra | Rotación terrestre / flujo de agua | Minutos por día | Antigüedad |\n| Reloj de péndulo | Gravedad y longitud ($T = 2\\pi\\sqrt{L/g}$) | $\\sim 1\\text{ s}$ por día (solo en tierra firme) | Observatorios astronómicos clásicos |\n| Cronómetro marino mecánico | Volante y espiral compensado | $\\sim 0{,}1\\text{ s}$ por día | Navegación astronómica en buques |\n| Reloj de cuarzo | Vibración piezoeléctrica del cristal de $\\text{SiO}_2$ ($32\\,768\\text{ Hz}$) | $\\sim 0{,}5\\text{ s}$ por mes | Cronógrafos y equipos electrónicos |\n| Reloj atómico de cesio-133 | Transición hiperfina ($9\\,192\\,631\\,770\\text{ Hz}$) | $1\\text{ s}$ en más de $30\\text{ millones}$ de años | Satélites GPS y tiempo universal (UTC) |\n\n#### 4. Tiempo y longitud geográfica en navegación\nLa Tierra gira $360^\\circ$ hacia el este en $24\\text{ h}$, lo que establece la relación fundamental entre el tiempo y la longitud geográfica:\n\n$$\\omega_{\\text{Tierra}} = \\frac{360^\\circ}{24\\text{ h}} = 15^\\circ/\\text{h} \\qquad \\Longrightarrow \\qquad 1^\\circ = 4\\text{ min de tiempo} \\qquad \\Longrightarrow \\qquad 1' = 4\\text{ s de tiempo}$$\n\nComparando la hora del mediodía solar local del buque con la hora del meridiano cero (UTC / Greenwich) guardada en el cronómetro marino, el oficial de derrota calcula su longitud:\n* Si en el buque es mediodía ($12\\text{h }00\\text{m}$) cuando el cronómetro UTC marca más de las $12\\text{h }00\\text{m}$, el buque está al **Oeste (W/O)** de Greenwich.\n\n> **⚓ Ojo Naval:** En el ecuador terrestre, $1'$ de longitud equivale a $1\\text{ milla náutica}$ ($1\\,852\\text{ m}$). Como la Tierra gira $1'$ cada $4\\text{ s}$, ¡un error de apenas $4\\text{ segundos}$ en el cronómetro marino desplaza la posición calculada del buque en $1\\text{ milla náutica}$!",
+        "videoUrl": null,
+        "tituloSimulador": "Simulador: Mediciones de Longitud, Masa y Tiempo 3",
+        "tituloLeccionSimulador": "🎯 Práctica 3: Péndulo Simple, Relojes y Cronometraje Naval",
+        "preguntas": [
+          {
+            "enunciado": "El cristal de cuarzo de un cronógrafo marino vibra con una frecuencia de $2{,}0 \\times 10^{4}\\text{ Hz}$. ¿Cuál es el periodo de cada vibración del cristal?",
+            "opciones": [
+              "$5{,}0 \\times 10^{-5}\\text{ s}$",
+              "$2{,}0 \\times 10^{-4}\\text{ s}$",
+              "$5{,}0 \\times 10^{-4}\\text{ s}$",
+              "$2{,}0 \\times 10^{4}\\text{ s}$"
+            ],
+            "respuesta": "a",
+            "explicacion": "El periodo es el recíproco de la frecuencia: $T = \\frac{1}{f} = \\frac{1}{2{,}0 \\times 10^{4}\\text{ Hz}} = 0{,}5 \\times 10^{-4}\\text{ s} = 5{,}0 \\times 10^{-5}\\text{ s}$ ($50\\text{ }\\mu\\text{s}$)."
+          },
+          {
+            "enunciado": "Un péndulo simple tiene un periodo de oscilación de $1{,}5\\text{ s}$ para ángulos pequeños. Si se desea que su nuevo periodo sea el doble ($3{,}0\\text{ s}$) en el mismo lugar, ¿qué modificación se debe realizar?",
+            "opciones": [
+              "Duplicar la masa de la esfera colgada.",
+              "Duplicar la longitud del hilo.",
+              "Cuadruplicar la longitud del hilo.",
+              "Reducir la longitud del hilo a la cuarta parte."
+            ],
+            "respuesta": "c",
+            "explicacion": "De $T = 2\\pi\\sqrt{L/g}$, el periodo es proporcional a $\\sqrt{L}$ y no depende de la masa. Para que $T$ se multiplique por 2, la longitud $L$ dentro de la raíz cuadrada debe multiplicarse por $2^2 = 4$."
+          },
+          {
+            "enunciado": "Dos péndulos simples, A y B, tienen exactamente la misma longitud de hilo en el mismo laboratorio, pero la esfera de bronce del péndulo A tiene el triple de masa que la del péndulo B ($m_A = 3\\,m_B$). Para oscilaciones pequeñas, ¿cómo se comparan sus periodos?",
+            "opciones": [
+              "$T_A = 3\\,T_B$",
+              "$T_A = T_B$",
+              "$T_A = \\sqrt{3}\\,T_B$",
+              "$T_A = T_B / 3$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Por las leyes del péndulo simple ($T = 2\\pi\\sqrt{L/g}$), la masa se cancela en la ecuación dinámica del movimiento, por lo que el periodo es independiente de la masa: $T_A = T_B$."
+          },
+          {
+            "enunciado": "Se denomina \"péndulo que bate segundos\" a aquel cuyo periodo completo (ida y vuelta) es exactamente $T = 2{,}0\\text{ s}$, de modo que cada medio ciclo dura $1{,}0\\text{ s}$. Si $g = 9{,}8\\text{ m/s}^2$ y $\\pi^2 \\approx 9{,}8$, ¿cuál debe ser la longitud aproximada de este péndulo?",
+            "opciones": [
+              "$2{,}0\\text{ m}$",
+              "$0{,}5\\text{ m}$",
+              "$9{,}8\\text{ m}$",
+              "$1{,}0\\text{ m}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "Elevando al cuadrado $T = 2\\pi\\sqrt{L/g}$ resulta $T^2 = \\frac{4\\pi^2 L}{g}$, de donde $L = \\frac{g \\cdot T^2}{4\\pi^2}$. Con $T = 2{,}0\\text{ s}$ y $g \\approx \\pi^2$, se obtiene $L \\approx \\frac{9{,}8 \\times 4}{4 \\times 9{,}8} = 1{,}0\\text{ m}$."
+          },
+          {
+            "enunciado": "Un reloj de péndulo ha sido ajustado con exactitud al nivel del mar en Europa ($g = 9{,}81\\text{ m/s}^2$). Si se traslada a Quito ($2\\,850\\text{ m}$ de altitud y sobre la línea ecuatorial, donde $g \\approx 9{,}77\\text{ m/s}^2$) sin modificar la longitud del péndulo, ¿qué ocurrirá con el reloj?",
+            "opciones": [
+              "Se atrasará, porque al disminuir $g$ aumenta el periodo $T$ de cada oscilación.",
+              "Se adelantará, porque al disminuir $g$ el péndulo encuentra menos resistencia.",
+              "Seguirá marcando la hora exacta, porque el péndulo no depende de la gravedad.",
+              "Se detendrá por completo debido a la menor presión atmosférica."
+            ],
+            "respuesta": "a",
+            "explicacion": "En $T = 2\\pi\\sqrt{L/g}$, si $g$ disminuye en el denominador, el periodo $T$ aumenta. Eso significa que cada oscilación tarda un poco más del tiempo previsto y las agujas del reloj avanzan más despacio (el reloj se atrasa)."
+          },
+          {
+            "enunciado": "¿Por qué los relojes de péndulo no pudieron utilizarse a bordo de los buques para determinar la longitud geográfica en alta mar?",
+            "opciones": [
+              "Porque la salinidad del aire oxida el hilo del péndulo en pocas horas.",
+              "Porque el campo magnético terrestre frena las oscilaciones metálicas en el océano.",
+              "Porque el balanceo y cabeceo del buque por las olas, junto con las variaciones de temperatura y de gravedad con la latitud, alteran continuamente el periodo del péndulo.",
+              "Porque en el hemisferio sur el péndulo oscila en sentido contrario al del hemisferio norte."
+            ],
+            "respuesta": "c",
+            "explicacion": "El péndulo depende directamente de la aceleración efectiva. El movimiento del buque en las olas introduce aceleraciones adicionales que descontrolan la marcha del péndulo; por eso fue necesario inventar el cronómetro marino con volante y resorte espiral."
+          },
+          {
+            "enunciado": "El Buque Escuela Guayas navega en el océano Pacífico. El oficial de guardia observa con el sextante el paso del Sol por el meridiano superior (mediodía solar local: $12\\text{h }00\\text{m}$) en el preciso instante en que el cronómetro marino sincronizado con el meridiano de Greenwich (UTC) marca las $17\\text{h }20\\text{m}$. ¿En qué longitud geográfica se encuentra el buque?",
+            "opciones": [
+              "$75^\\circ\\text{ O}$",
+              "$80^\\circ\\text{ O}$",
+              "$80^\\circ\\text{ E}$",
+              "$53^\\circ\\text{ O}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "La diferencia de tiempo con Greenwich es de $5\\text{ h }20\\text{ min} = 5\\text{ h} + \\frac{1}{3}\\text{ h}$. Como la Tierra rota $15^\\circ$ cada hora ($1^\\circ$ cada $4\\text{ min}$), la diferencia de longitud es $5 \\times 15^\\circ + \\frac{20}{4}^\\circ = 75^\\circ + 5^\\circ = 80^\\circ$. Dado que en Greenwich ya son las $17\\text{h }20\\text{m}$ cuando en el buque recién es mediodía, el buque está al Oeste: $80^\\circ\\text{ O}$."
+          },
+          {
+            "enunciado": "Si el cronómetro marino de un buque que navega sobre la línea ecuatorial acumula un error de $12\\text{ segundos}$ respecto al tiempo UTC real, ¿qué error de posición en millas náuticas producirá al calcular la longitud geográfica?",
+            "opciones": [
+              "$12\\text{ millas náuticas}$",
+              "$1\\text{ milla náutica}$",
+              "$48\\text{ millas náuticas}$",
+              "$3\\text{ millas náuticas}$"
+            ],
+            "respuesta": "d",
+            "explicacion": "La Tierra gira $1'$ de arco cada $4\\text{ s}$ de tiempo. Por lo tanto, $12\\text{ s}$ de error equivalen a $\\frac{12}{4} = 3'$ de longitud. En el ecuador terrestre, $1'$ de longitud equivale a $1\\text{ M}$, resultando un error de posición de $3\\text{ millas náuticas}$ ($5\\,556\\text{ m}$)."
+          },
+          {
+            "enunciado": "¿En qué propiedad física se basa la alta estabilidad de frecuencia de los relojes de cuarzo empleados en instrumentos electrónicos de navegación?",
+            "opciones": [
+              "En el efecto piezoeléctrico de un cristal de dióxido de silicio ($\\text{SiO}_2$), que vibra mecánicamente a una frecuencia muy precisa cuando se le aplica un voltaje alterno.",
+              "En la desintegración radiactiva de un isótopo de carbono dentro del reloj.",
+              "En la dilatación térmica de una barra bimetálica de cobre y acero.",
+              "En la transición hiperfina de los electrones del átomo de cesio-133."
+            ],
+            "respuesta": "a",
+            "explicacion": "El cuarzo presenta piezoelectricidad: al aplicarle tensión eléctrica oscila mecánicamente con una frecuencia sumamente estable (típicamente $32\\,768\\text{ Hz} = 2^{15}\\text{ Hz}$), que un circuito digital divide sucesivamente hasta obtener pulsos de exactamente $1\\text{ s}$."
+          },
+          {
+            "enunciado": "Un péndulo simple en un laboratorio naval realiza 30 oscilaciones completas en $45\\text{ s}$. ¿Cuáles son su periodo y su frecuencia?",
+            "opciones": [
+              "$T = 0{,}67\\text{ s}$ y $f = 1{,}5\\text{ Hz}$",
+              "$T = 1{,}5\\text{ s}$ y $f = 1{,}5\\text{ Hz}$",
+              "$T = 1{,}5\\text{ s}$ y $f = 0{,}67\\text{ Hz}$",
+              "$T = 15\\text{ s}$ y $f = 0{,}067\\text{ Hz}$"
+            ],
+            "respuesta": "c",
+            "explicacion": "El periodo es el tiempo por cada oscilación: $T = \\frac{45\\text{ s}}{30} = 1{,}5\\text{ s}$. La frecuencia es el número de oscilaciones por segundo: $f = \\frac{1}{T} = \\frac{30}{45\\text{ s}} = \\frac{2}{3}\\text{ Hz} \\approx 0{,}67\\text{ Hz}$."
+          },
+          {
+            "enunciado": "La luz viaja en el vacío a razón de unos $3{,}0 \\times 10^{8}\\text{ m/s}$. ¿Cuánto tiempo tarda la señal de radio de un satélite en recorrer una distancia de $36\\,000\\text{ km}$ hasta la antena de una fragata?",
+            "opciones": [
+              "$1{,}2\\text{ s}$",
+              "$0{,}12\\text{ s}$",
+              "$0{,}012\\text{ s}$",
+              "$8{,}33\\text{ s}$"
+            ],
+            "respuesta": "b",
+            "explicacion": "Expresando la distancia en metros ($36\\,000\\text{ km} = 3{,}6 \\times 10^{7}\\text{ m}$), el tiempo de viaje en un solo sentido es $t = \\frac{d}{c} = \\frac{3{,}6 \\times 10^{7}\\text{ m}}{3{,}0 \\times 10^{8}\\text{ m/s}} = 0{,}12\\text{ s}$ ($120\\text{ ms}$)."
+          },
+          {
+            "enunciado": "Dos péndulos simples se encuentran en el mismo lugar. Si la longitud del péndulo 1 es nueve veces mayor que la del péndulo 2 ($L_1 = 9\\,L_2$), ¿cuál es la relación entre sus periodos $T_1$ y $T_2$?",
+            "opciones": [
+              "$T_1 = 3\\,T_2$",
+              "$T_1 = 9\\,T_2$",
+              "$T_1 = 81\\,T_2$",
+              "$T_1 = T_2 / 3$"
+            ],
+            "respuesta": "a",
+            "explicacion": "Dado que $T \\propto \\sqrt{L}$, al dividir ambas expresiones resulta $\\frac{T_1}{T_2} = \\sqrt{\\frac{L_1}{L_2}} = \\sqrt{9} = 3$, por lo que $T_1 = 3\\,T_2$."
+          },
+          {
+            "enunciado": "Ordene los siguientes intervalos de tiempo de menor a mayor duración: 1) Un microsegundo ($1\\text{ }\\mu\\text{s}$), 2) El periodo de una onda de radar de $10\\text{ GHz}$, 3) Un milisegundo ($1\\text{ ms}$), 4) El parpadeo humano ($0{,}1\\text{ s}$).",
+            "opciones": [
+              "1, 2, 3, 4",
+              "2, 3, 1, 4",
+              "4, 3, 1, 2",
+              "2, 1, 3, 4"
+            ],
+            "respuesta": "d",
+            "explicacion": "El periodo de una onda de $10\\text{ GHz}$ ($10^{10}\\text{ Hz}$) es $T = \\frac{1}{10^{10}\\text{ Hz}} = 10^{-10}\\text{ s}$ ($0{,}1\\text{ ns}$). Luego siguen $1\\text{ }\\mu\\text{s} = 10^{-6}\\text{ s}$, $1\\text{ ms} = 10^{-3}\\text{ s}$ y finalmente $0{,}1\\text{ s} = 10^{-1}\\text{ s}$. El orden creciente correcto es 2, 1, 3, 4."
+          }
+        ]
+      }
+    ]
+  }
